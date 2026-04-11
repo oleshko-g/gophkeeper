@@ -1,0 +1,73 @@
+edition = "2023";
+
+package gophkeper.v1;
+
+service UserService {
+  rpc Register (RegisterRequest) returns (RegisterResponse);
+}
+service ClientAppService {
+  rpc Authorize (AuthorizeRequest) returns (AuthorizeResponse);
+  rpc Connect (ConnectRequest) returns (ConnectResponse);
+}
+
+service KeeperService {
+  rpc StoreData (StoreDataRequest) returns (StoreDataResponse);
+  rpc RetrieveData (RetrieveDataRequest) returns (RetrieveDataResponse);
+  rpc DeleteData (DeleteDataRequest) returns (DeleteDataResponse);
+  rpc SyncData (SyncDataRequest) returns (SyncDataResponse);
+}
+
+message RegisterRequest {
+
+}
+
+message RegisterResponse {
+
+}
+
+message AuthorizeRequest {
+
+}
+
+message AuthorizeResponse {
+
+}
+
+message ConnectRequest {
+
+}
+
+message ConnectResponse {
+
+}
+
+message StoreDataRequest {
+
+}
+
+message StoreDataResponse {
+
+}
+message RetrieveDataRequest {
+
+}
+
+message RetrieveDataResponse {
+
+}
+
+message DeleteDataRequest {
+
+}
+
+message DeleteDataResponse {
+
+}
+
+message SyncDataRequest {
+
+}
+
+message SyncDataResponse {
+
+}
