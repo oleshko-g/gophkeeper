@@ -1,0 +1,34 @@
+@startuml entities
+  hide empty members
+  entity keeper_user_pub_keys {
+    * id UUID
+    --
+    - pub_key string
+  } 
+  entity keeper_user_apps {
+    * id UUID
+    --
+    - app_name string
+    - keeper_user_pub_key_id UUID
+  }
+
+  entity keeper_user_refresh_tokens {
+    * id UUID
+    - token string
+    - keeper_user_pub_key_id UUID
+    - issued_at datetimez
+    + revoked_at datetimez
+  }
+
+  entity kept_user_data {
+    * id
+    --
+    - keeper_user_pub_key_id
+    - ciphered_data
+  }
+
+  keeper_user_pub_keys::id ||--o{ kept_user_data::keeper_user_pub_key_id
+  keeper_user_pub_keys::id ||--|{ keeper_user_apps::keeper_user_pub_key_id
+  keeper_user_pub_keys::id ||-up-|{ keeper_user_refresh_tokens::keeper_user_pub_key_id
+
+@enduml
