@@ -2,72 +2,98 @@ edition = "2023";
 
 package gophkeper.v1;
 
-service UserService {
-  rpc Register (RegisterRequest) returns (RegisterResponse);
-}
+// ClientAppService is the interface to:
+//  - [Register] public keys of the Keeper users
+//  - [Authorize] their client apps
+//  - and [Connect] through the authorized apps to [KeeperService]
 service ClientAppService {
-  rpc Authorize (AuthorizeRequest) returns (AuthorizeResponse);
-  rpc Connect (ConnectRequest) returns (ConnectResponse);
+  // Register registers an anonymous public key and returns a refresh token.
+  // The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+
+  // Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
+  // The owner of the authentication token can then [Connect] to [KeeperService]
+  rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse);
+
+  // Connect creates a new [Session] for an [Authorize]d client app.
+  // The holder of the session can then make requests to [KeeperService]
+  rpc Connect(ConnectRequest) returns (ConnectResponse);
 }
 
+// KeeperService is the interface to:
+//  - [UploadData] of the owners of the [Register]ed public keys
+//  - [DownloadData] the uploaded data
+//  - [ListData] the uploaded data
+//  - [DeleteData] the uploaded data
 service KeeperService {
-  rpc StoreData (StoreDataRequest) returns (StoreDataResponse);
-  rpc RetrieveData (RetrieveDataRequest) returns (RetrieveDataResponse);
-  rpc DeleteData (DeleteDataRequest) returns (DeleteDataResponse);
-  rpc SyncData (SyncDataRequest) returns (SyncDataResponse);
+  // UploadData uploads data of the owners of the [Register]ed public keys.
+  rpc UploadData(UploadDataRequest) returns (UploadDataResponse);
+
+  // DownloadData downloads the [Upload]ed data
+  rpc DownloadData(DownloadDataRequest) returns (DownloadDataResponse);
+
+  // DownloadData lists the [Upload]ed data
+  rpc ListData(ListDataRequest) returns (ListDataResponse);
+
+  // Delete deletes the [Upload]ed data from the [KeeperService]
+  rpc DeleteData(DeleteDataRequest) returns (DeleteDataResponse);
 }
 
 message RegisterRequest {
-
+  string pub_key = 1;
 }
 
 message RegisterResponse {
-
+  string refresh_token = 1;
 }
 
 message AuthorizeRequest {
-
+  string refresh_token = 1;
+  App app = 2;
 }
 
 message AuthorizeResponse {
-
+  string auth_token = 1;
 }
 
 message ConnectRequest {
-
+  string auth_token = 1;
 }
 
 message ConnectResponse {
-
+  Session session = 1;
 }
 
-message StoreDataRequest {
-
+message UploadDataRequest {
+  Session session = 1;
 }
 
-message StoreDataResponse {
+message UploadDataResponse {}
 
+message DownloadDataRequest {
+  Session session = 1;
 }
-message RetrieveDataRequest {
 
-}
-
-message RetrieveDataResponse {
-
+message DownloadDataResponse {
+  Session session = 1;
 }
 
 message DeleteDataRequest {
-
+  Session session = 1;
 }
 
-message DeleteDataResponse {
+message DeleteDataResponse {}
 
+message ListDataRequest {
+  Session session = 1;
 }
 
-message SyncDataRequest {
+message ListDataResponse {}
 
+message App {
+  string app_id = 1;
 }
 
-message SyncDataResponse {
-
+message Session {
+  string session_id = 1;
 }

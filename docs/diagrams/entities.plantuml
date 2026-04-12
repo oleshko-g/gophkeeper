@@ -21,14 +21,21 @@
   }
 
   entity kept_user_data {
-    * id
+    * id UUID
     --
-    - keeper_user_pub_key_id
-    - ciphered_data
+    - keeper_user_pub_key_id UUID
+    - ciphered_data jsob
+  }
+
+  entity keeper_apps_sessions {
+    * id UUID
+    --
+    - started_at datetimz
+    + expired_at datetimz
   }
 
   keeper_user_pub_keys::id ||--o{ kept_user_data::keeper_user_pub_key_id
-  keeper_user_pub_keys::id ||--|{ keeper_user_apps::keeper_user_pub_key_id
+  keeper_user_pub_keys::id ||--o{ keeper_user_apps::keeper_user_pub_key_id
   keeper_user_pub_keys::id ||-up-|{ keeper_user_refresh_tokens::keeper_user_pub_key_id
 
 @enduml
