@@ -4,7 +4,8 @@ import (
 	"context"
 )
 
-type ClientApp interface {
+// Depositor is the interface to i
+type Depositor interface {
 	// Register registers an anonymous public key and returns a refresh token.
 	// The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
 	Register(ctx context.Context, in *RegisterRequest) (*RegisterResponse, error)

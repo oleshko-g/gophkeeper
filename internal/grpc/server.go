@@ -10,7 +10,7 @@ func New() *Server {
 }
 
 type Server struct {
-	keeper_v1.UnimplementedClientAppServiceServer
+	keeper_v1.UnimplementedDepositorServiceServer
 	keeper_v1.UnimplementedKeeperServiceServer
 	*implemented
 }

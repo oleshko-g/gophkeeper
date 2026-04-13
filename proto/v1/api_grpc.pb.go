@@ -19,20 +19,20 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ClientAppService_Register_FullMethodName  = "/gophkeper.v1.ClientAppService/Register"
-	ClientAppService_Authorize_FullMethodName = "/gophkeper.v1.ClientAppService/Authorize"
-	ClientAppService_Connect_FullMethodName   = "/gophkeper.v1.ClientAppService/Connect"
+	DepositorService_Register_FullMethodName  = "/gophkeper.v1.DepositorService/Register"
+	DepositorService_Authorize_FullMethodName = "/gophkeper.v1.DepositorService/Authorize"
+	DepositorService_Connect_FullMethodName   = "/gophkeper.v1.DepositorService/Connect"
 )
 
-// ClientAppServiceClient is the client API for ClientAppService service.
+// DepositorServiceClient is the client API for DepositorService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// ClientAppService is the interface to:
+// DepositorService is the interface to:
 //   - [Register] public keys of the Keeper users
 //   - [Authorize] their client apps
 //   - and [Connect] through the authorized apps to [KeeperService]
-type ClientAppServiceClient interface {
+type DepositorServiceClient interface {
 	// Register registers an anonymous public key and returns a refresh token.
 	// The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
@@ -44,53 +44,53 @@ type ClientAppServiceClient interface {
 	Connect(ctx context.Context, in *ConnectRequest, opts ...grpc.CallOption) (*ConnectResponse, error)
 }
 
-type clientAppServiceClient struct {
+type depositorServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewClientAppServiceClient(cc grpc.ClientConnInterface) ClientAppServiceClient {
-	return &clientAppServiceClient{cc}
+func NewDepositorServiceClient(cc grpc.ClientConnInterface) DepositorServiceClient {
+	return &depositorServiceClient{cc}
 }
 
-func (c *clientAppServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+func (c *depositorServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RegisterResponse)
-	err := c.cc.Invoke(ctx, ClientAppService_Register_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, DepositorService_Register_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *clientAppServiceClient) Authorize(ctx context.Context, in *AuthorizeRequest, opts ...grpc.CallOption) (*AuthorizeResponse, error) {
+func (c *depositorServiceClient) Authorize(ctx context.Context, in *AuthorizeRequest, opts ...grpc.CallOption) (*AuthorizeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AuthorizeResponse)
-	err := c.cc.Invoke(ctx, ClientAppService_Authorize_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, DepositorService_Authorize_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *clientAppServiceClient) Connect(ctx context.Context, in *ConnectRequest, opts ...grpc.CallOption) (*ConnectResponse, error) {
+func (c *depositorServiceClient) Connect(ctx context.Context, in *ConnectRequest, opts ...grpc.CallOption) (*ConnectResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ConnectResponse)
-	err := c.cc.Invoke(ctx, ClientAppService_Connect_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, DepositorService_Connect_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ClientAppServiceServer is the server API for ClientAppService service.
-// All implementations must embed UnimplementedClientAppServiceServer
+// DepositorServiceServer is the server API for DepositorService service.
+// All implementations must embed UnimplementedDepositorServiceServer
 // for forward compatibility.
 //
-// ClientAppService is the interface to:
+// DepositorService is the interface to:
 //   - [Register] public keys of the Keeper users
 //   - [Authorize] their client apps
 //   - and [Connect] through the authorized apps to [KeeperService]
-type ClientAppServiceServer interface {
+type DepositorServiceServer interface {
 	// Register registers an anonymous public key and returns a refresh token.
 	// The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
@@ -100,118 +100,118 @@ type ClientAppServiceServer interface {
 	// Connect creates a new [Session] for an [Authorize]d client app.
 	// The holder of the session can then make requests to [KeeperService]
 	Connect(context.Context, *ConnectRequest) (*ConnectResponse, error)
-	mustEmbedUnimplementedClientAppServiceServer()
+	mustEmbedUnimplementedDepositorServiceServer()
 }
 
-// UnimplementedClientAppServiceServer must be embedded to have
+// UnimplementedDepositorServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedClientAppServiceServer struct{}
+type UnimplementedDepositorServiceServer struct{}
 
-func (UnimplementedClientAppServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
+func (UnimplementedDepositorServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedClientAppServiceServer) Authorize(context.Context, *AuthorizeRequest) (*AuthorizeResponse, error) {
+func (UnimplementedDepositorServiceServer) Authorize(context.Context, *AuthorizeRequest) (*AuthorizeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Authorize not implemented")
 }
-func (UnimplementedClientAppServiceServer) Connect(context.Context, *ConnectRequest) (*ConnectResponse, error) {
+func (UnimplementedDepositorServiceServer) Connect(context.Context, *ConnectRequest) (*ConnectResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Connect not implemented")
 }
-func (UnimplementedClientAppServiceServer) mustEmbedUnimplementedClientAppServiceServer() {}
-func (UnimplementedClientAppServiceServer) testEmbeddedByValue()                          {}
+func (UnimplementedDepositorServiceServer) mustEmbedUnimplementedDepositorServiceServer() {}
+func (UnimplementedDepositorServiceServer) testEmbeddedByValue()                          {}
 
-// UnsafeClientAppServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ClientAppServiceServer will
+// UnsafeDepositorServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to DepositorServiceServer will
 // result in compilation errors.
-type UnsafeClientAppServiceServer interface {
-	mustEmbedUnimplementedClientAppServiceServer()
+type UnsafeDepositorServiceServer interface {
+	mustEmbedUnimplementedDepositorServiceServer()
 }
 
-func RegisterClientAppServiceServer(s grpc.ServiceRegistrar, srv ClientAppServiceServer) {
-	// If the following call panics, it indicates UnimplementedClientAppServiceServer was
+func RegisterDepositorServiceServer(s grpc.ServiceRegistrar, srv DepositorServiceServer) {
+	// If the following call panics, it indicates UnimplementedDepositorServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&ClientAppService_ServiceDesc, srv)
+	s.RegisterService(&DepositorService_ServiceDesc, srv)
 }
 
-func _ClientAppService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DepositorService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ClientAppServiceServer).Register(ctx, in)
+		return srv.(DepositorServiceServer).Register(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ClientAppService_Register_FullMethodName,
+		FullMethod: DepositorService_Register_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClientAppServiceServer).Register(ctx, req.(*RegisterRequest))
+		return srv.(DepositorServiceServer).Register(ctx, req.(*RegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ClientAppService_Authorize_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DepositorService_Authorize_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AuthorizeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ClientAppServiceServer).Authorize(ctx, in)
+		return srv.(DepositorServiceServer).Authorize(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ClientAppService_Authorize_FullMethodName,
+		FullMethod: DepositorService_Authorize_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClientAppServiceServer).Authorize(ctx, req.(*AuthorizeRequest))
+		return srv.(DepositorServiceServer).Authorize(ctx, req.(*AuthorizeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ClientAppService_Connect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _DepositorService_Connect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ConnectRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ClientAppServiceServer).Connect(ctx, in)
+		return srv.(DepositorServiceServer).Connect(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ClientAppService_Connect_FullMethodName,
+		FullMethod: DepositorService_Connect_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClientAppServiceServer).Connect(ctx, req.(*ConnectRequest))
+		return srv.(DepositorServiceServer).Connect(ctx, req.(*ConnectRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// ClientAppService_ServiceDesc is the grpc.ServiceDesc for ClientAppService service.
+// DepositorService_ServiceDesc is the grpc.ServiceDesc for DepositorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var ClientAppService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "gophkeper.v1.ClientAppService",
-	HandlerType: (*ClientAppServiceServer)(nil),
+var DepositorService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "gophkeper.v1.DepositorService",
+	HandlerType: (*DepositorServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Register",
-			Handler:    _ClientAppService_Register_Handler,
+			Handler:    _DepositorService_Register_Handler,
 		},
 		{
 			MethodName: "Authorize",
-			Handler:    _ClientAppService_Authorize_Handler,
+			Handler:    _DepositorService_Authorize_Handler,
 		},
 		{
 			MethodName: "Connect",
-			Handler:    _ClientAppService_Connect_Handler,
+			Handler:    _DepositorService_Connect_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

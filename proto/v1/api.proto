@@ -4,11 +4,11 @@ package gophkeper.v1;
 
 option go_package = "github.com/oleshko-g/gophkeeper/proto/api/v1;keeper_v1";
 
-// ClientAppService is the interface to:
+// DepositorService is the interface to:
 //  - [Register] public keys of the Keeper users
 //  - [Authorize] their client apps
 //  - and [Connect] through the authorized apps to [KeeperService]
-service ClientAppService {
+service DepositorService {
   // Register registers an anonymous public key and returns a refresh token.
   // The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
   rpc Register(RegisterRequest) returns (RegisterResponse);

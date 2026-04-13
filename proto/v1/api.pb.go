@@ -747,7 +747,7 @@ const file_v1_api_proto_rawDesc = "" +
 	"\aSession\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId2\xf3\x01\n" +
-	"\x10ClientAppService\x12I\n" +
+	"\x10DepositorService\x12I\n" +
 	"\bRegister\x12\x1d.gophkeper.v1.RegisterRequest\x1a\x1e.gophkeper.v1.RegisterResponse\x12L\n" +
 	"\tAuthorize\x12\x1e.gophkeper.v1.AuthorizeRequest\x1a\x1f.gophkeper.v1.AuthorizeResponse\x12F\n" +
 	"\aConnect\x12\x1c.gophkeper.v1.ConnectRequest\x1a\x1d.gophkeper.v1.ConnectResponse2\xd3\x02\n" +
@@ -798,16 +798,16 @@ var file_v1_api_proto_depIdxs = []int32{
 	15, // 4: gophkeper.v1.DownloadDataResponse.session:type_name -> gophkeper.v1.Session
 	15, // 5: gophkeper.v1.DeleteDataRequest.session:type_name -> gophkeper.v1.Session
 	15, // 6: gophkeper.v1.ListDataRequest.session:type_name -> gophkeper.v1.Session
-	0,  // 7: gophkeper.v1.ClientAppService.Register:input_type -> gophkeper.v1.RegisterRequest
-	2,  // 8: gophkeper.v1.ClientAppService.Authorize:input_type -> gophkeper.v1.AuthorizeRequest
-	4,  // 9: gophkeper.v1.ClientAppService.Connect:input_type -> gophkeper.v1.ConnectRequest
+	0,  // 7: gophkeper.v1.DepositorService.Register:input_type -> gophkeper.v1.RegisterRequest
+	2,  // 8: gophkeper.v1.DepositorService.Authorize:input_type -> gophkeper.v1.AuthorizeRequest
+	4,  // 9: gophkeper.v1.DepositorService.Connect:input_type -> gophkeper.v1.ConnectRequest
 	6,  // 10: gophkeper.v1.KeeperService.UploadData:input_type -> gophkeper.v1.UploadDataRequest
 	8,  // 11: gophkeper.v1.KeeperService.DownloadData:input_type -> gophkeper.v1.DownloadDataRequest
 	12, // 12: gophkeper.v1.KeeperService.ListData:input_type -> gophkeper.v1.ListDataRequest
 	10, // 13: gophkeper.v1.KeeperService.DeleteData:input_type -> gophkeper.v1.DeleteDataRequest
-	1,  // 14: gophkeper.v1.ClientAppService.Register:output_type -> gophkeper.v1.RegisterResponse
-	3,  // 15: gophkeper.v1.ClientAppService.Authorize:output_type -> gophkeper.v1.AuthorizeResponse
-	5,  // 16: gophkeper.v1.ClientAppService.Connect:output_type -> gophkeper.v1.ConnectResponse
+	1,  // 14: gophkeper.v1.DepositorService.Register:output_type -> gophkeper.v1.RegisterResponse
+	3,  // 15: gophkeper.v1.DepositorService.Authorize:output_type -> gophkeper.v1.AuthorizeResponse
+	5,  // 16: gophkeper.v1.DepositorService.Connect:output_type -> gophkeper.v1.ConnectResponse
 	7,  // 17: gophkeper.v1.KeeperService.UploadData:output_type -> gophkeper.v1.UploadDataResponse
 	9,  // 18: gophkeper.v1.KeeperService.DownloadData:output_type -> gophkeper.v1.DownloadDataResponse
 	13, // 19: gophkeper.v1.KeeperService.ListData:output_type -> gophkeper.v1.ListDataResponse

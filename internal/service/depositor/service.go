@@ -6,7 +6,7 @@ import (
 	"github.com/oleshko-g/gophkeeper/internal/service"
 )
 
-var _ service.ClientApp = (*Service)(nil)
+var _ service.Depositor = (*Service)(nil)
 
 type Service struct {
 }
