@@ -1,4 +1,4 @@
-package clientapp
+package depositor
 
 import (
 	"context"

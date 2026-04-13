@@ -3,7 +3,6 @@ package grpc
 import "time"
 
 type Config struct {
-	Host       string
-	Port       string
-	SessionTTL time.Duration
+	GRPCAddr   string        `envconfig:"GRPC_ADDR" default:":8001"`
+	SessionTTL time.Duration `envconfig:"SESSION_TTL" default:"15m"`
 }
