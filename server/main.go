@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"os"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -68,7 +70,22 @@ func main() {
 	if err := a.setup(); err != nil {
 		panic(err)
 	}
-	if err := a.run(); err != nil {
-		panic(err)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go func() {
+		if err := a.run(); err != nil {
+			cancel()
+		}
+	}()
+	fmt.Printf("gophkeeper is listening on %s", a.GRPCAddr)
+
+	<-ctx.Done()
+
+	err := a.stop()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 }
