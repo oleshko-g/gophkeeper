@@ -15,7 +15,7 @@ import (
 
 type app struct {
 	*grpc.Config
-	*grpc.Server
+	Server *grpc.Server
 	depositor struct {
 		*depositor.Service
 		depositor.Storage
@@ -52,7 +52,7 @@ func (a *app) run() error {
 }
 
 func (a *app) stop() error {
-	return nil
+	return a.Server.Stop()
 }
 
 func main() {
@@ -82,7 +82,6 @@ func main() {
 	fmt.Printf("gophkeeper is listening on %s", a.GRPCAddr)
 
 	<-ctx.Done()
-
 	err := a.stop()
 	if err != nil {
 		fmt.Println(err)

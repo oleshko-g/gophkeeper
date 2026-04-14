@@ -32,6 +32,11 @@ type Server struct {
 	}
 }
 
+func (s *Server) Stop() error  {
+	s.Server.GracefulStop()
+	return nil
+}
+
 func (s *Server) Serve(cfg *Config) error {
 	lis, err := net.Listen("tcp", cfg.GRPCAddr)
 	if err != nil {
