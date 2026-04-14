@@ -25,7 +25,6 @@ type app struct {
 }
 
 func (a *app) setup() error {
-	// 0. configure the gRPC server listener
 	err := a.configure()
 	if err != nil {
 		return err
@@ -34,7 +33,6 @@ func (a *app) setup() error {
 	a.keeper.Storage = storage.NewKeeper()
 	a.depositor.Storage = storage.NewDepositor()
 
-	// 2. create services
 	a.keeper.Service = keeper.New(a.keeper.Storage)
 	a.depositor.Service = depositor.New(a.depositor.Storage)
 
