@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// New creates a new gRPC server with the gRPC server
 func New(keeper service.Keeper, depositor service.Depositor) *Server {
 	s := &Server{}
 
@@ -20,6 +21,7 @@ func New(keeper service.Keeper, depositor service.Depositor) *Server {
 	return s
 }
 
+// Server is a gRPC server with the implemented [minifier_v1.Keeper] and [minifier_v1.Depositor] services
 type Server struct {
 	*grpc.Server
 	implemented struct {
