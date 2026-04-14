@@ -1,6 +1,8 @@
 package grpc
 
 import (
+	"net"
+
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	keeper_v1 "github.com/oleshko-g/gophkeeper/proto/v1"
 	"google.golang.org/grpc"
@@ -28,6 +30,15 @@ type Server struct {
 		keeper
 		depositor
 	}
+}
+
+func (s *Server) Serve(cfg *Config) error {
+	lis, err := net.Listen("tcp", cfg.GRPCAddr)
+	if err != nil {
+		return err
+	}
+
+	return s.Server.Serve(lis)
 }
 
 type keeper struct {

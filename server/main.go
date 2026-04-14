@@ -24,6 +24,10 @@ type app struct {
 	}
 }
 
+func (a *app) configure() error {
+	return envconfig.Process("", a.Config)
+}
+
 func (a *app) setup() error {
 	err := a.configure()
 	if err != nil {
@@ -41,12 +45,8 @@ func (a *app) setup() error {
 	return nil
 }
 
-func (a *app) configure() error {
-	return envconfig.Process("", a.Config)
-}
-
 func (a *app) run() error {
-	return nil
+	return a.Server.Serve(a.Config)
 }
 
 func (a *app) stop() error {
