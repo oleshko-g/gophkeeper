@@ -1,18 +1,39 @@
 package grpc
 
 import (
+	"github.com/oleshko-g/gophkeeper/internal/service"
 	keeper_v1 "github.com/oleshko-g/gophkeeper/proto/v1"
+	"google.golang.org/grpc"
 )
 
-func New() *Server {
+func New(keeper service.Keeper, depositor service.Depositor) *Server {
+	s := &Server{}
 
-	return &Server{}
+	s.Server = grpc.NewServer()
+
+	s.implemented.keeper.service = keeper
+	keeper_v1.RegisterKeeperServiceServer(s.Server, s.implemented.keeper)
+
+	s.implemented.depositor.service = depositor
+	keeper_v1.RegisterDepositorServiceServer(s.Server, s.implemented.depositor)
+
+	return s
 }
 
 type Server struct {
-	keeper_v1.UnimplementedDepositorServiceServer
-	keeper_v1.UnimplementedKeeperServiceServer
-	*implemented
+	*grpc.Server
+	implemented struct {
+		keeper
+		depositor
+	}
 }
 
-type implemented struct{}
+type keeper struct {
+	keeper_v1.UnimplementedKeeperServiceServer
+	service service.Keeper
+}
+
+type depositor struct {
+	keeper_v1.UnimplementedDepositorServiceServer
+	service service.Depositor
+}

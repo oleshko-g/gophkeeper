@@ -39,10 +39,9 @@ func (a *app) setup() error {
 	a.depositor.Service = depositor.New(a.depositor.Storage)
 
 	// 3. create gRPC service server implementations
-
 	// 4. Register gRPC service server implementations
-
 	// 5. Create the gRPC server
+	a.Server = grpc.New(a.keeper.Service, a.depositor.Service)
 
 	return nil
 }
