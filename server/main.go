@@ -26,6 +26,10 @@ type app struct {
 
 func (a *app) setup() error {
 	// 0. configure the gRPC server listener
+	err := a.configure()
+	if err != nil {
+		return err
+	}
 
 	// 1. create storage
 
@@ -41,11 +45,7 @@ func (a *app) setup() error {
 }
 
 func (a *app) configure() error {
-	if err := envconfig.Process("", a.Config); err != nil {
-		return err
-	}
-
-	return nil
+	return envconfig.Process("", a.Config)
 }
 
 func (a *app) run() error {
