@@ -6,20 +6,20 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/oleshko-g/gophkeeper/internal/grpc"
-	_ "github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/service/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/service/keeper"
+	"github.com/oleshko-g/gophkeeper/internal/storage"
 )
 
 type app struct {
 	*grpc.Config
 	*grpc.Server
 	depositor struct {
-		depositor.Service
+		*depositor.Service
 		depositor.Storage
 	}
 	keeper struct {
-		keeper.Service
+		*keeper.Service
 		keeper.Storage
 	}
 }
@@ -31,9 +31,12 @@ func (a *app) setup() error {
 		return err
 	}
 
-	// 1. create storage
+	a.keeper.Storage = storage.NewKeeper()
+	a.depositor.Storage = storage.NewDepositor()
 
 	// 2. create services
+	a.keeper.Service = keeper.New(a.keeper.Storage)
+	a.depositor.Service = depositor.New(a.depositor.Storage)
 
 	// 3. create gRPC service server implementations
 

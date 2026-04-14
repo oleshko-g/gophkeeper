@@ -15,4 +15,4 @@ type Server struct {
 	*implemented
 }
 
-type implemented struct {}
+type implemented struct{}

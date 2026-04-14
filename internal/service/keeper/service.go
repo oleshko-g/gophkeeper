@@ -8,7 +8,12 @@ import (
 
 var _ service.Keeper = (*Service)(nil)
 
+func New(s Storage) *Service {
+	return &Service{Storage: s}
+}
+
 type Service struct {
+	Storage
 }
 
 // UploadData uploads data of the owners of the [Register]ed public keys.

@@ -8,7 +8,12 @@ import (
 
 var _ service.Depositor = (*Service)(nil)
 
+func New(s Storage) *Service {
+	return &Service{Storage: s}
+}
+
 type Service struct {
+	Storage
 }
 
 // Register registers an anonymous public key and returns a refresh token.
