@@ -9,6 +9,8 @@ import (
 //   - [DownloadData] the uploaded data
 //   - [ListData] the uploaded data
 //   - [DeleteData] the uploaded data
+//
+//go:generate moq -out keeper_mock.go . Keeper
 type Keeper interface {
 	// UploadData uploads data of the owners of the [Register]ed public keys.
 	UploadData(ctx context.Context, in *UploadDataRequest) (*UploadDataResponse, error)

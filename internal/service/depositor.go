@@ -4,7 +4,12 @@ import (
 	"context"
 )
 
-// Depositor is the interface to i
+// Depositor is the interface to:
+//   - [Register] public keys of the Keeper users
+//   - [Authorize] their client apps
+//   - and [Connect] through the authorized apps to [KeeperService]
+//
+//go:generate moq -out depositor_mock.go . Depositor
 type Depositor interface {
 	// Register registers an anonymous public key and returns a refresh token.
 	// The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
