@@ -1,11 +1,5 @@
 package storage
 
-import "github.com/oleshko-g/gophkeeper/internal/service/keeper"
-
-func NewKeeper() *Keeper {
-	return &Keeper{}
+//go:generate moq -out storage_mock.go . Storage
+type Keeper interface {
 }
-
-var _ keeper.Storage = (*keeper.Storage)(nil)
-
-type Keeper struct{}

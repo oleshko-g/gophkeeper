@@ -4,16 +4,17 @@ import (
 	"context"
 
 	"github.com/oleshko-g/gophkeeper/internal/service"
+	"github.com/oleshko-g/gophkeeper/internal/storage"
 )
 
 var _ service.Keeper = (*Service)(nil)
 
-func New(s Storage) *Service {
-	return &Service{Storage: s}
+func New(s storage.Keeper) *Service {
+	return &Service{Keeper: s}
 }
 
 type Service struct {
-	Storage
+	storage.Keeper
 }
 
 // UploadData uploads data of the owners of the [Register]ed public keys.

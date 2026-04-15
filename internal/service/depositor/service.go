@@ -4,16 +4,17 @@ import (
 	"context"
 
 	"github.com/oleshko-g/gophkeeper/internal/service"
+	"github.com/oleshko-g/gophkeeper/internal/storage"
 )
 
 var _ service.Depositor = (*Service)(nil)
 
-func New(s Storage) *Service {
-	return &Service{Storage: s}
+func New(s storage.Depositor) *Service {
+	return &Service{Depositor: s}
 }
 
 type Service struct {
-	Storage
+	storage.Depositor
 }
 
 // Register registers an anonymous public key and returns a refresh token.

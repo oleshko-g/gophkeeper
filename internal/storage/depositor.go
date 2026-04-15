@@ -1,12 +1,5 @@
 package storage
 
-import "github.com/oleshko-g/gophkeeper/internal/service/depositor"
-
-func NewDepositor() *Depositor {
-	return &Depositor{}
-}
-
-var _ depositor.Storage = &Depositor{}
-
-type Depositor struct {
+//go:generate moq -out storage_mock.go . Storage
+type Depositor interface {
 }
