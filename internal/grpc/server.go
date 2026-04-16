@@ -32,11 +32,13 @@ type Server struct {
 	}
 }
 
-func (s *Server) Stop() error  {
+// Stop stops the gRPC server gracefully.
+func (s *Server) Stop() error {
 	s.Server.GracefulStop()
 	return nil
 }
 
+// Serve starts the gRPC server on the configured address and returns any error that occurs.
 func (s *Server) Serve(cfg *Config) error {
 	lis, err := net.Listen("tcp", cfg.GRPCAddr)
 	if err != nil {

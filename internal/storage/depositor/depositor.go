@@ -2,7 +2,7 @@ package depositor
 
 import "github.com/oleshko-g/gophkeeper/internal/storage"
 
-func NewDepositor() *Depositor {
+func New() *Depositor {
 	return &Depositor{}
 }
 

@@ -14,31 +14,30 @@ import (
 )
 
 func main() {
-	sk := storageKeeper.NewKeeper()
-	sd := storageDepositor.NewDepositor()
-	a, err := server.Build(
-		keeper.New(sk),
-		depositor.New(sd),
-	)
+	app := server.App{}
 
+	err := app.Configure()
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("%+v", a.GRPC.Config)
+	app.SetStorage(
+		storageKeeper.New(),
+		storageDepositor.New(),
+	)
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	app.SetService(
+		keeper.New(app.Storage.Keeper),
+		depositor.New(app.Storage.Depositor),
+	)
 
-	go func() {
-		if err := a.Run(); err != nil {
-			cancel()
-		}
-	}()
-	fmt.Printf("gophkeeper is listening on %s", a.GRPC.Config.GRPCAddr)
+	app.SetServer()
 
-	<-ctx.Done()
-	err = a.Stop()
+	ctx := context.Background()
+	err = app.Run(ctx)
+	fmt.Println(err)
+
+	err = app.Stop(err)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)

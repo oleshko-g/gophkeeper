@@ -2,7 +2,7 @@ package keeper
 
 import "github.com/oleshko-g/gophkeeper/internal/storage"
 
-func NewKeeper() *Keeper {
+func New() *Keeper {
 	return &Keeper{}
 }
 
