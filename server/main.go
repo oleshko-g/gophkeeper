@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/oleshko-g/gophkeeper/internal/app/server"
-	_ "github.com/oleshko-g/gophkeeper/internal/grpc"
 	"github.com/oleshko-g/gophkeeper/internal/service/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/service/keeper"
 	storageDepositor "github.com/oleshko-g/gophkeeper/internal/storage/depositor"
