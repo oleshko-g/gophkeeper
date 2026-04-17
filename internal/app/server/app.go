@@ -20,8 +20,8 @@ type App struct {
 }
 
 // Configure loads environment variables and processes them into the [App.config] field.
-func (a *App) Configure() error {
-	err := godotenv.Load()
+func (a *App) Configure(envFiles ...string) error {
+	err := godotenv.Load(envFiles...)
 	if err != nil {
 		return err
 	}

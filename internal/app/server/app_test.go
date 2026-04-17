@@ -13,7 +13,7 @@ func TestMain(m *testing.M) {
 func TestApp(t *testing.T) {
 	app := server.App{}
 	t.Run("Configure", func(t *testing.T) {
-		err := app.Configure()
+		err := app.Configure("testdata/.env")
 		if err != nil {
 			t.Fatal(err)
 		}
