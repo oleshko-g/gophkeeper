@@ -69,6 +69,10 @@ func (a *App) SetServer() error {
 
 // Run starts the [App.Server] and blocks until it is stopped or an error occurs.
 func (a *App) Run(ctx context.Context) error {
+	if a.config == nil {
+		return errors.New("config is nil. App.Configue() must be called before App.Run()")
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
