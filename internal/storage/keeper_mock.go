@@ -3,6 +3,8 @@
 
 package storage
 
+import ()
+
 // Ensure, that KeeperMock does implement Keeper.
 // If this is not the case, regenerate this file with moq.
 var _ Keeper = &KeeperMock{}

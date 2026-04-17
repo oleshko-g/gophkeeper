@@ -1,5 +1,5 @@
 package storage
 
-//go:generate moq -out storage_mock.go . Depositor
+//go:generate moq -out depositor_mock.go . Depositor
 type Depositor interface {
 }
