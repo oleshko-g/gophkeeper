@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/joho/godotenv"
@@ -11,7 +12,13 @@ import (
 	"github.com/oleshko-g/gophkeeper/internal/storage"
 )
 
-// App
+// App is the struct to hold a gophkeeper server implementation.
+//
+// In order to set up the app call:
+//  1. [App.Configure]
+//  2. [App.SetStorage]
+//  3. [App.SetService]
+//  4. [App.SetServer]
 type App struct {
 	config *grpc.Config
 	Server *grpc.Server
@@ -47,11 +54,17 @@ func (a *App) SetService(keeper service.Keeper, depositor service.Depositor) {
 }
 
 // Setup initializes [App.Server] with the [App.Service] implementations. If [App.Service] is nil it panics
-func (a *App) SetServer() {
+func (a *App) SetServer() error {
+	if a.Service == nil {
+		return errors.New("field Service is nil. SetService() must be called before SetServer")
+	}
+
 	a.Server = grpc.New(
 		a.Service.Keeper,
 		a.Service.Depositor,
 	)
+
+	return nil
 }
 
 // Run starts the [App.Server] and blocks until it is stopped or an error occurs.
