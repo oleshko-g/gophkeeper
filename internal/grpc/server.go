@@ -3,8 +3,8 @@ package grpc
 import (
 	"net"
 
+	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/internal/service"
-	keeper_v1 "github.com/oleshko-g/gophkeeper/proto/v1"
 	"google.golang.org/grpc"
 )
 
@@ -15,10 +15,10 @@ func New(keeper service.Keeper, depositor service.Depositor) *Server {
 	s.Server = grpc.NewServer()
 
 	s.implemented.keeper.service = keeper
-	keeper_v1.RegisterKeeperServiceServer(s.Server, s.implemented.keeper)
+	pb.RegisterKeeperServiceServer(s.Server, s.implemented.keeper)
 
 	s.implemented.depositor.service = depositor
-	keeper_v1.RegisterDepositorServiceServer(s.Server, s.implemented.depositor)
+	pb.RegisterDepositorServiceServer(s.Server, s.implemented.depositor)
 
 	return s
 }
@@ -49,11 +49,11 @@ func (s *Server) Serve(cfg *Config) error {
 }
 
 type keeper struct {
-	keeper_v1.UnimplementedKeeperServiceServer
+	pb.UnimplementedKeeperServiceServer
 	service service.Keeper
 }
 
 type depositor struct {
-	keeper_v1.UnimplementedDepositorServiceServer
+	pb.UnimplementedDepositorServiceServer
 	service service.Depositor
 }

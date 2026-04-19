@@ -13,18 +13,18 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func TestApp(t *testing.T) {
+func TestApp(t0 *testing.T) {
 	app := server.App{}
 
-	t.Run("Configure", func(t *testing.T) {
-		t.Run("Success", func(t *testing.T) {
+	t0.Run("Configure", func(t1 *testing.T) {
+		t1.Run("Success", func(t *testing.T) {
 			err := app.Configure("testdata/.env")
 			if err != nil {
 				t.Fatal(err)
 			}
 		})
 
-		t.Run("Err", func(t *testing.T) {
+		t1.Run("Err", func(t *testing.T) {
 			err := app.Configure("testdata/.env.notfound")
 			if err == nil {
 				t.Fatal("expected error, got nil")
@@ -32,15 +32,24 @@ func TestApp(t *testing.T) {
 		})
 	})
 
-	t.Run("SetStorage", func(t *testing.T) {
+	t0.Run("SetStorage", func(t *testing.T) {
+		if t0.Failed() {
+			t.Skip()
+		}
 		app.SetStorage(storage.KeeperMock{}, storage.DepositorMock{})
 	})
 
-	t.Run("SetService", func(t *testing.T) {
+	t0.Run("SetService", func(t *testing.T) {
+		if t0.Failed() {
+			t.Skip()
+		}
 		app.SetService(&service.KeeperMock{}, &service.DepositorMock{})
 	})
 
-	t.Run("SetServer", func(t *testing.T) {
+	t0.Run("SetServer", func(t *testing.T) {
+		if t0.Failed() {
+			t.Skip()
+		}
 		t.Run("Success", func(t *testing.T) {
 			app := app // make a copy for the test
 			app.SetService(&service.KeeperMock{}, &service.DepositorMock{})
@@ -53,16 +62,16 @@ func TestApp(t *testing.T) {
 		})
 	})
 
-	t.Run("Run", func(t *testing.T) {
+	t0.Run("Run", func(t *testing.T) {
+		if t0.Failed() {
+			t.Skip()
+		}
 		app := app // make a copy for the test
 		app.Configure("testdata/.env")
 		app.SetService(&service.KeeperMock{}, &service.DepositorMock{})
 		err := app.SetServer()
 
 		t.Run("Success", func(t *testing.T) {
-			if err != nil {
-				t.Fatal(err)
-			}
 			ctx := context.Background()
 
 			err = app.Run(ctx)

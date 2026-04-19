@@ -1,8 +1,12 @@
 edition = "2023";
 
-package gophkeper.v1;
+package gophkeeper.api.v1;
+import "google/protobuf/empty.proto";
 
-option go_package = "github.com/oleshko-g/gophkeeper/proto/api/v1;keeper_v1";
+import "google/api/annotations.proto";
+import "google/api/httpbody.proto";
+
+option go_package = "github.com/oleshko-g/gophkeeper/api/v1;pb";
 
 // DepositorService is the interface to:
 //  - [Register] public keys of the Keeper users
@@ -39,6 +43,19 @@ service KeeperService {
 
   // Delete deletes the [Upload]ed data from the [KeeperService]
   rpc DeleteData(DeleteDataRequest) returns (DeleteDataResponse);
+
+  // DownloadFile downloads a file from the [KeeperService]
+  rpc DownloadFile(DownloadFileRequest) returns (stream google.api.HttpBody) {
+    option (google.api.http) = {get: "/v1/file/download"};
+  }
+
+  // UploadFile uploads a file to the [KeeperService]
+  rpc UploadFile(stream google.api.HttpBody) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/file/upload"
+      body: "*"
+    };
+  }
 }
 
 message RegisterRequest {
@@ -51,7 +68,7 @@ message RegisterResponse {
 
 message AuthorizeRequest {
   string refresh_token = 1;
-  App app = 2;
+  Depositor app = 2;
 }
 
 message AuthorizeResponse {
@@ -92,10 +109,12 @@ message ListDataRequest {
 
 message ListDataResponse {}
 
-message App {
-  string app_id = 1;
+message Depositor {
+  string id = 1;
 }
 
 message Session {
   string session_id = 1;
 }
+
+message DownloadFileRequest {}
