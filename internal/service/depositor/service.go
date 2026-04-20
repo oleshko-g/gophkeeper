@@ -3,6 +3,7 @@ package depositor
 import (
 	"context"
 
+	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
 )
@@ -19,7 +20,10 @@ type Service struct {
 
 // Register registers an anonymous public key and returns a refresh token.
 // The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
-func (s *Service) Register(ctx context.Context, in *service.RegisterRequest) (*service.RegisterResponse, error) {
+func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+	if in == nil {
+		return nil, errRegisterRequestIsEmpty
+	}
 	return nil, nil
 }
 
