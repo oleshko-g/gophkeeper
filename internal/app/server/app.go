@@ -73,16 +73,9 @@ func (a *App) Run(ctx context.Context) error {
 		return errors.New("config is nil. App.Configue() must be called before App.Run()")
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	go func() {
-		if err := a.Server.Serve(a.config); err != nil {
-			cancel()
-		}
-	}()
-
-	fmt.Printf("gophkeeper is listening on %s", a.config.GRPCAddr)
+	if err := a.Server.Serve(ctx, a.config); err != nil {
+		return err
+	}
 
 	<-ctx.Done()
 

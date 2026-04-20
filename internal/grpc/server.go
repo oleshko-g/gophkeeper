@@ -1,6 +1,8 @@
 package grpc
 
 import (
+	"context"
+	"fmt"
 	"net"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
@@ -39,13 +41,25 @@ func (s *Server) Stop() error {
 }
 
 // Serve starts the gRPC server on the configured address and returns any error that occurs.
-func (s *Server) Serve(cfg *Config) error {
+func (s *Server) Serve(ctx context.Context, cfg *Config) error {
 	lis, err := net.Listen("tcp", cfg.GRPCAddr)
 	if err != nil {
 		return err
 	}
 
-	return s.Server.Serve(lis)
+	errCh := make(chan error)
+	go func() {
+		errCh <- s.Server.Serve(lis)
+	}()
+
+	fmt.Printf("gRPC server is listening on %s\n", cfg.GRPCAddr)
+
+	select {
+	case err := <-errCh:
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }
 
 type keeper struct {

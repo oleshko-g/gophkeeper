@@ -2,7 +2,10 @@ package server_test
 
 import (
 	"context"
+	"errors"
 	"testing"
+	"time"
+	_ "time"
 
 	"github.com/oleshko-g/gophkeeper/internal/app/server"
 	"github.com/oleshko-g/gophkeeper/internal/service"
@@ -16,18 +19,18 @@ func TestMain(m *testing.M) {
 func TestApp(t0 *testing.T) {
 	app := server.App{}
 
-	t0.Run("Configure", func(t1 *testing.T) {
-		t1.Run("Success", func(t *testing.T) {
+	t0.Run("Configure", func(t *testing.T) {
+		t.Run("Success", func(t *testing.T) {
 			err := app.Configure("testdata/.env")
 			if err != nil {
-				t.Fatal(err)
+				t.Error(err)
 			}
 		})
 
-		t1.Run("Err", func(t *testing.T) {
-			err := app.Configure("testdata/.env.notfound")
+		t.Run("Err", func(t *testing.T) {
+			err := app.Configure("no env file")
 			if err == nil {
-				t.Fatal("expected error, got nil")
+				t.Error("expected error, got nil")
 			}
 		})
 	})
@@ -40,6 +43,7 @@ func TestApp(t0 *testing.T) {
 	})
 
 	t0.Run("SetService", func(t *testing.T) {
+		app := app
 		if t0.Failed() {
 			t.Skip()
 		}
@@ -50,14 +54,16 @@ func TestApp(t0 *testing.T) {
 		if t0.Failed() {
 			t.Skip()
 		}
+
 		t.Run("Success", func(t *testing.T) {
 			app := app // make a copy for the test
 			app.SetService(&service.KeeperMock{}, &service.DepositorMock{})
 		})
+
 		t.Run("Err", func(t *testing.T) {
 			err := app.SetServer()
 			if err == nil {
-				t.Fatal("expected error, got nil")
+				t.Error("expected error, got nil")
 			}
 		})
 	})
@@ -66,23 +72,32 @@ func TestApp(t0 *testing.T) {
 		if t0.Failed() {
 			t.Skip()
 		}
-		app := app // make a copy for the test
+
+		app := app
 		app.Configure("testdata/.env")
 		app.SetService(&service.KeeperMock{}, &service.DepositorMock{})
-		err := app.SetServer()
 
 		t.Run("Success", func(t *testing.T) {
-			ctx := context.Background()
+			err := app.SetServer()
+			if err != nil {
+				t0.Error(err)
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+			defer cancel()
 
 			err = app.Run(ctx)
-			if err != nil {
-				t.Fatal(err)
+			if !errors.Is(err, context.DeadlineExceeded) {
+				t.Error(err)
 			}
 		})
+
 		t.Run("Err", func(t *testing.T) {
-			ctx := context.Background()
+			app := app
+			ctx, cancel := context.WithCancel(context.Background())
+
 			err := app.Run(ctx)
 			if err == nil {
+				cancel()
 				t.Fatal("expected error, got nil")
 			}
 		})
