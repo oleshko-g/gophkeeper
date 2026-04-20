@@ -1,0 +1,27 @@
+# Documentation: https://easyp.tech/docs/guide/introduction/what-is
+deps:
+  - github.com/googleapis/googleapis
+  - github.com/grpc-ecosystem/grpc-gateway
+  - github.com/grpc-ecosystem/grpc-gateway
+lint:
+  use:
+    - DEFAULT
+generate:
+  inputs:
+    - directory: api
+  plugins:
+    - name: go
+      out: .
+      opts:
+        paths: source_relative
+    - name: go-grpc
+      out: .
+      opts:
+        paths: source_relative
+    - name: grpc-gateway
+      out: .
+      opts:
+        logtostderr: true
+        paths: source_relative
+        generate_unbound_methods: true
+        allow_delete_body: true
