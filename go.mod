@@ -3,7 +3,6 @@ module github.com/oleshko-g/gophkeeper
 go 1.26.1
 
 require (
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0
 	github.com/joho/godotenv v1.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260414002931-afd174a4e478
