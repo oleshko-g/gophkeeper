@@ -23,7 +23,9 @@
 
 !Makefile
 
+# code gen
 !easyp*
+!sqlc*
 
 # ...even if they are in subdirectories
 !*/
