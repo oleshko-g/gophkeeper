@@ -6,6 +6,8 @@ package service
 import (
 	"context"
 	"sync"
+
+	pb "github.com/oleshko-g/gophkeeper/api/v1"
 )
 
 // Ensure, that DepositorMock does implement Depositor.
@@ -24,7 +26,7 @@ var _ Depositor = &DepositorMock{}
 //			ConnectFunc: func(ctx context.Context, in *ConnectRequest) (*ConnectResponse, error) {
 //				panic("mock out the Connect method")
 //			},
-//			RegisterFunc: func(ctx context.Context, in *RegisterRequest) (*RegisterResponse, error) {
+//			RegisterFunc: func(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 //				panic("mock out the Register method")
 //			},
 //		}
@@ -41,7 +43,7 @@ type DepositorMock struct {
 	ConnectFunc func(ctx context.Context, in *ConnectRequest) (*ConnectResponse, error)
 
 	// RegisterFunc mocks the Register method.
-	RegisterFunc func(ctx context.Context, in *RegisterRequest) (*RegisterResponse, error)
+	RegisterFunc func(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -64,7 +66,7 @@ type DepositorMock struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// In is the in argument value.
-			In *RegisterRequest
+			In *pb.RegisterRequest
 		}
 	}
 	lockAuthorize sync.RWMutex
@@ -145,13 +147,13 @@ func (mock *DepositorMock) ConnectCalls() []struct {
 }
 
 // Register calls RegisterFunc.
-func (mock *DepositorMock) Register(ctx context.Context, in *RegisterRequest) (*RegisterResponse, error) {
+func (mock *DepositorMock) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	if mock.RegisterFunc == nil {
 		panic("DepositorMock.RegisterFunc: method is nil but Depositor.Register was just called")
 	}
 	callInfo := struct {
 		Ctx context.Context
-		In  *RegisterRequest
+		In  *pb.RegisterRequest
 	}{
 		Ctx: ctx,
 		In:  in,
@@ -168,11 +170,11 @@ func (mock *DepositorMock) Register(ctx context.Context, in *RegisterRequest) (*
 //	len(mockedDepositor.RegisterCalls())
 func (mock *DepositorMock) RegisterCalls() []struct {
 	Ctx context.Context
-	In  *RegisterRequest
+	In  *pb.RegisterRequest
 } {
 	var calls []struct {
 		Ctx context.Context
-		In  *RegisterRequest
+		In  *pb.RegisterRequest
 	}
 	mock.lockRegister.RLock()
 	calls = mock.calls.Register

@@ -6,6 +6,8 @@ import (
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
+	"github.com/oleshko-g/gophkeeper/internal/storage/model"
+	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 )
 
 var _ service.Depositor = (*Service)(nil)
@@ -24,7 +26,23 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 	if in == nil {
 		return nil, errRegisterRequestIsEmpty
 	}
-	return nil, nil
+
+	pubKeyID, err := s.Depositor.StorePubKey(ctx, in.GetPubKey())
+	if err != nil {
+		return nil, err
+	}
+
+	rt := model.RefreshToken{
+		ID:           uuidv7.NewString(),
+		PubKeyID:     pubKeyID,
+		RefreshToken: uuidv7.NewString(),
+	}
+	err = s.Depositor.StoreRefreshToken(ctx, rt)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.RegisterResponse{RefreshToken: &rt.RefreshToken}, nil
 }
 
 // Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.

@@ -11,7 +11,7 @@ import (
 )
 
 func TestDepositor(t *testing.T) {
-	svc := depositor.New(storage.DepositorMock{})
+	svc := depositor.New(&storage.DepositorMock{})
 
 	t.Run("Register", func(t *testing.T) {
 		t.Run("Success", func(t *testing.T) {

@@ -1,6 +1,11 @@
 package depositor
 
-import "github.com/oleshko-g/gophkeeper/internal/storage"
+import (
+	"context"
+
+	"github.com/oleshko-g/gophkeeper/internal/storage"
+	"github.com/oleshko-g/gophkeeper/internal/storage/model"
+)
 
 func New() *Depositor {
 	return &Depositor{}
@@ -9,4 +14,24 @@ func New() *Depositor {
 var _ storage.Depositor = (*Depositor)(nil)
 
 type Depositor struct {
+}
+
+func (d *Depositor) StorePubKey(ctx context.Context, pubKey string) (pub_key_id string, err error) {
+	if pubKey == "" {
+		return "", storage.ErrEmptyInput
+	}
+
+	return "not_implemented", nil
+}
+
+func (d *Depositor) StoreRefreshToken(ctx context.Context, rt model.RefreshToken) error {
+	return nil
+}
+
+func (d *Depositor) GetRefreshToken(ctx context.Context, id string) (*model.RefreshToken, error) {
+	if id == "" {
+		return nil, storage.ErrEmptyInput
+	}
+
+	return &model.RefreshToken{}, nil
 }
