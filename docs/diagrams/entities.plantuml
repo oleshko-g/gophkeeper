@@ -4,7 +4,7 @@
     * id UUID
     --
     - pub_key string
-  } 
+  }
   entity depositor_apps {
     * id UUID
     --

@@ -3,7 +3,7 @@
 //   sqlc v1.30.0
 // source: insertRefreshToken.sql
 
-package schema
+package query
 
 import (
 	"context"
