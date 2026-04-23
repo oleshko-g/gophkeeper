@@ -1,5 +1,5 @@
--- ++goose Up
-CREATE TABLE depositor_pub_keys (id UUID PRIMARY KEY, pub_key TEXT NOT NULL,);
+-- +goose Up
+CREATE TABLE depositor_pub_keys (id UUID PRIMARY KEY, pub_key TEXT NOT NULL);
 
 
 CREATE TABLE depositor_refresh_tokens (
@@ -14,14 +14,14 @@ CREATE TABLE depositor_refresh_tokens (
 CREATE TABLE depositor_apps (
   id UUID PRIMARY KEY,
   app_name TEXT NOT NULL,
-  depositor_pub_key_id UUID NOT NULL,
+  depositor_pub_key_id UUID NOT NULL
 );
 
 
 CREATE TABLE deposited_data (
   id UUID PRIMARY KEY,
   depositor_pub_key_id UUID NOT NULL,
-  ciphered_data JSONB NOT NULL,
+  ciphered_data JSONB NOT NULL
 );
 
 
@@ -29,11 +29,11 @@ CREATE TABLE depositor_app_sessions (
   id UUID PRIMARY KEY,
   depositor_app_id UUID NOT NULL,
   started_at TIMESTAMP WITH TIME ZONE NOT NULL,
-  expired_at TIMESTAMP WITH TIME ZONE,
+  expired_at TIMESTAMP WITH TIME ZONE
 );
 
 
--- ++goose Down
+-- +goose Down
 DROP TABLE IF EXISTS depositor_app_sessions;
 
 

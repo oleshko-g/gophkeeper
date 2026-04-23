@@ -7,6 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/oleshko-g/gophkeeper/internal/db/pgsql"
 	"github.com/oleshko-g/gophkeeper/internal/grpc"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
@@ -20,8 +21,13 @@ import (
 //  3. [App.SetService]
 //  4. [App.SetServer]
 type App struct {
-	config *grpc.Config
-	Server *grpc.Server
+	grpc struct {
+		*grpc.Config
+		*grpc.Server
+	}
+	DB struct {
+		*pgsql.Config
+	}
 	*storage.Storage
 	*service.Service
 }
@@ -33,8 +39,19 @@ func (a *App) Configure(envFiles ...string) error {
 		return err
 	}
 
-	a.config = &grpc.Config{}
-	return envconfig.Process("", a.config)
+	a.grpc.Config = &grpc.Config{}
+	err = envconfig.Process("", a.grpc.Config)
+	if err != nil {
+		return err
+	}
+
+	a.DB.Config = &pgsql.Config{}
+	err = envconfig.Process("", a.DB.Config)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // SetStorage populates the [App.Storage] field with the given [storage.Keeper] and [storage.Depositor] implementations.
@@ -59,7 +76,7 @@ func (a *App) SetServer() error {
 		return errors.New("field Service is nil. SetService() must be called before SetServer")
 	}
 
-	a.Server = grpc.New(
+	a.grpc.Server = grpc.New(
 		a.Service.Keeper,
 		a.Service.Depositor,
 	)
@@ -69,11 +86,11 @@ func (a *App) SetServer() error {
 
 // Run starts the [App.Server] and blocks until it is stopped or an error occurs.
 func (a *App) Run(ctx context.Context) error {
-	if a.config == nil {
+	if a.grpc.Config == nil {
 		return errors.New("config is nil. App.Configue() must be called before App.Run()")
 	}
 
-	if err := a.Server.Serve(ctx, a.config); err != nil {
+	if err := a.grpc.Server.Serve(ctx, a.grpc.Config); err != nil {
 		return err
 	}
 
@@ -84,5 +101,5 @@ func (a *App) Run(ctx context.Context) error {
 
 func (a *App) Stop(err error) error {
 	fmt.Printf("Stopping the app because of %q\n", err)
-	return a.Server.Stop()
+	return a.grpc.Server.Stop()
 }

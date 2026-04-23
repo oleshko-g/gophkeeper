@@ -1,5 +1,0 @@
--- +goose Up
-CREATE DATABASE ${DB_NAME};
-
--- +goose Down
-DROP DATABASE IF EXISTS ${DB_NAME};
