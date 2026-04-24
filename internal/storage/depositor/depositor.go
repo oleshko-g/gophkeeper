@@ -3,7 +3,7 @@ package depositor
 import (
 	"context"
 
-	"github.com/oleshko-g/gophkeeper/internal/db/pgsql/queries"
+	"github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
 	"github.com/oleshko-g/gophkeeper/internal/storage/model"
 )

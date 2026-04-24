@@ -2,12 +2,13 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/oleshko-g/gophkeeper/internal/db/pgsql"
+	"github.com/oleshko-g/gophkeeper/internal/db/pgx"
 	"github.com/oleshko-g/gophkeeper/internal/grpc"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
@@ -27,6 +28,7 @@ type App struct {
 	}
 	DB struct {
 		*pgsql.Config
+		*sql.DB
 	}
 	*storage.Storage
 	*service.Service

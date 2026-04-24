@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/oleshko-g/gophkeeper/internal/app/server"
-	"github.com/oleshko-g/gophkeeper/internal/db/pgsql"
+	pgsql "github.com/oleshko-g/gophkeeper/internal/db/pgx"
 	"github.com/oleshko-g/gophkeeper/internal/service/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/service/keeper"
 	storageDepositor "github.com/oleshko-g/gophkeeper/internal/storage/depositor"
