@@ -8,18 +8,20 @@ import (
 	"github.com/oleshko-g/gophkeeper/internal/storage/model"
 )
 
-type DepositorQuerier interface {
+var _ storage.Depositor = (*Depositor)(nil)
+
+type Querier interface {
 	InsertRefreshToken(ctx context.Context, arg queries.InsertRefreshTokenParams) (queries.InsertRefreshTokenRow, error)
 }
 
-func New() *Depositor {
-	return &Depositor{}
+func New(q Querier) *Depositor {
+	return &Depositor{
+		Querier: q,
+	}
 }
 
-var _ storage.Depositor = (*Depositor)(nil)
-
 type Depositor struct {
-	DepositorQuerier
+	Querier
 }
 
 func (d *Depositor) StorePubKey(ctx context.Context, pubKey string) (pub_key_id string, err error) {

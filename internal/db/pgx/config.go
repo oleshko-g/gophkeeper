@@ -1,4 +1,4 @@
-package pgsql
+package pgx
 
 type Config struct {
 	GophkeeperDBName   string `envconfig:"GOPHKEEPER_DB_NAME" default:"gophkeeper"`

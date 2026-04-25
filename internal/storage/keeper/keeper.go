@@ -8,4 +8,15 @@ func New() *Keeper {
 
 var _ storage.Keeper = (*Keeper)(nil)
 
-type Keeper struct{}
+//go:generate moq -rm -out querier_mock.go . Querier
+type Querier interface{}
+
+func New(q Querier) *Keeper {
+	return &Keeper{
+		Querier: q,
+	}
+}
+
+type Keeper struct {
+	Querier Querier
+}

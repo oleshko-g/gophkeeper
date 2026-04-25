@@ -1,4 +1,4 @@
-package pgsql
+package pgx
 
 import (
 	"context"
@@ -9,6 +9,8 @@ import (
 )
 
 var driverName string = "pgx"
+
+type Conn = pgx.Conn
 
 func New(cfg *Config) (*pgx.Conn, error) {
 	pgxConn, err := pgx.Connect(context.Background(), cfg.PostgresDSN)

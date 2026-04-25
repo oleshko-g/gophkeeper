@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 
@@ -27,8 +26,8 @@ type App struct {
 		*grpc.Server
 	}
 	DB struct {
-		*pgsql.Config
-		*sql.DB
+		*pgx.Config
+		*pgx.Conn
 	}
 	*storage.Storage
 	*service.Service
@@ -47,7 +46,7 @@ func (a *App) Configure(envFiles ...string) error {
 		return err
 	}
 
-	a.DB.Config = &pgsql.Config{}
+	a.DB.Config = &pgx.Config{}
 	err = envconfig.Process("", a.DB.Config)
 	if err != nil {
 		return err

@@ -7,6 +7,7 @@ import (
 
 	"github.com/oleshko-g/gophkeeper/internal/app/server"
 	pgsql "github.com/oleshko-g/gophkeeper/internal/db/pgx"
+	queries "github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
 	"github.com/oleshko-g/gophkeeper/internal/service/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/service/keeper"
 	storageDepositor "github.com/oleshko-g/gophkeeper/internal/storage/depositor"
@@ -26,9 +27,10 @@ func main() {
 		panic(err)
 	}
 
+	q := queries.New(app.DB.Conn)
 	app.SetStorage(
-		storageKeeper.New(),
-		storageDepositor.New(),
+		storageKeeper.New(q),
+		storageDepositor.New(q),
 	)
 
 	app.SetService(
