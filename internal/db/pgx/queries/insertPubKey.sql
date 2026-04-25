@@ -1,4 +1,5 @@
--- name: InsertPubKey :one
-INSERT INTO public_keys (id, key)
-VALUES ($1, $2)
-RETURNING *;
+-- name: InsertPubKey :exec
+INSERT INTO
+  depositor_pub_keys (id, pub_key)
+VALUES
+  ($1, $2);

@@ -1,9 +1,22 @@
 version: 2
 sql:
   - engine: "postgresql"
-    schema: "internal/db/pgsql/migrations"
-    queries: "internal/db/pgsql/queries"
+    schema: "internal/db/pgx/migrations"
+    queries: "internal/db/pgx/queries"
     gen:
       go:
-        out: "internal/db/pgsql/queries/"
+        out: "internal/db/pgx/queries/"
         sql_package: "pgx/v5"
+        overrides:
+          - db_type: "uuid"
+            nullable: false
+            go_type: "github.com/google/uuid.UUID"
+          - db_type: "uuid"
+            nullable: true
+            go_type: "github.com/google/uuid.NullUUID"
+          - db_type: "pg_catalog.timestamptz"
+            nullable: false
+            go_type: "time.Time"
+          - db_type: "pg_catalog.timestamptz"
+            nullable: true
+            go_type: "database/sql.NullTime"

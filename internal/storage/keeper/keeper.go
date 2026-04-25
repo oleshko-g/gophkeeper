@@ -2,10 +2,6 @@ package keeper
 
 import "github.com/oleshko-g/gophkeeper/internal/storage"
 
-func New() *Keeper {
-	return &Keeper{}
-}
-
 var _ storage.Keeper = (*Keeper)(nil)
 
 //go:generate moq -rm -out querier_mock.go . Querier

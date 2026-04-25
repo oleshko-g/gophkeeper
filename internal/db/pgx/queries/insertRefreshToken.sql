@@ -1,4 +1,4 @@
--- name: InsertRefreshToken :one
+-- name: InsertRefreshToken :exec
 INSERT INTO
   depositor_refresh_tokens (
     id,
@@ -8,8 +8,4 @@ INSERT INTO
     revoked_at
   )
 VALUES
-  ($1, $2, $3, $4, $5)
-RETURNING
-  id,
-  token,
-  depositor_pub_key_id;
+  ($1, $2, $3, $4, $5);

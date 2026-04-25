@@ -2,5 +2,9 @@
 
 .PHONY: gen
 
-gen:
+gen: fmt
 	go generate ./...
+	sqlc generate
+
+fmt:
+	goimports -w .

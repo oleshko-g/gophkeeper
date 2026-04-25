@@ -7,11 +7,13 @@ package queries
 
 import (
 	"context"
+	"database/sql"
+	"time"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
-const insertRefreshToken = `-- name: InsertRefreshToken :one
+const insertRefreshToken = `-- name: InsertRefreshToken :exec
 INSERT INTO
   depositor_refresh_tokens (
     id,
@@ -22,35 +24,23 @@ INSERT INTO
   )
 VALUES
   ($1, $2, $3, $4, $5)
-RETURNING
-  id,
-  token,
-  depositor_pub_key_id
 `
 
 type InsertRefreshTokenParams struct {
-	ID                pgtype.UUID
+	ID                uuid.UUID
 	Token             string
-	DepositorPubKeyID pgtype.UUID
-	IssuedAt          pgtype.Timestamptz
-	RevokedAt         pgtype.Timestamptz
+	DepositorPubKeyID uuid.UUID
+	IssuedAt          time.Time
+	RevokedAt         sql.NullTime
 }
 
-type InsertRefreshTokenRow struct {
-	ID                pgtype.UUID
-	Token             string
-	DepositorPubKeyID pgtype.UUID
-}
-
-func (q *Queries) InsertRefreshToken(ctx context.Context, arg InsertRefreshTokenParams) (InsertRefreshTokenRow, error) {
-	row := q.db.QueryRow(ctx, insertRefreshToken,
+func (q *Queries) InsertRefreshToken(ctx context.Context, arg InsertRefreshTokenParams) error {
+	_, err := q.db.Exec(ctx, insertRefreshToken,
 		arg.ID,
 		arg.Token,
 		arg.DepositorPubKeyID,
 		arg.IssuedAt,
 		arg.RevokedAt,
 	)
-	var i InsertRefreshTokenRow
-	err := row.Scan(&i.ID, &i.Token, &i.DepositorPubKeyID)
-	return i, err
+	return err
 }

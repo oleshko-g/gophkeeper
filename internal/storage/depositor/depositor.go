@@ -2,16 +2,19 @@ package depositor
 
 import (
 	"context"
+	"time"
 
 	"github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
 	"github.com/oleshko-g/gophkeeper/internal/storage/model"
+	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 )
 
 var _ storage.Depositor = (*Depositor)(nil)
 
 type Querier interface {
-	InsertRefreshToken(ctx context.Context, arg queries.InsertRefreshTokenParams) (queries.InsertRefreshTokenRow, error)
+	InsertPubKey(ctx context.Context, arg queries.InsertPubKeyParams) error
+	InsertRefreshToken(ctx context.Context, arg queries.InsertRefreshTokenParams) error
 }
 
 func New(q Querier) *Depositor {
@@ -29,11 +32,25 @@ func (d *Depositor) StorePubKey(ctx context.Context, pubKey string) (pub_key_id 
 		return "", storage.ErrEmptyInput
 	}
 
-	return "not_implemented", nil
+	id := uuidv7.NewPGType()
+	err = d.InsertPubKey(ctx, queries.InsertPubKeyParams{
+		ID:     uuidv7.New(),
+		PubKey: pubKey,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return id.String(), nil
 }
 
 func (d *Depositor) StoreRefreshToken(ctx context.Context, rt model.RefreshToken) error {
-	return nil
+	return d.InsertRefreshToken(ctx, queries.InsertRefreshTokenParams{
+		ID:                uuidv7.New(),
+		DepositorPubKeyID: uuidv7.FromString(rt.PubKeyID),
+		Token:             rt.RefreshToken,
+		IssuedAt:          time.Now().UTC(),
+	})
 }
 
 func (d *Depositor) GetRefreshToken(ctx context.Context, id string) (*model.RefreshToken, error) {

@@ -33,7 +33,6 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 	}
 
 	rt := model.RefreshToken{
-		ID:           uuidv7.NewString(),
 		PubKeyID:     pubKeyID,
 		RefreshToken: uuidv7.NewString(),
 	}

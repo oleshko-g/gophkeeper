@@ -5,37 +5,40 @@
 package queries
 
 import (
-	"github.com/jackc/pgx/v5/pgtype"
+	"database/sql"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type DepositedDatum struct {
-	ID                pgtype.UUID
-	DepositorPubKeyID pgtype.UUID
+	ID                uuid.UUID
+	DepositorPubKeyID uuid.UUID
 	CipheredData      []byte
 }
 
 type DepositorApp struct {
-	ID                pgtype.UUID
+	ID                uuid.UUID
 	AppName           string
-	DepositorPubKeyID pgtype.UUID
+	DepositorPubKeyID uuid.UUID
 }
 
 type DepositorAppSession struct {
-	ID             pgtype.UUID
-	DepositorAppID pgtype.UUID
-	StartedAt      pgtype.Timestamptz
-	ExpiredAt      pgtype.Timestamptz
+	ID             uuid.UUID
+	DepositorAppID uuid.UUID
+	StartedAt      time.Time
+	ExpiredAt      sql.NullTime
 }
 
 type DepositorPubKey struct {
-	ID     pgtype.UUID
+	ID     uuid.UUID
 	PubKey string
 }
 
 type DepositorRefreshToken struct {
-	ID                pgtype.UUID
+	ID                uuid.UUID
 	Token             string
-	DepositorPubKeyID pgtype.UUID
-	IssuedAt          pgtype.Timestamptz
-	RevokedAt         pgtype.Timestamptz
+	DepositorPubKeyID uuid.UUID
+	IssuedAt          time.Time
+	RevokedAt         sql.NullTime
 }
