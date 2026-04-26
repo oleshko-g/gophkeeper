@@ -23,7 +23,7 @@ type Service struct {
 // Register registers an anonymous public key and returns a refresh token.
 // The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
 func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
-	if in == nil {
+	if !in.ProtoReflect().IsValid() {
 		return nil, errRegisterRequestIsEmpty
 	}
 

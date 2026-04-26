@@ -12,11 +12,6 @@ import (
 
 var _ storage.Depositor = (*Depositor)(nil)
 
-type Querier interface {
-	InsertPubKey(ctx context.Context, arg queries.InsertPubKeyParams) error
-	InsertRefreshToken(ctx context.Context, arg queries.InsertRefreshTokenParams) error
-}
-
 func New(q Querier) *Depositor {
 	return &Depositor{
 		Querier: q,
@@ -27,14 +22,20 @@ type Depositor struct {
 	Querier
 }
 
+type Querier interface {
+	InsertPubKey(ctx context.Context, arg queries.InsertPubKeyParams) error
+	InsertRefreshToken(ctx context.Context, arg queries.InsertRefreshTokenParams) error
+}
+
+
 func (d *Depositor) StorePubKey(ctx context.Context, pubKey string) (pub_key_id string, err error) {
 	if pubKey == "" {
 		return "", storage.ErrEmptyInput
 	}
 
-	id := uuidv7.NewPGType()
+	id := uuidv7.New()
 	err = d.InsertPubKey(ctx, queries.InsertPubKeyParams{
-		ID:     uuidv7.New(),
+		ID:     id,
 		PubKey: pubKey,
 	})
 	if err != nil {
