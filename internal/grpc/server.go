@@ -8,6 +8,7 @@ import (
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 // New creates a new gRPC server with the gRPC server
@@ -15,6 +16,7 @@ func New(keeper service.Keeper, depositor service.Depositor) *Server {
 	s := &Server{}
 
 	s.Server = grpc.NewServer()
+	reflection.Register(s.Server)
 
 	s.implemented.keeper.service = keeper
 	pb.RegisterKeeperServiceServer(s.Server, s.implemented.keeper)

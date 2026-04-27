@@ -22,10 +22,11 @@ func main() {
 		panic(err)
 	}
 
-	_, err = pgsql.New(app.DB.Config)
+	pgConn, err := pgsql.New(app.DB.Config)
 	if err != nil {
 		panic(err)
 	}
+	app.DB.Conn = pgConn
 
 	q := queries.New(app.DB.Conn)
 	app.SetStorage(
@@ -38,7 +39,10 @@ func main() {
 		depositor.New(app.Storage.Depositor),
 	)
 
-	app.SetServer()
+	err = app.SetServer()
+	if err != nil {
+		panic(err)
+	}
 
 	ctx := context.Background()
 	err = app.Run(ctx)
