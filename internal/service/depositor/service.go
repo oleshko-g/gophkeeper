@@ -27,6 +27,14 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 		return nil, errRegisterRequestIsEmpty
 	}
 
+	if err := in.Validate(); err != nil {
+		return nil, &service.Err{
+			SvcName: "Depositor",
+			Method:  "Register",
+			Err:     err,
+		}
+	}
+
 	pubKeyID, err := s.Depositor.StorePubKey(ctx, in.GetPubKey())
 	if err != nil {
 		return nil, err

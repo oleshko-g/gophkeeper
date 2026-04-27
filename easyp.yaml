@@ -1,7 +1,7 @@
 # Documentation: https://easyp.tech/docs/guide/introduction/what-is
 deps:
   - github.com/googleapis/googleapis
-  - github.com/grpc-ecosystem/grpc-gateway
+  - github.com/bufbuild/protoc-gen-validate
   - github.com/grpc-ecosystem/grpc-gateway
 lint:
   use:
@@ -18,3 +18,8 @@ generate:
       out: .
       opts:
         paths: source_relative
+    - name: protoc-gen-validate
+      out: .
+      opts:
+        paths: source_relative
+        lang: go

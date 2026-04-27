@@ -3,6 +3,7 @@ module github.com/oleshko-g/gophkeeper
 go 1.26.1
 
 require (
+	github.com/envoyproxy/protoc-gen-validate v1.3.3
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.9.2
 	github.com/joho/godotenv v1.5.1

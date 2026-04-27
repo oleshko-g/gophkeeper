@@ -1,10 +1,11 @@
 edition = "2023";
 
 package gophkeeper.api.v1;
-import "google/protobuf/empty.proto";
 
 import "google/api/annotations.proto";
 import "google/api/httpbody.proto";
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
 
 option go_package = "github.com/oleshko-g/gophkeeper/api/v1;pb";
 
@@ -59,7 +60,7 @@ service KeeperService {
 }
 
 message RegisterRequest {
-  string pub_key = 1;
+  string pub_key = 1 [(validate.rules).string.min_len = 1];
 }
 
 message RegisterResponse {
@@ -67,7 +68,7 @@ message RegisterResponse {
 }
 
 message AuthorizeRequest {
-  string refresh_token = 1;
+  string refresh_token = 1 [(validate.rules).string.min_len = 1];
   Depositor app = 2;
 }
 
@@ -76,7 +77,7 @@ message AuthorizeResponse {
 }
 
 message ConnectRequest {
-  string auth_token = 1;
+  string auth_token = 1 [(validate.rules).string.min_len = 1];
 }
 
 message ConnectResponse {

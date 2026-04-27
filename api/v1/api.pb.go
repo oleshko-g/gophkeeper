@@ -7,15 +7,15 @@
 package pb
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
+	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -753,20 +753,20 @@ var File_api_v1_api_proto protoreflect.FileDescriptor
 
 const file_api_v1_api_proto_rawDesc = "" +
 	"\n" +
-	"\x10api/v1/api.proto\x12\x11gophkeeper.api.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x19google/api/httpbody.proto\"*\n" +
-	"\x0fRegisterRequest\x12\x17\n" +
-	"\apub_key\x18\x01 \x01(\tR\x06pubKey\"7\n" +
+	"\x10api/v1/api.proto\x12\x11gophkeeper.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x19google/api/httpbody.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\"3\n" +
+	"\x0fRegisterRequest\x12 \n" +
+	"\apub_key\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x06pubKey\"7\n" +
 	"\x10RegisterResponse\x12#\n" +
-	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"g\n" +
-	"\x10AuthorizeRequest\x12#\n" +
-	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\x12.\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"p\n" +
+	"\x10AuthorizeRequest\x12,\n" +
+	"\rrefresh_token\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\frefreshToken\x12.\n" +
 	"\x03app\x18\x02 \x01(\v2\x1c.gophkeeper.api.v1.DepositorR\x03app\"2\n" +
 	"\x11AuthorizeResponse\x12\x1d\n" +
 	"\n" +
-	"auth_token\x18\x01 \x01(\tR\tauthToken\"/\n" +
-	"\x0eConnectRequest\x12\x1d\n" +
+	"auth_token\x18\x01 \x01(\tR\tauthToken\"8\n" +
+	"\x0eConnectRequest\x12&\n" +
 	"\n" +
-	"auth_token\x18\x01 \x01(\tR\tauthToken\"G\n" +
+	"auth_token\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tauthToken\"G\n" +
 	"\x0fConnectResponse\x124\n" +
 	"\asession\x18\x01 \x01(\v2\x1a.gophkeeper.api.v1.SessionR\asession\"I\n" +
 	"\x11UploadDataRequest\x124\n" +

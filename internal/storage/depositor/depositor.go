@@ -27,7 +27,6 @@ type Querier interface {
 	InsertRefreshToken(ctx context.Context, arg queries.InsertRefreshTokenParams) error
 }
 
-
 func (d *Depositor) StorePubKey(ctx context.Context, pubKey string) (pub_key_id string, err error) {
 	if pubKey == "" {
 		return "", storage.ErrEmptyInput
