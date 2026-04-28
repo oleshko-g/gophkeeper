@@ -18,7 +18,8 @@ generate:
       out: .
       opts:
         paths: source_relative
-    - name: protoc-gen-validate
+        require_unimplemented_servers: false
+    - name: validate
       out: .
       opts:
         paths: source_relative

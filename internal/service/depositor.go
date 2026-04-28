@@ -18,10 +18,10 @@ type Depositor interface {
 	Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error)
 	// Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
 	// The owner of the authentication token can then [Connect] to [KeeperService]
-	Authorize(ctx context.Context, in *AuthorizeRequest) (*AuthorizeResponse, error)
+	Authorize(ctx context.Context, in *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error)
 	// Connect creates a new [Session] for an [Authorize]d client app.
 	// The holder of the session can then make requests to [KeeperService]
-	Connect(ctx context.Context, in *ConnectRequest) (*ConnectResponse, error)
+	Connect(ctx context.Context, in *pb.ConnectRequest) (*pb.ConnectResponse, error)
 }
 
 type RegisterRequest struct {

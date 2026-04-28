@@ -54,12 +54,12 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 
 // Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
 // The owner of the authentication token can then [Connect] to [KeeperService]
-func (s *Service) Authorize(ctx context.Context, in *service.AuthorizeRequest) (*service.AuthorizeResponse, error) {
+func (s *Service) Authorize(ctx context.Context, in *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error) {
 	return nil, nil
 }
 
 // Connect creates a new [Session] for an [Authorize]d client app.
 // The holder of the session can then make requests to [KeeperService]
-func (s *Service) Connect(ctx context.Context, in *service.ConnectRequest) (*service.ConnectResponse, error) {
+func (s *Service) Connect(ctx context.Context, in *pb.ConnectRequest) (*pb.ConnectResponse, error) {
 	return nil, nil
 }

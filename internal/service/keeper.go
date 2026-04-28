@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+
+	pb "github.com/oleshko-g/gophkeeper/api/v1"
 )
 
 // KeeperService is the interface to:
@@ -10,16 +12,16 @@ import (
 //   - [ListData] the uploaded data
 //   - [DeleteData] the uploaded data
 //
-//go:generate moq -out keeper_mock.go . Keeper
+//go:generate moq -rm -out keeper_mock.go . Keeper
 type Keeper interface {
 	// UploadData uploads data of the owners of the [Register]ed public keys.
-	UploadData(ctx context.Context, in *UploadDataRequest) (*UploadDataResponse, error)
+	UploadData(ctx context.Context, in *pb.UploadDataRequest) (*pb.UploadDataResponse, error)
 	// DownloadData downloads the [Upload]ed data
-	DownloadData(ctx context.Context, in *DownloadDataRequest) (*DownloadDataResponse, error)
+	DownloadData(ctx context.Context, in *pb.DownloadDataRequest) (*pb.DownloadDataResponse, error)
 	// DownloadData lists the [Upload]ed data
-	ListData(ctx context.Context, in *ListDataRequest) (*ListDataResponse, error)
+	ListData(ctx context.Context, in *pb.ListDataRequest) (*pb.ListDataResponse, error)
 	// Delete deletes the [Upload]ed data from the [KeeperService]
-	DeleteData(ctx context.Context, in *DeleteDataRequest) (*DeleteDataResponse, error)
+	DeleteData(ctx context.Context, in *pb.DeleteDataRequest) (*pb.DeleteDataResponse, error)
 }
 
 type UploadDataRequest struct {

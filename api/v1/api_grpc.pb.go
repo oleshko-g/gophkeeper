@@ -86,7 +86,7 @@ func (c *depositorServiceClient) Connect(ctx context.Context, in *ConnectRequest
 }
 
 // DepositorServiceServer is the server API for DepositorService service.
-// All implementations must embed UnimplementedDepositorServiceServer
+// All implementations should embed UnimplementedDepositorServiceServer
 // for forward compatibility.
 //
 // DepositorService is the interface to:
@@ -103,10 +103,9 @@ type DepositorServiceServer interface {
 	// Connect creates a new [Session] for an [Authorize]d client app.
 	// The holder of the session can then make requests to [KeeperService]
 	Connect(context.Context, *ConnectRequest) (*ConnectResponse, error)
-	mustEmbedUnimplementedDepositorServiceServer()
 }
 
-// UnimplementedDepositorServiceServer must be embedded to have
+// UnimplementedDepositorServiceServer should be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
@@ -122,8 +121,7 @@ func (UnimplementedDepositorServiceServer) Authorize(context.Context, *Authorize
 func (UnimplementedDepositorServiceServer) Connect(context.Context, *ConnectRequest) (*ConnectResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Connect not implemented")
 }
-func (UnimplementedDepositorServiceServer) mustEmbedUnimplementedDepositorServiceServer() {}
-func (UnimplementedDepositorServiceServer) testEmbeddedByValue()                          {}
+func (UnimplementedDepositorServiceServer) testEmbeddedByValue() {}
 
 // UnsafeDepositorServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to DepositorServiceServer will
@@ -335,7 +333,7 @@ func (c *keeperServiceClient) UploadFile(ctx context.Context, opts ...grpc.CallO
 type KeeperService_UploadFileClient = grpc.ClientStreamingClient[httpbody.HttpBody, emptypb.Empty]
 
 // KeeperServiceServer is the server API for KeeperService service.
-// All implementations must embed UnimplementedKeeperServiceServer
+// All implementations should embed UnimplementedKeeperServiceServer
 // for forward compatibility.
 //
 // KeeperService is the interface to:
@@ -356,10 +354,9 @@ type KeeperServiceServer interface {
 	DownloadFile(*DownloadFileRequest, grpc.ServerStreamingServer[httpbody.HttpBody]) error
 	// UploadFile uploads a file to the [KeeperService]
 	UploadFile(grpc.ClientStreamingServer[httpbody.HttpBody, emptypb.Empty]) error
-	mustEmbedUnimplementedKeeperServiceServer()
 }
 
-// UnimplementedKeeperServiceServer must be embedded to have
+// UnimplementedKeeperServiceServer should be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
@@ -384,8 +381,7 @@ func (UnimplementedKeeperServiceServer) DownloadFile(*DownloadFileRequest, grpc.
 func (UnimplementedKeeperServiceServer) UploadFile(grpc.ClientStreamingServer[httpbody.HttpBody, emptypb.Empty]) error {
 	return status.Error(codes.Unimplemented, "method UploadFile not implemented")
 }
-func (UnimplementedKeeperServiceServer) mustEmbedUnimplementedKeeperServiceServer() {}
-func (UnimplementedKeeperServiceServer) testEmbeddedByValue()                       {}
+func (UnimplementedKeeperServiceServer) testEmbeddedByValue() {}
 
 // UnsafeKeeperServiceServer may be embedded to opt out of forward compatibility for this service.
 // Use of this interface is not recommended, as added methods to KeeperServiceServer will

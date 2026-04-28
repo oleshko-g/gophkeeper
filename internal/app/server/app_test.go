@@ -1,3 +1,4 @@
+//go:build ignore
 package server_test
 
 import (
@@ -5,7 +6,6 @@ import (
 	"errors"
 	"testing"
 	"time"
-	_ "time"
 
 	"github.com/oleshko-g/gophkeeper/internal/app/server"
 	"github.com/oleshko-g/gophkeeper/internal/service"

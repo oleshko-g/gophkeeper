@@ -12,17 +12,14 @@ import (
 )
 
 // New creates a new gRPC server with the gRPC server
-func New(keeper service.Keeper, depositor service.Depositor) *Server {
+func New(_ service.Keeper, depositor service.Depositor) *Server {
 	s := &Server{}
 
 	s.Server = grpc.NewServer()
 	reflection.Register(s.Server)
 
-	s.implemented.keeper.service = keeper
-	pb.RegisterKeeperServiceServer(s.Server, s.implemented.keeper)
-
-	s.implemented.depositor.service = depositor
-	pb.RegisterDepositorServiceServer(s.Server, s.implemented.depositor)
+	s.Depositor = depositor
+	pb.RegisterDepositorServiceServer(s.Server, s.Depositor)
 
 	return s
 }
@@ -30,10 +27,8 @@ func New(keeper service.Keeper, depositor service.Depositor) *Server {
 // Server is a gRPC server with the implemented [minifier_v1.Keeper] and [minifier_v1.Depositor] services
 type Server struct {
 	*grpc.Server
-	implemented struct {
-		keeper
-		depositor
-	}
+	service.Keeper
+	service.Depositor
 }
 
 // Stop stops the gRPC server gracefully.

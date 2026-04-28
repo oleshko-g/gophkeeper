@@ -9,7 +9,6 @@ import (
 	pgsql "github.com/oleshko-g/gophkeeper/internal/db/pgx"
 	queries "github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
 	"github.com/oleshko-g/gophkeeper/internal/service/depositor"
-	"github.com/oleshko-g/gophkeeper/internal/service/keeper"
 	storageDepositor "github.com/oleshko-g/gophkeeper/internal/storage/depositor"
 	storageKeeper "github.com/oleshko-g/gophkeeper/internal/storage/keeper"
 )
@@ -35,7 +34,7 @@ func main() {
 	)
 
 	app.SetService(
-		keeper.New(app.Storage.Keeper),
+		nil,
 		depositor.New(app.Storage.Depositor),
 	)
 
