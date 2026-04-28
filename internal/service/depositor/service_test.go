@@ -97,7 +97,7 @@ func TestAuthorize(t *testing.T) {
 				nil,
 			)
 			if err == nil {
-				t.Errorf("expected error, got nil")
+				t.Error("expected error, got nil")
 			}
 		})
 	})
@@ -123,7 +123,7 @@ func TestConnect(t *testing.T) {
 				nil,
 			)
 			if err == nil {
-				t.Errorf("expected error, got nil")
+				t.Error("expected error, got nil")
 			}
 		})
 	})

@@ -22,6 +22,7 @@ type Depositor struct {
 	Querier
 }
 
+//go:generate moq -rm -out querier_mock.go . Querier
 type Querier interface {
 	InsertPubKey(ctx context.Context, arg queries.InsertPubKeyParams) error
 	InsertRefreshToken(ctx context.Context, arg queries.InsertRefreshTokenParams) error
