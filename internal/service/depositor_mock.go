@@ -20,13 +20,13 @@ var _ Depositor = &DepositorMock{}
 //
 //		// make and configure a mocked Depositor
 //		mockedDepositor := &DepositorMock{
-//			AuthorizeFunc: func(ctx context.Context, in *AuthorizeRequest) (*AuthorizeResponse, error) {
+//			AuthorizeFunc: func(contextMoqParam context.Context, authorizeRequest *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error) {
 //				panic("mock out the Authorize method")
 //			},
-//			ConnectFunc: func(ctx context.Context, in *ConnectRequest) (*ConnectResponse, error) {
+//			ConnectFunc: func(contextMoqParam context.Context, connectRequest *pb.ConnectRequest) (*pb.ConnectResponse, error) {
 //				panic("mock out the Connect method")
 //			},
-//			RegisterFunc: func(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+//			RegisterFunc: func(contextMoqParam context.Context, registerRequest *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 //				panic("mock out the Register method")
 //			},
 //		}
@@ -37,36 +37,36 @@ var _ Depositor = &DepositorMock{}
 //	}
 type DepositorMock struct {
 	// AuthorizeFunc mocks the Authorize method.
-	AuthorizeFunc func(ctx context.Context, in *AuthorizeRequest) (*AuthorizeResponse, error)
+	AuthorizeFunc func(contextMoqParam context.Context, authorizeRequest *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error)
 
 	// ConnectFunc mocks the Connect method.
-	ConnectFunc func(ctx context.Context, in *ConnectRequest) (*ConnectResponse, error)
+	ConnectFunc func(contextMoqParam context.Context, connectRequest *pb.ConnectRequest) (*pb.ConnectResponse, error)
 
 	// RegisterFunc mocks the Register method.
-	RegisterFunc func(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error)
+	RegisterFunc func(contextMoqParam context.Context, registerRequest *pb.RegisterRequest) (*pb.RegisterResponse, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
 		// Authorize holds details about calls to the Authorize method.
 		Authorize []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// In is the in argument value.
-			In *AuthorizeRequest
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// AuthorizeRequest is the authorizeRequest argument value.
+			AuthorizeRequest *pb.AuthorizeRequest
 		}
 		// Connect holds details about calls to the Connect method.
 		Connect []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// In is the in argument value.
-			In *ConnectRequest
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// ConnectRequest is the connectRequest argument value.
+			ConnectRequest *pb.ConnectRequest
 		}
 		// Register holds details about calls to the Register method.
 		Register []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// In is the in argument value.
-			In *pb.RegisterRequest
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// RegisterRequest is the registerRequest argument value.
+			RegisterRequest *pb.RegisterRequest
 		}
 	}
 	lockAuthorize sync.RWMutex
@@ -75,21 +75,21 @@ type DepositorMock struct {
 }
 
 // Authorize calls AuthorizeFunc.
-func (mock *DepositorMock) Authorize(ctx context.Context, in *AuthorizeRequest) (*AuthorizeResponse, error) {
+func (mock *DepositorMock) Authorize(contextMoqParam context.Context, authorizeRequest *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error) {
 	if mock.AuthorizeFunc == nil {
 		panic("DepositorMock.AuthorizeFunc: method is nil but Depositor.Authorize was just called")
 	}
 	callInfo := struct {
-		Ctx context.Context
-		In  *AuthorizeRequest
+		ContextMoqParam  context.Context
+		AuthorizeRequest *pb.AuthorizeRequest
 	}{
-		Ctx: ctx,
-		In:  in,
+		ContextMoqParam:  contextMoqParam,
+		AuthorizeRequest: authorizeRequest,
 	}
 	mock.lockAuthorize.Lock()
 	mock.calls.Authorize = append(mock.calls.Authorize, callInfo)
 	mock.lockAuthorize.Unlock()
-	return mock.AuthorizeFunc(ctx, in)
+	return mock.AuthorizeFunc(contextMoqParam, authorizeRequest)
 }
 
 // AuthorizeCalls gets all the calls that were made to Authorize.
@@ -97,12 +97,12 @@ func (mock *DepositorMock) Authorize(ctx context.Context, in *AuthorizeRequest) 
 //
 //	len(mockedDepositor.AuthorizeCalls())
 func (mock *DepositorMock) AuthorizeCalls() []struct {
-	Ctx context.Context
-	In  *AuthorizeRequest
+	ContextMoqParam  context.Context
+	AuthorizeRequest *pb.AuthorizeRequest
 } {
 	var calls []struct {
-		Ctx context.Context
-		In  *AuthorizeRequest
+		ContextMoqParam  context.Context
+		AuthorizeRequest *pb.AuthorizeRequest
 	}
 	mock.lockAuthorize.RLock()
 	calls = mock.calls.Authorize
@@ -111,21 +111,21 @@ func (mock *DepositorMock) AuthorizeCalls() []struct {
 }
 
 // Connect calls ConnectFunc.
-func (mock *DepositorMock) Connect(ctx context.Context, in *ConnectRequest) (*ConnectResponse, error) {
+func (mock *DepositorMock) Connect(contextMoqParam context.Context, connectRequest *pb.ConnectRequest) (*pb.ConnectResponse, error) {
 	if mock.ConnectFunc == nil {
 		panic("DepositorMock.ConnectFunc: method is nil but Depositor.Connect was just called")
 	}
 	callInfo := struct {
-		Ctx context.Context
-		In  *ConnectRequest
+		ContextMoqParam context.Context
+		ConnectRequest  *pb.ConnectRequest
 	}{
-		Ctx: ctx,
-		In:  in,
+		ContextMoqParam: contextMoqParam,
+		ConnectRequest:  connectRequest,
 	}
 	mock.lockConnect.Lock()
 	mock.calls.Connect = append(mock.calls.Connect, callInfo)
 	mock.lockConnect.Unlock()
-	return mock.ConnectFunc(ctx, in)
+	return mock.ConnectFunc(contextMoqParam, connectRequest)
 }
 
 // ConnectCalls gets all the calls that were made to Connect.
@@ -133,12 +133,12 @@ func (mock *DepositorMock) Connect(ctx context.Context, in *ConnectRequest) (*Co
 //
 //	len(mockedDepositor.ConnectCalls())
 func (mock *DepositorMock) ConnectCalls() []struct {
-	Ctx context.Context
-	In  *ConnectRequest
+	ContextMoqParam context.Context
+	ConnectRequest  *pb.ConnectRequest
 } {
 	var calls []struct {
-		Ctx context.Context
-		In  *ConnectRequest
+		ContextMoqParam context.Context
+		ConnectRequest  *pb.ConnectRequest
 	}
 	mock.lockConnect.RLock()
 	calls = mock.calls.Connect
@@ -147,21 +147,21 @@ func (mock *DepositorMock) ConnectCalls() []struct {
 }
 
 // Register calls RegisterFunc.
-func (mock *DepositorMock) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+func (mock *DepositorMock) Register(contextMoqParam context.Context, registerRequest *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	if mock.RegisterFunc == nil {
 		panic("DepositorMock.RegisterFunc: method is nil but Depositor.Register was just called")
 	}
 	callInfo := struct {
-		Ctx context.Context
-		In  *pb.RegisterRequest
+		ContextMoqParam context.Context
+		RegisterRequest *pb.RegisterRequest
 	}{
-		Ctx: ctx,
-		In:  in,
+		ContextMoqParam: contextMoqParam,
+		RegisterRequest: registerRequest,
 	}
 	mock.lockRegister.Lock()
 	mock.calls.Register = append(mock.calls.Register, callInfo)
 	mock.lockRegister.Unlock()
-	return mock.RegisterFunc(ctx, in)
+	return mock.RegisterFunc(contextMoqParam, registerRequest)
 }
 
 // RegisterCalls gets all the calls that were made to Register.
@@ -169,12 +169,12 @@ func (mock *DepositorMock) Register(ctx context.Context, in *pb.RegisterRequest)
 //
 //	len(mockedDepositor.RegisterCalls())
 func (mock *DepositorMock) RegisterCalls() []struct {
-	Ctx context.Context
-	In  *pb.RegisterRequest
+	ContextMoqParam context.Context
+	RegisterRequest *pb.RegisterRequest
 } {
 	var calls []struct {
-		Ctx context.Context
-		In  *pb.RegisterRequest
+		ContextMoqParam context.Context
+		RegisterRequest *pb.RegisterRequest
 	}
 	mock.lockRegister.RLock()
 	calls = mock.calls.Register

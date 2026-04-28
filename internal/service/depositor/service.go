@@ -18,6 +18,7 @@ func New(s storage.Depositor) *Service {
 
 type Service struct {
 	storage.Depositor
+	pb.UnimplementedDepositorServiceServer
 }
 
 // Register registers an anonymous public key and returns a refresh token.
@@ -52,14 +53,14 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 	return &pb.RegisterResponse{RefreshToken: &rt.RefreshToken}, nil
 }
 
-// Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
-// The owner of the authentication token can then [Connect] to [KeeperService]
-func (s *Service) Authorize(ctx context.Context, in *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error) {
-	return nil, nil
-}
+// // Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
+// // The owner of the authentication token can then [Connect] to [KeeperService]
+// func (s *Service) Authorize(ctx context.Context, in *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error) {
+// 	return nil, nil
+// }
 
-// Connect creates a new [Session] for an [Authorize]d client app.
-// The holder of the session can then make requests to [KeeperService]
-func (s *Service) Connect(ctx context.Context, in *pb.ConnectRequest) (*pb.ConnectResponse, error) {
-	return nil, nil
-}
+// // Connect creates a new [Session] for an [Authorize]d client app.
+// // The holder of the session can then make requests to [KeeperService]
+// func (s *Service) Connect(ctx context.Context, in *pb.ConnectRequest) (*pb.ConnectResponse, error) {
+// 	return nil, nil
+// }

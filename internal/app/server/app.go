@@ -56,18 +56,18 @@ func (a *App) Configure(envFiles ...string) error {
 }
 
 // SetStorage populates the [App.Storage] field with the given [storage.Keeper] and [storage.Depositor] implementations.
-func (a *App) SetStorage(keeper storage.Keeper, depositor storage.Depositor) {
+func (a *App) SetStorage(depositor storage.Depositor, keeper storage.Keeper) {
 	a.Storage = &storage.Storage{
-		Keeper:    keeper,
 		Depositor: depositor,
+		Keeper:    keeper,
 	}
 }
 
 // SetService populates the [App.Service] field with the given [service.Keeper] and [service.Depositor] implementations.
-func (a *App) SetService(keeper service.Keeper, depositor service.Depositor) {
+func (a *App) SetService(depositor service.Depositor, keeper service.Keeper) {
 	a.Service = &service.Service{
-		Keeper:    keeper,
 		Depositor: depositor,
+		Keeper:    keeper,
 	}
 }
 
@@ -78,8 +78,8 @@ func (a *App) SetServer() error {
 	}
 
 	a.grpc.Server = grpc.New(
-		a.Service.Keeper,
 		a.Service.Depositor,
+		a.Service.Keeper,
 	)
 
 	return nil

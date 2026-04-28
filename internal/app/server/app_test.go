@@ -1,4 +1,3 @@
-//go:build ignore
 package server_test
 
 import (
@@ -39,7 +38,7 @@ func TestApp(t0 *testing.T) {
 		if t0.Failed() {
 			t.Skip()
 		}
-		app.SetStorage(storage.KeeperMock{}, &storage.DepositorMock{})
+		app.SetStorage(&storage.DepositorMock{}, storage.KeeperMock{})
 	})
 
 	t0.Run("SetService", func(t *testing.T) {
@@ -47,7 +46,7 @@ func TestApp(t0 *testing.T) {
 		if t0.Failed() {
 			t.Skip()
 		}
-		app.SetService(&service.KeeperMock{}, &service.DepositorMock{})
+		app.SetService(&service.DepositorMock{}, &service.KeeperMock{})
 	})
 
 	t0.Run("SetServer", func(t *testing.T) {
@@ -57,7 +56,7 @@ func TestApp(t0 *testing.T) {
 
 		t.Run("Success", func(t *testing.T) {
 			app := app // make a copy for the test
-			app.SetService(&service.KeeperMock{}, &service.DepositorMock{})
+			app.SetService(&service.DepositorMock{}, &service.KeeperMock{})
 		})
 
 		t.Run("Err", func(t *testing.T) {
@@ -75,7 +74,7 @@ func TestApp(t0 *testing.T) {
 
 		app := app
 		app.Configure("testdata/.env")
-		app.SetService(&service.KeeperMock{}, &service.DepositorMock{})
+		app.SetService(&service.DepositorMock{}, &service.KeeperMock{})
 
 		t.Run("Success", func(t *testing.T) {
 			err := app.SetServer()
