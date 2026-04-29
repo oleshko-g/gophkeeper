@@ -3,6 +3,8 @@
 
 package keeper
 
+import ()
+
 // Ensure, that QuerierMock does implement Querier.
 // If this is not the case, regenerate this file with moq.
 var _ Querier = &QuerierMock{}
