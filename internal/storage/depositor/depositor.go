@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
+	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
-	"github.com/oleshko-g/gophkeeper/internal/storage/model"
 	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 )
 
@@ -34,27 +34,27 @@ func (d *Depositor) StorePubKey(ctx context.Context, pubKey string) (pub_key_id 
 
 	id := uuidv7.New()
 	err = d.InsertPubKey(ctx, queries.InsertPubKeyParams{
-		ID:     id,
+		ID:     id.Value,
 		PubKey: pubKey,
 	})
 	if err != nil {
 		return "", err
 	}
 
-	return id.String(), nil
+	return id.Value.String(), nil
 }
 
-func (d *Depositor) StoreRefreshToken(ctx context.Context, rt model.RefreshToken) error {
+func (d *Depositor) StoreRefreshToken(ctx context.Context, rt depositor.RefreshToken) error {
 	return d.InsertRefreshToken(ctx, queries.InsertRefreshTokenParams{
-		ID:                rt.RefreshToken,
-		DepositorPubKeyID: uuidv7.FromString(rt.PubKeyID),
+		Token:             rt.ID.Value,
+		DepositorPubKeyID: rt.PubKeyID.Value,
 	})
 }
 
-func (d *Depositor) GetRefreshToken(ctx context.Context, id string) (*model.RefreshToken, error) {
+func (d *Depositor) GetRefreshToken(ctx context.Context, id string) (*depositor.RefreshToken, error) {
 	if id == "" {
 		return nil, storage.ErrEmptyInput
 	}
 
-	return &model.RefreshToken{}, nil
+	return &depositor.RefreshToken{}, nil
 }

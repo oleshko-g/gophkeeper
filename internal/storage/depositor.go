@@ -3,7 +3,7 @@ package storage
 import (
 	"context"
 
-	"github.com/oleshko-g/gophkeeper/internal/storage/model"
+	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
 )
 
 //go:generate moq -rm -out depositor_mock.go . Depositor
@@ -17,6 +17,5 @@ type PubKeyer interface {
 }
 
 type RefreshTokener interface {
-	StoreRefreshToken(context.Context, model.RefreshToken) error
-	GetRefreshToken(ctx context.Context, id string) (*model.RefreshToken, error)
+	StoreRefreshToken(context.Context, depositor.RefreshToken) error
 }

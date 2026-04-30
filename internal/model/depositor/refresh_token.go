@@ -5,15 +5,16 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 )
 
 // RefreshToken is the model of a refresh token.
 // It enforces the relationship between a public key and a refresh token.
-type RefreshToken[T RefreshTokenValue] struct {
+type RefreshToken struct {
 	// PubKeyID is the ID of the public key associated with the refresh token
-	PubKeyID string
+	PubKeyID uuidv7.UUID[uuid.UUID]
 	// ID is the actual refresh token value
-	ID T
+	ID uuidv7.UUID[uuid.UUID]
 	// TTL is the time-to-live of the refresh token
 	TTL time.Duration
 	// RevokedAt is the timestamp at which the refresh token has been revoked
@@ -32,18 +33,17 @@ type RefreshTokenValue interface {
 
 // IssuedAt returns the timestamp at which the refresh token has been issued.
 // It uses the UUID v7 timestamp to determine the issuance time.
-func (r *RefreshToken[T]) IssuedAt() time.Time {
-	sec, nsec := r.ID.Time().UnixTime()
-	return time.Date(0, 0, 0, 0, 0, int(sec), int(nsec), time.UTC)
+func (r *RefreshToken) IssuedAt() time.Time {
+	return r.ID.Time()
 }
 
 // ExpiresAt returns the timestamp at which the refresh token expires.
-func (r *RefreshToken[T]) ExpiresAt() time.Time {
+func (r *RefreshToken) ExpiresAt() time.Time {
 	return r.IssuedAt().Add(r.TTL)
 }
 
 // IsExpired returns true if the refresh token has expired.
-func (r *RefreshToken[T]) IsExpired() bool {
+func (r *RefreshToken) IsExpired() bool {
 	if time.Now().After(r.ExpiresAt()) {
 		return true
 	}
@@ -52,7 +52,7 @@ func (r *RefreshToken[T]) IsExpired() bool {
 }
 
 // IsRevoked returns true if the refresh token has been revoked.
-func (r *RefreshToken[T]) IsRevoked() bool {
+func (r *RefreshToken) IsRevoked() bool {
 	if r.IssuedAt().After(r.RevokedAt) {
 		return true
 	}

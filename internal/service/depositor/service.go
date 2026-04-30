@@ -8,8 +8,6 @@ import (
 	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
-	"github.com/oleshko-g/gophkeeper/internal/storage/model"
-	"github.com/oleshko-g/gophkeeper/internal/transform"
 	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 )
 
@@ -45,43 +43,37 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 		return nil, err
 	}
 
-	rt := model.RefreshToken{
-		PubKeyID:     pubKeyID,
-		RefreshToken: uuidv7.NewString(),
+	rt := depositor.RefreshToken{
+		PubKeyID: uuidv7.FromString(pubKeyID),
+		ID:       uuidv7.New(),
+		TTL:      s.refreshTokenTTL,
 	}
 	err = s.Depositor.StoreRefreshToken(ctx, rt)
 	if err != nil {
 		return nil, err
 	}
-	drt := depositor.RefreshToken[uuidv7.UUID]{
-		PubKeyID: pubKeyID,
-		ID:       uuidv7.New(),
-		TTL:      s.refreshTokenTTL,
-	}
-
-	_ = drt
-	return &pb.RegisterResponse{RefreshToken: &rt.RefreshToken}, nil
+	return nil, nil
 }
 
 // Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
 // The owner of the authentication token can then [Connect] to [KeeperService]
-func (s *Service) Authorize(ctx context.Context, in *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error) {
-	rt, err := s.Depositor.GetRefreshToken(ctx, in.GetRefreshToken())
-	if err != nil {
-		return nil, err
-	}
+// func (s *Service) Authorize(ctx context.Context, in *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error) {
+// 	rt, err := s.Depositor.GetRefreshToken(ctx, in.GetRefreshToken())
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	_ = rt
-	// if revoked return service.Err
+// 	_ = rt
+// 	// if revoked return service.Err
 
-	// if expired return service.Err
+// 	// if expired return service.Err
 
-	// var a authToken
-	// make auth token
-	// return a
+// 	// var a authToken
+// 	// make auth token
+// 	// return a
 
-	return &pb.AuthorizeResponse{AuthToken: transform.ValueToPtr("")}, nil
-}
+// 	return &pb.AuthorizeResponse{AuthToken: transform.ValueToPtr("")}, nil
+// }
 
 // // Connect creates a new [Session] for an [Authorize]d client app.
 // // The holder of the session can then make requests to [KeeperService]

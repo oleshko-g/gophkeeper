@@ -5,7 +5,7 @@ package storage
 
 import (
 	"context"
-	"github.com/oleshko-g/gophkeeper/internal/storage/model"
+	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
 	"sync"
 )
 
@@ -19,13 +19,10 @@ var _ Depositor = &DepositorMock{}
 //
 //		// make and configure a mocked Depositor
 //		mockedDepositor := &DepositorMock{
-//			GetRefreshTokenFunc: func(ctx context.Context, id string) (*model.RefreshToken, error) {
-//				panic("mock out the GetRefreshToken method")
-//			},
 //			StorePubKeyFunc: func(ctx context.Context, pubKey string) (string, error) {
 //				panic("mock out the StorePubKey method")
 //			},
-//			StoreRefreshTokenFunc: func(contextMoqParam context.Context, refreshToken model.RefreshToken) error {
+//			StoreRefreshTokenFunc: func(contextMoqParam context.Context, refreshToken depositor.RefreshToken) error {
 //				panic("mock out the StoreRefreshToken method")
 //			},
 //		}
@@ -35,24 +32,14 @@ var _ Depositor = &DepositorMock{}
 //
 //	}
 type DepositorMock struct {
-	// GetRefreshTokenFunc mocks the GetRefreshToken method.
-	GetRefreshTokenFunc func(ctx context.Context, id string) (*model.RefreshToken, error)
-
 	// StorePubKeyFunc mocks the StorePubKey method.
 	StorePubKeyFunc func(ctx context.Context, pubKey string) (string, error)
 
 	// StoreRefreshTokenFunc mocks the StoreRefreshToken method.
-	StoreRefreshTokenFunc func(contextMoqParam context.Context, refreshToken model.RefreshToken) error
+	StoreRefreshTokenFunc func(contextMoqParam context.Context, refreshToken depositor.RefreshToken) error
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// GetRefreshToken holds details about calls to the GetRefreshToken method.
-		GetRefreshToken []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// ID is the id argument value.
-			ID string
-		}
 		// StorePubKey holds details about calls to the StorePubKey method.
 		StorePubKey []struct {
 			// Ctx is the ctx argument value.
@@ -65,48 +52,11 @@ type DepositorMock struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// RefreshToken is the refreshToken argument value.
-			RefreshToken model.RefreshToken
+			RefreshToken depositor.RefreshToken
 		}
 	}
-	lockGetRefreshToken   sync.RWMutex
 	lockStorePubKey       sync.RWMutex
 	lockStoreRefreshToken sync.RWMutex
-}
-
-// GetRefreshToken calls GetRefreshTokenFunc.
-func (mock *DepositorMock) GetRefreshToken(ctx context.Context, id string) (*model.RefreshToken, error) {
-	if mock.GetRefreshTokenFunc == nil {
-		panic("DepositorMock.GetRefreshTokenFunc: method is nil but Depositor.GetRefreshToken was just called")
-	}
-	callInfo := struct {
-		Ctx context.Context
-		ID  string
-	}{
-		Ctx: ctx,
-		ID:  id,
-	}
-	mock.lockGetRefreshToken.Lock()
-	mock.calls.GetRefreshToken = append(mock.calls.GetRefreshToken, callInfo)
-	mock.lockGetRefreshToken.Unlock()
-	return mock.GetRefreshTokenFunc(ctx, id)
-}
-
-// GetRefreshTokenCalls gets all the calls that were made to GetRefreshToken.
-// Check the length with:
-//
-//	len(mockedDepositor.GetRefreshTokenCalls())
-func (mock *DepositorMock) GetRefreshTokenCalls() []struct {
-	Ctx context.Context
-	ID  string
-} {
-	var calls []struct {
-		Ctx context.Context
-		ID  string
-	}
-	mock.lockGetRefreshToken.RLock()
-	calls = mock.calls.GetRefreshToken
-	mock.lockGetRefreshToken.RUnlock()
-	return calls
 }
 
 // StorePubKey calls StorePubKeyFunc.
@@ -146,13 +96,13 @@ func (mock *DepositorMock) StorePubKeyCalls() []struct {
 }
 
 // StoreRefreshToken calls StoreRefreshTokenFunc.
-func (mock *DepositorMock) StoreRefreshToken(contextMoqParam context.Context, refreshToken model.RefreshToken) error {
+func (mock *DepositorMock) StoreRefreshToken(contextMoqParam context.Context, refreshToken depositor.RefreshToken) error {
 	if mock.StoreRefreshTokenFunc == nil {
 		panic("DepositorMock.StoreRefreshTokenFunc: method is nil but Depositor.StoreRefreshToken was just called")
 	}
 	callInfo := struct {
 		ContextMoqParam context.Context
-		RefreshToken    model.RefreshToken
+		RefreshToken    depositor.RefreshToken
 	}{
 		ContextMoqParam: contextMoqParam,
 		RefreshToken:    refreshToken,
@@ -169,11 +119,11 @@ func (mock *DepositorMock) StoreRefreshToken(contextMoqParam context.Context, re
 //	len(mockedDepositor.StoreRefreshTokenCalls())
 func (mock *DepositorMock) StoreRefreshTokenCalls() []struct {
 	ContextMoqParam context.Context
-	RefreshToken    model.RefreshToken
+	RefreshToken    depositor.RefreshToken
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		RefreshToken    model.RefreshToken
+		RefreshToken    depositor.RefreshToken
 	}
 	mock.lockStoreRefreshToken.RLock()
 	calls = mock.calls.StoreRefreshToken
