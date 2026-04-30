@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/internal/service"
@@ -13,6 +14,8 @@ import (
 	"github.com/oleshko-g/gophkeeper/internal/transform"
 )
 
+var refreshTokenTTL time.Duration = time.Hour * 24
+
 func TestRegister(t *testing.T) {
 	svc := depositor.New(&storage.DepositorMock{
 		StorePubKeyFunc: func(_ context.Context, _ string) (string, error) {
@@ -21,7 +24,7 @@ func TestRegister(t *testing.T) {
 		StoreRefreshTokenFunc: func(_ context.Context, _ model.RefreshToken) error {
 			return nil
 		},
-	})
+	}, refreshTokenTTL)
 	t.Run("Success", func(t *testing.T) {
 		_, err := svc.Register(
 			nil,
@@ -78,7 +81,7 @@ func TestRegister(t *testing.T) {
 }
 
 func TestAuthorize(t *testing.T) {
-	svc := depositor.New(&storage.DepositorMock{})
+	svc := depositor.New(&storage.DepositorMock{}, refreshTokenTTL)
 
 	t.Run("Success", func(t *testing.T) {
 		_, err := svc.Authorize(
@@ -104,7 +107,7 @@ func TestAuthorize(t *testing.T) {
 }
 
 func TestConnect(t *testing.T) {
-	svc := depositor.New(&storage.DepositorMock{})
+	svc := depositor.New(&storage.DepositorMock{}, refreshTokenTTL)
 
 	t.Run("Success", func(t *testing.T) {
 		_, err := svc.Connect(

@@ -3,6 +3,8 @@ package uuidv7
 
 import "github.com/google/uuid"
 
+type UUID = uuid.UUID
+
 // New generates a new UUID based on the v7 specification as a uuid.UUID.
 func New() uuid.UUID {
 	id, _ := uuid.NewV7()

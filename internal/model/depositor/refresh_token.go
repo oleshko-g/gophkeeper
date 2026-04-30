@@ -1,10 +1,14 @@
 // Package model contains the data models used by the gophkeeper application.
-package model
+package depositor
 
-import "time"
+import (
+	"time"
 
-// RefreshToken is the model of a refresh token
-// It enforces the relationship between a public key and a refresh token
+	"github.com/google/uuid"
+)
+
+// RefreshToken is the model of a refresh token.
+// It enforces the relationship between a public key and a refresh token.
 type RefreshToken[T RefreshTokenValue] struct {
 	// PubKeyID is the ID of the public key associated with the refresh token
 	PubKeyID string
@@ -21,12 +25,16 @@ type RefreshToken[T RefreshTokenValue] struct {
 //   - instantiated with [uuid.UUID].
 //   - populated with a UUID v7 value. So the ID iself could answer at what timestamp the refresh token has been issued.
 type RefreshTokenValue interface {
-	Time() time.Time
+	Time() uuid.Time
+	Version() uuid.Version
+	String() string
 }
 
 // IssuedAt returns the timestamp at which the refresh token has been issued.
+// It uses the UUID v7 timestamp to determine the issuance time.
 func (r *RefreshToken[T]) IssuedAt() time.Time {
-	return r.ID.Time()
+	sec, nsec := r.ID.Time().UnixTime()
+	return time.Date(0, 0, 0, 0, 0, int(sec), int(nsec), time.UTC)
 }
 
 // ExpiresAt returns the timestamp at which the refresh token expires.

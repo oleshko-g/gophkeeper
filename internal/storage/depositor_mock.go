@@ -5,9 +5,8 @@ package storage
 
 import (
 	"context"
-	"sync"
-
 	"github.com/oleshko-g/gophkeeper/internal/storage/model"
+	"sync"
 )
 
 // Ensure, that DepositorMock does implement Depositor.

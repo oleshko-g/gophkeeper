@@ -14,7 +14,7 @@ import (
 type DepositedDatum struct {
 	ID                uuid.UUID
 	DepositorPubKeyID uuid.UUID
-	CipheredData      []byte
+	EncryptedData     []byte
 }
 
 type DepositorApp struct {
@@ -24,10 +24,9 @@ type DepositorApp struct {
 }
 
 type DepositorAppSession struct {
+	// token is a UUID v7 value. It includes the timestamp at which was started
 	ID             uuid.UUID
 	DepositorAppID uuid.UUID
-	StartedAt      time.Time
-	ExpiredAt      sql.NullTime
 }
 
 type DepositorPubKey struct {
@@ -35,10 +34,10 @@ type DepositorPubKey struct {
 	PubKey string
 }
 
+// Refresh tokens for depositors
 type DepositorRefreshToken struct {
-	ID                uuid.UUID
-	Token             string
+	// token is a UUID v7 value. It includes the timestamp at which the token was issued
+	Token             uuid.UUID
 	DepositorPubKeyID uuid.UUID
-	IssuedAt          time.Time
 	RevokedAt         sql.NullTime
 }

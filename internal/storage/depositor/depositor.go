@@ -2,7 +2,6 @@ package depositor
 
 import (
 	"context"
-	"time"
 
 	"github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
@@ -47,10 +46,8 @@ func (d *Depositor) StorePubKey(ctx context.Context, pubKey string) (pub_key_id 
 
 func (d *Depositor) StoreRefreshToken(ctx context.Context, rt model.RefreshToken) error {
 	return d.InsertRefreshToken(ctx, queries.InsertRefreshTokenParams{
-		ID:                uuidv7.New(),
+		ID:                rt.RefreshToken,
 		DepositorPubKeyID: uuidv7.FromString(rt.PubKeyID),
-		Token:             rt.RefreshToken,
-		IssuedAt:          time.Now().UTC(),
 	})
 }
 

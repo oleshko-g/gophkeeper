@@ -35,7 +35,8 @@ func main() {
 	)
 
 	app.SetService(
-		depositor.New(app.Storage.Depositor),
+		depositor.New(app.Storage.Depositor,
+			app.Service.Config.RefreshTokenTTL),
 		keeper.New(app.Storage.Keeper),
 	)
 

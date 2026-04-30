@@ -8,39 +8,24 @@ package queries
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/google/uuid"
 )
 
 const insertRefreshToken = `-- name: InsertRefreshToken :exec
 INSERT INTO
-  depositor_refresh_tokens (
-    id,
-    token,
-    depositor_pub_key_id,
-    issued_at,
-    revoked_at
-  )
+  depositor_refresh_tokens (token, depositor_pub_key_id, revoked_at)
 VALUES
-  ($1, $2, $3, $4, $5)
+  ($1, $2, $3)
 `
 
 type InsertRefreshTokenParams struct {
-	ID                uuid.UUID
-	Token             string
+	Token             uuid.UUID
 	DepositorPubKeyID uuid.UUID
-	IssuedAt          time.Time
 	RevokedAt         sql.NullTime
 }
 
 func (q *Queries) InsertRefreshToken(ctx context.Context, arg InsertRefreshTokenParams) error {
-	_, err := q.db.Exec(ctx, insertRefreshToken,
-		arg.ID,
-		arg.Token,
-		arg.DepositorPubKeyID,
-		arg.IssuedAt,
-		arg.RevokedAt,
-	)
+	_, err := q.db.Exec(ctx, insertRefreshToken, arg.Token, arg.DepositorPubKeyID, arg.RevokedAt)
 	return err
 }

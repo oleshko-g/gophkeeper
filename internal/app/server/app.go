@@ -52,6 +52,14 @@ func (a *App) Configure(envFiles ...string) error {
 		return err
 	}
 
+	a.Service = &service.Service{
+		Config: &service.Config{},
+	}
+	err = envconfig.Process("", a.Service.Config)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
