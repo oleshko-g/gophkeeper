@@ -2,6 +2,7 @@ package depositor
 
 import (
 	"context"
+	"crypto/x509"
 	"encoding/pem"
 	"errors"
 
@@ -11,7 +12,7 @@ import (
 	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 )
 
-// Register registers an anonymous public key and returns a refresh token.
+// Register registers an anonymous RSA public key and returns a refresh token.
 // The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
 func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	if !in.ProtoReflect().IsValid() {
@@ -19,6 +20,14 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 	}
 
 	if err := in.Validate(); err != nil {
+		return nil, &service.Err{
+			SvcName: "Depositor",
+			Method:  "Register",
+			Err:     err,
+		}
+	}
+
+	if err := validateRSAPubKey(in.GetPubKey()); err != nil {
 		return nil, &service.Err{
 			SvcName: "Depositor",
 			Method:  "Register",
@@ -40,14 +49,20 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 	if err != nil {
 		return nil, err
 	}
-	return nil, nil
+	return &pb.RegisterResponse{RefreshToken: &rt.ID.String}, nil
 }
 
-func validatePubKey(s string) error {
+func validateRSAPubKey(s string) error {
 	pem, _ := pem.Decode([]byte(s))
 	if pem == nil {
 		return errDecodingPEM
 	}
+
+	_, err := x509.ParsePKCS1PublicKey(pem.Bytes)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -8,7 +8,8 @@ import (
 )
 
 type UUID[T timeID] struct {
-	Value T
+	Value  T
+	String string
 }
 
 // timeID is the interface that an ID value must implement.
@@ -24,7 +25,7 @@ type timeID interface {
 // New generates a new UUID based on the v7 specification as a uuid.UUID.
 func New() UUID[uuid.UUID] {
 	id, _ := uuid.NewV7()
-	return UUID[uuid.UUID]{Value: id}
+	return UUID[uuid.UUID]{Value: id, String: id.String()}
 }
 
 // Time returns the timestamp at which the Value has been created.

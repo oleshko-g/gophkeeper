@@ -7,7 +7,7 @@ type Err struct {
 }
 
 func (e *Err) Error() string {
-	return e.Error()
+	return "error " + e.SvcName + "." + e.Method + ": " + e.Err.Error()
 }
 
 func (e *Err) Unwrap() error {
