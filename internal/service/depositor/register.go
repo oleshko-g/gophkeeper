@@ -2,6 +2,7 @@ package depositor
 
 import (
 	"context"
+	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
@@ -58,9 +59,23 @@ func validateRSAPubKey(s string) error {
 		return errDecodingPEM
 	}
 
-	_, err := x509.ParsePKCS1PublicKey(pem.Bytes)
+	var (
+		pub any
+		err error
+	)
+
+	pub, err = x509.ParsePKCS1PublicKey(pem.Bytes)
 	if err != nil {
 		return err
+	}
+
+	pub, err = x509.ParsePKIXPublicKey(pem.Bytes)
+	if err != nil {
+		return err
+	}
+
+	if _, ok := pub.(*rsa.PublicKey); !ok {
+		return errNotRSA
 	}
 
 	return nil
@@ -68,4 +83,5 @@ func validateRSAPubKey(s string) error {
 
 var (
 	errDecodingPEM = errors.New("decoding PEM")
+	errNotRSA      = errors.New("not an RSA pub key")
 )
