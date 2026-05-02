@@ -59,17 +59,12 @@ func validateRSAPubKey(s string) error {
 		return errDecodingPEM
 	}
 
-	var (
-		pub any
-		err error
-	)
-
-	pub, err = x509.ParsePKCS1PublicKey(pem.Bytes)
-	if err != nil {
-		return err
+	_, err := x509.ParsePKCS1PublicKey(pem.Bytes)
+	if err == nil {
+		return nil
 	}
 
-	pub, err = x509.ParsePKIXPublicKey(pem.Bytes)
+	pub, err := x509.ParsePKIXPublicKey(pem.Bytes)
 	if err != nil {
 		return err
 	}
