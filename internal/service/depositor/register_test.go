@@ -57,29 +57,40 @@ func TestRegister(t *testing.T) {
 
 			testName = "Emtpy Request"
 			t.Run(testName, func(t *testing.T) {
-				tests[testName] = testCase{req: nil, wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation}}
+				tests[testName] = testCase{
+					req:     nil,
+					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
+				}
 			})
 
 			testName = "Nil Pub Key"
 			t.Run(testName, func(t *testing.T) {
-				tests[testName] = testCase{req: &pb.RegisterRequest{PubKey: nil},
-					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation}}
+				tests[testName] = testCase{
+					req:     &pb.RegisterRequest{PubKey: nil},
+					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
+				}
 			})
 
 			testName = "Empty Pub Key"
 			t.Run(testName, func(t *testing.T) {
-				tests[testName] = testCase{req: &pb.RegisterRequest{PubKey: transform.ValueToPtr("")},
-					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation}}
+				tests[testName] = testCase{
+					req:     &pb.RegisterRequest{PubKey: transform.ValueToPtr("")},
+					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
+				}
 			})
 
 			testName = "Empty PKIX Public Key"
 			t.Run(testName, func(t *testing.T) {
 				err := pem.Encode(stringBuilder, &pem.Block{Type: "PUBLIC KEY", Bytes: nil})
 				if err != nil {
-					t.Log("encoding")
+					t.Error(err)
 				}
-				tests[testName] = testCase{req: &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
-					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation}}
+
+				tests[testName] = testCase{
+					req:     &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
+					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
+				}
+
 				stringBuilder.Reset()
 			})
 
@@ -87,36 +98,45 @@ func TestRegister(t *testing.T) {
 			t.Run(testName, func(t *testing.T) {
 				err := pem.Encode(stringBuilder, &pem.Block{Type: "RSA PUBLIC KEY", Bytes: nil})
 				if err != nil {
-					t.Log("encoding")
+					t.Error(err)
 				}
-				tests[testName] = testCase{req: &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
-					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation}}
+
+				tests[testName] = testCase{
+					req:     &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
+					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
+				}
+
 				stringBuilder.Reset()
 			})
 
 			testName = "Valid PKIX Public Key"
 			t.Run(testName, func(t *testing.T) {
 				PKIXPublicKeyBytes, _ := x509.MarshalPKIXPublicKey(&priv.PublicKey)
-				err := pem.Encode(stringBuilder,
-					&pem.Block{Type: "PUBLIC KEY", Bytes: PKIXPublicKeyBytes})
+				err := pem.Encode(stringBuilder, &pem.Block{Type: "PUBLIC KEY", Bytes: PKIXPublicKeyBytes})
 				if err != nil {
-					t.Log("encoding")
+					t.Error(err)
 				}
+
 				tests[testName] = testCase{
-					req: &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())}, wantErr: nil}
+					req:     &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
+					wantErr: nil,
+				}
+
 				stringBuilder.Reset()
 			})
 
 			testName = "Valid PKCS1 Public Key"
 			t.Run(testName, func(t *testing.T) {
-				err = pem.Encode(stringBuilder,
-					&pem.Block{Type: "RSA PUBLIC KEY", Bytes: x509.MarshalPKCS1PublicKey(&priv.PublicKey)})
+				err = pem.Encode(stringBuilder, &pem.Block{Type: "RSA PUBLIC KEY", Bytes: x509.MarshalPKCS1PublicKey(&priv.PublicKey)})
 				if err != nil {
-					t.Log("encoding")
+					t.Error(err)
 				}
 
 				tests[testName] = testCase{
-					req: &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())}, wantErr: nil}
+					req:     &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
+					wantErr: nil,
+				}
+
 				stringBuilder.Reset()
 			})
 		})
