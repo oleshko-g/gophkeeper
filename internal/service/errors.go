@@ -12,6 +12,11 @@ type Err struct {
 	err     error
 }
 
+func WrapError(e *Err, err error) error {
+	e.err = err
+	return e
+}
+
 type ErrType string
 
 const (
@@ -21,24 +26,27 @@ const (
 )
 
 func (e *Err) Error() string {
+	if e == nil {
+		return errNil.Error()
+	}
+
 	if e.err == nil {
 		e.err = errNil
 	}
 
-	return fmt.Sprintf("error in %s.%s of type [%s]: %s", e.SvcName, e.Method, e.Type, e.err.Error())
+	return fmt.Sprintf("%s: %s", e.String(), e.err.Error())
 }
 
 func (e *Err) Unwrap() error {
 	return e.err
 }
 
-func WrapError(e *Err, err error) error {
-	e.err = err
-	return e
-}
+func (e *Err) String() string {
+	if e == nil {
+		return errNil.Error()
+	}
 
-// func (e *Err) String() string {
-// 	return e.Error()
-// }
+	return fmt.Sprintf("error in %s.%s of type [%s]", e.SvcName, e.Method, e.Type)
+}
 
 var errNil = errors.New("nil")

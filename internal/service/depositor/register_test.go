@@ -129,11 +129,11 @@ func TestRegister(t *testing.T) {
 				if test.wantErr != nil {
 					svcErr, ok := errors.AsType[*service.Err](err)
 					if !ok {
-						t.Fatalf("expected error %s, got %s", test.wantErr, err)
+						t.Fatalf("expected: %T, got: %T", test.wantErr, err)
 					}
 
 					if test.wantErr.Type != svcErr.Type {
-						t.Errorf("expected error type %s, got %s", test.wantErr, err)
+						t.Errorf("expected: %q, got: %q", test.wantErr.Type, svcErr.Type)
 					}
 				}
 			})
