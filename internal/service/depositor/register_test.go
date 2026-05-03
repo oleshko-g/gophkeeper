@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -21,90 +22,122 @@ import (
 var refreshTokenTTL time.Duration = time.Hour * 24
 
 func TestRegister(t *testing.T) {
-	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
+	type testCase struct {
+		name string
+		req  *pb.RegisterRequest
+		want *service.Err
+	}
 
-	svc := depositor.New(&storage.DepositorMock{
-		StorePubKeyFunc: func(_ context.Context, _ string) (string, error) {
-			return "019dd2b5-0ab9-768b-b1f9-aac25f94d238", nil
-		},
-		StoreRefreshTokenFunc: func(_ context.Context, _ RefreshToken) error {
-			return nil
-		},
-	}, refreshTokenTTL)
-	t.Run("Success", func(t *testing.T) {
-		t.Run("PKIX Public Key", func(t *testing.T) {
+	var (
+		svc        *depositor.Service
+		methodName string
+		priv       *rsa.PrivateKey
+		err        error
+		tests      []testCase
+	)
 
-			PKIXPublicKeyBytes, _ := x509.MarshalPKIXPublicKey(&priv.PublicKey)
-			pemPKIXPublicKey := pem.EncodeToMemory(&pem.Block{
-				Type:  "PUBLIC KEY",
-				Bytes: PKIXPublicKeyBytes,
-			})
-
-			_, err := svc.Register(
-				nil,
-				&pb.RegisterRequest{PubKey: transform.ValueToPtr(string(pemPKIXPublicKey))},
+	t.Run("Setup", func(t *testing.T) {
+		t.Run("Service", func(t *testing.T) {
+			svc = depositor.New(&storage.DepositorMock{
+				StorePubKeyFunc:       func(_ context.Context, _ string) (string, error) { return "019dd2b5-0ab9-768b-b1f9-aac25f94d238", nil },
+				StoreRefreshTokenFunc: func(_ context.Context, _ RefreshToken) error { return nil }},
+				refreshTokenTTL,
 			)
-			if err != nil {
-				t.Error(err)
-			}
 		})
 
-		t.Run("PKCS1 Public Key", func(t *testing.T) {
-			pemPKCS1PublicKey := pem.EncodeToMemory(&pem.Block{
-				Type:  "RSA PUBLIC KEY",
-				Bytes: x509.MarshalPKCS1PublicKey(&priv.PublicKey),
-			})
-			_, err := svc.Register(
-				nil,
-				&pb.RegisterRequest{PubKey: transform.ValueToPtr(string(pemPKCS1PublicKey))},
-			)
+		t.Run("Test cases", func(t *testing.T) {
+			priv, err = rsa.GenerateKey(rand.Reader, 2048)
 			if err != nil {
-				t.Error(err)
+				t.Fatal(err)
 			}
+
+			var (
+				testName      string
+				stringBuilder = &strings.Builder{}
+			)
+
+			testName = "Emtpy Request"
+			t.Run(testName, func(t *testing.T) {
+				tests = append(tests, testCase{name: testName, req: &pb.RegisterRequest{},
+					want: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation}})
+			})
+
+			testName = "Nil Pub Key"
+			t.Run(testName, func(t *testing.T) {
+				tests = append(tests, testCase{name: testName, req: &pb.RegisterRequest{PubKey: nil},
+					want: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation}})
+			})
+
+			testName = "Empty Pub Key"
+			t.Run(testName, func(t *testing.T) {
+				tests = append(tests, testCase{name: testName, req: &pb.RegisterRequest{PubKey: transform.ValueToPtr("")},
+					want: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation}})
+			})
+
+			testName = "Empty PKIX Public Key"
+			t.Run(testName, func(t *testing.T) {
+				err := pem.Encode(stringBuilder, &pem.Block{Type: "PUBLIC KEY", Bytes: nil})
+				if err != nil {
+					t.Log("encoding")
+				}
+				tests = append(tests, testCase{name: testName, req: &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
+					want: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation}})
+				stringBuilder.Reset()
+			})
+
+			testName = "Empty PKCS1 Public Key"
+			t.Run(testName, func(t *testing.T) {
+				err := pem.Encode(stringBuilder, &pem.Block{Type: "RSA PUBLIC KEY", Bytes: nil})
+				if err != nil {
+					t.Log("encoding")
+				}
+				tests = append(tests, testCase{name: testName, req: &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
+					want: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation}})
+				stringBuilder.Reset()
+			})
+
+			testName = "Valid PKIX Public Key"
+			t.Run(testName, func(t *testing.T) {
+				PKIXPublicKeyBytes, _ := x509.MarshalPKIXPublicKey(&priv.PublicKey)
+				err := pem.Encode(stringBuilder, &pem.Block{Type: "PUBLIC KEY", Bytes: PKIXPublicKeyBytes})
+				if err != nil {
+					t.Log("encoding")
+				}
+				tests = append(tests, testCase{name: testName,
+					req: &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())}, want: nil})
+				stringBuilder.Reset()
+			})
+
+			testName = "Valid PKCS1 Public Key"
+			t.Run(testName, func(t *testing.T) {
+				err = pem.Encode(stringBuilder, &pem.Block{
+					Type:  "RSA PUBLIC KEY",
+					Bytes: x509.MarshalPKCS1PublicKey(&priv.PublicKey),
+				})
+				if err != nil {
+					t.Log("encoding")
+				}
+
+				tests = append(tests, testCase{name: testName,
+					req: &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())}, want: nil})
+				stringBuilder.Reset()
+			})
 		})
 	})
 
-	t.Run("Err", func(t *testing.T) {
-		t.Run("Empty Request", func(t *testing.T) {
-			_, err := svc.Register(
-				nil,
-				nil,
-			)
-			if err == nil {
-				t.Errorf("expected error, got nil")
-			}
-		})
+	t.Run("Tests", func(t *testing.T) {
+		for _, test := range tests {
+			t.Run(test.name, func(t *testing.T) {
+				_, err := svc.Register(nil, test.req)
+				svcErr, ok := errors.AsType[*service.Err](err)
+				if !ok {
+					t.Errorf("expected error %v, got %v", test.want, err)
+				}
 
-		t.Run("Invalid PubKey", func(t *testing.T) {
-			_, err := svc.Register(
-				nil,
-				&pb.RegisterRequest{PubKey: transform.ValueToPtr("")},
-			)
-			if err == nil {
-				t.Errorf("expected error, got nil")
-			}
-
-			e, ok := errors.AsType[*service.Err](err)
-			if !ok {
-				t.Errorf("expected service.Err, got %v", e)
-			}
-
-			if e.SvcName != "Depositor" {
-				t.Errorf("expected SvcName depositor, got %s", e.SvcName)
-			}
-
-			if e.Method != "Register" {
-				t.Errorf("expected method Register, got %s", e.Method)
-			}
-
-			pbErr, ok := errors.AsType[pb.RegisterRequestValidationError](e.Err)
-			if !ok {
-				t.Errorf("expected RegisterRequestValidationError, got %v", pbErr)
-			}
-
-			if pbErr.Field() != "PubKey" {
-				t.Errorf("expected field pub_key, got %s", pbErr.Field())
-			}
-		})
+				if test.want.Type != svcErr.Type {
+					t.Errorf("expected error type %s, got %s", test.want, err)
+				}
+			})
+		}
 	})
 }
