@@ -2,4 +2,4 @@ package depositor
 
 import "errors"
 
-var errRegisterRequestIsEmpty = errors.New("register request is empty")
+var errRequestEmpty = errors.New("request is empty")

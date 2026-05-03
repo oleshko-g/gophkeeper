@@ -22,6 +22,10 @@ type Service struct {
 	pb.UnimplementedDepositorServiceServer
 }
 
+func (s *Service) wrapError(methodName string, t service.ErrType, err error) error {
+	return service.WrapError(&service.Err{SvcName: s.Name, Method: methodName, Type: t}, err)
+}
+
 // Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
 // The owner of the authentication token can then [Connect] to [KeeperService]
 // func (s *Service) Authorize(ctx context.Context, in *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error) {

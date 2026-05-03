@@ -1,12 +1,15 @@
 package service
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Err struct {
 	SvcName string
 	Method  string
 	Type    ErrType
-	Err     error
+	err     error
 }
 
 type ErrType string
@@ -18,9 +21,24 @@ const (
 )
 
 func (e *Err) Error() string {
-	return fmt.Sprintf("error in %s.%s of type [%s]:%s", e.SvcName, e.Method, e.Type, e.Err.Error())
+	if e.err == nil {
+		e.err = errNil
+	}
+
+	return fmt.Sprintf("error in %s.%s of type [%s]: %s", e.SvcName, e.Method, e.Type, e.err.Error())
 }
 
 func (e *Err) Unwrap() error {
-	return e.Err
+	return e.err
 }
+
+func WrapError(e *Err, err error) error {
+	e.err = err
+	return e
+}
+
+// func (e *Err) String() string {
+// 	return e.Error()
+// }
+
+var errNil = errors.New("nil")
