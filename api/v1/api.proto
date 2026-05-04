@@ -111,7 +111,7 @@ message ListDataRequest {
 message ListDataResponse {}
 
 message Depositor {
-  string id = 1;
+  string name = 1;
 }
 
 message Session {
