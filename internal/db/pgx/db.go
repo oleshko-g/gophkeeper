@@ -35,10 +35,10 @@ func newConn(cfg *Config) (*pgx.Conn, error) {
 	ctx := context.Background()
 
 	defaultDB, err := pgx.Connect(ctx, cfg.PostgresDefaultDSN)
-	defer defaultDB.Close(ctx)
 	if err != nil {
 		return nil, err
 	}
+	defer defaultDB.Close(ctx)
 
 	q := fmt.Sprintf("CREATE DATABASE %s;", cfg.GophkeeperDBName)
 	_, err = defaultDB.Exec(ctx, q)

@@ -32,7 +32,7 @@ func New() UUID[uuid.UUID] {
 // It uses the UUID v7 timestamp to determine the issuance time.
 func (u *UUID[T]) Time() time.Time {
 	sec, nsec := u.Value.Time().UnixTime()
-	return time.Date(0, 0, 0, 0, 0, int(sec), int(nsec), time.UTC)
+	return time.Date(1970, 01, 01, 0, 0, int(sec), int(nsec), time.UTC)
 }
 
 func FromString(s string) UUID[uuid.UUID] {
