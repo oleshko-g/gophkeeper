@@ -21,7 +21,7 @@ var (
 			Short: "Gets the refresh token",
 			Run: func(cmd *cobra.Command, args []string) {
 				for input := range transform.StringFromReader(cmd.InOrStdin()) {
-					fmt.Print(input)
+					fmt.Println(input)
 				}
 			},
 		},
@@ -38,6 +38,7 @@ var (
 
 func init() {
 	depositor.AddCommand(cmds...)
+	cobra.OnInitialize(initConfig)
 }
 
 func Execute() error {
