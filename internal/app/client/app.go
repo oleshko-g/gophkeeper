@@ -1,7 +1,10 @@
 package client
 
 import (
+	"fmt"
+
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
+	"github.com/oleshko-g/gophkeeper/internal/transform"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -14,8 +17,13 @@ var (
 	}
 	cmds = []*cobra.Command{
 		&cobra.Command{
-			Use:   "register {-p rsa_public_key}",
+			Use:   "register",
 			Short: "Gets the refresh token",
+			Run: func(cmd *cobra.Command, args []string) {
+				for input := range transform.StringFromReader(cmd.InOrStdin()) {
+					fmt.Print(input)
+				}
+			},
 		},
 		&cobra.Command{
 			Use:   "authorize",
