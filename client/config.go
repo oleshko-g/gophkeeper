@@ -1,10 +1,30 @@
-package client
+package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path"
 )
+
+func newConfig() (config, error) {
+	cfgData, err := os.ReadFile(path.Join(cfgDir, ".cfg"))
+	if err != nil {
+		return config{}, err
+	}
+
+	var cfg config
+	err = json.Unmarshal(cfgData, &cfg)
+	if err != nil {
+		return config{}, err
+	}
+
+	return cfg, nil
+}
+
+type config struct {
+	GophKeeperURL string `json:"keeper_url"`
+}
 
 var cfgDir string
 
@@ -19,6 +39,13 @@ func initConfig() {
 	if err != nil {
 		panic(err)
 	}
+
+	cfg, err := newConfig()
+	a.config = cfg
+	if err != nil {
+		panic(err)
+	}
+
 	fmt.Println(cfgDir)
 }
 
