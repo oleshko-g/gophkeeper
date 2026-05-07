@@ -4,19 +4,22 @@ import (
 	"fmt"
 	"os"
 	"path"
-
-	"github.com/spf13/viper"
 )
 
 var cfgDir string
 
 func initConfig() {
-	cfgDir, err := os.UserConfigDir()
+	userCfgDir, err := os.UserConfigDir()
 	if err != nil {
 		panic(err)
 	}
-	viper.SetConfigFile(path.Join(cfgDir, "gophkeeper/config.yaml"))
-	fmt.Println(viper.ConfigFileUsed())
+	cfgDir := path.Join(userCfgDir, "gophkeeper")
+
+	err = os.MkdirAll(cfgDir, dirPerm)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(cfgDir)
 }
 
 func initConfigFile(path string) error {
@@ -33,4 +36,5 @@ const (
 	// group: _     Read _
 	// other: _     Read _
 	filePerm os.FileMode = 0o644
+	dirPerm  os.FileMode = 0o700
 )
