@@ -10,50 +10,41 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func init() {
-	cobra.OnInitialize(initConfig)
-	d, err := new(a.config.GophKeeperURL)
-	if err != nil {
-		panic(err)
-	}
-	a.depositor = d
-	a.cmd.AddCommand(cmds...)
-}
-
-type app struct {
+var app = struct {
+	// state is used to operate the app flow
 	state appState
+
+	// cfgDir is the path to the app's data
+	cfgDir string
+
+	// config stores the config values read from the ".cfg" file stored in [app.cfgDir]
 	config
+
+	// cmd is the root command
+	// during init sub commands are added based on the current [app.state]
 	cmd *cobra.Command
-	*depositor
+
+	// is the gRPC interface to access the gophkeeper server
+	*client
+}{
+	cmd: &cobra.Command{
+		Use:   "depositor {register | authorize | connect }",
+		Short: "The client app for gophkeeper",
+	},
 }
 
 type appState int
 
 const (
-	initializedCfgDir appState = iota
-	readConfig
-	registered
-	authorized
-	connected
+	cfgDirInitialized appState = iota
+	cfgRead
+	pubKeyRegistered
+	appAuthorized
+	appConnected
 )
 
 var (
-	a = app{
-		cmd: &cobra.Command{
-			Use:   "depositor {register | authorize | connect }",
-			Short: "The client app for gophkeeper",
-		},
-	}
 	cmds = []*cobra.Command{
-		&cobra.Command{
-			Use:   "register",
-			Short: "Gets the refresh token",
-			Run: func(cmd *cobra.Command, args []string) {
-				for input := range transform.StringFromReader(cmd.InOrStdin()) {
-					fmt.Println(input)
-				}
-			},
-		},
 		&cobra.Command{
 			Use:   "authorize",
 			Short: "Authorizes the depositor with the refresh token gotten from register command",
@@ -65,11 +56,45 @@ var (
 	}
 )
 
-func main() {
-	a.cmd.Execute()
+func init() {
+	defer func() {
+		if v := recover(); v != nil {
+			err, ok := v.(error)
+			if !ok {
+				panic(v)
+			}
+			cobra.CheckErr(fmt.Errorf("error during app initialization %w", err))
+		}
+	}()
+
+	cobra.OnInitialize(
+		initConfigDir,
+		initConfig,
+	)
+
+	switch app.state {
+	case cfgRead:
+		app.cmd.AddCommand(register)
+	}
 }
 
-func new(gophKeeperURL string) (*depositor, error) {
+var (
+	register = &cobra.Command{
+		Use:   "register",
+		Short: "Gets the refresh token",
+		Run: func(cmd *cobra.Command, args []string) {
+			for input := range transform.StringFromReader(cmd.InOrStdin()) {
+				fmt.Println(input)
+			}
+		},
+	}
+)
+
+func main() {
+	app.cmd.Execute()
+}
+
+func newClient(gophKeeperURL string) (*client, error) {
 	conn, err := grpc.NewClient(
 		gophKeeperURL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -78,13 +103,13 @@ func new(gophKeeperURL string) (*depositor, error) {
 		return nil, err
 	}
 
-	return &depositor{
+	return &client{
 		DepositorServiceClient: pb.NewDepositorServiceClient(conn),
 		KeeperServiceClient:    pb.NewKeeperServiceClient(conn),
 	}, nil
 }
 
-type depositor struct {
+type client struct {
 	pb.DepositorServiceClient
 	pb.KeeperServiceClient
 }
