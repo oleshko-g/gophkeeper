@@ -25,28 +25,50 @@ func initConfigDir() {
 }
 
 func initConfig() {
-	cfgData, err := os.ReadFile(path.Join(app.cfgDir, ".cfg"))
+	cfgFile, err := openFileForRW(path.Join(app.cfgDir, ".cfg"))
 	if err != nil {
 		panic(err)
 	}
 
-	var cfg config
-	err = json.Unmarshal(cfgData, &cfg)
+	cfgData, err := os.ReadFile(cfgFile.Name())
 	if err != nil {
 		panic(err)
 	}
+
+	if len(cfgData) == 0 {
+		cfgData, err = json.Marshal(config{
+			GophKeeperURL: ":8080",
+		})
+		if err != nil {
+			panic(err)
+		}
+
+		_, err = cfgFile.Write(cfgData)
+		if err != nil {
+			panic(err)
+		}
+		app.state = cfgFileInitialized
+	}
+
+	err = json.Unmarshal(cfgData, app.config)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(app.config)
+	app.state = cfgFileInitialized
 }
 
 type config struct {
 	GophKeeperURL string `json:"keeper_url"`
 }
 
-func openCfgFile(path string) error {
-	_, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, filePerm)
+func openFileForRW(path string) (*os.File, error) {
+	cfgFile, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, filePerm)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	return cfgFile, nil
 }
 
 // UNIX permissions
@@ -54,6 +76,6 @@ const (
 	// user:  Write Read _
 	// group: _     Read _
 	// other: _     Read _
-	filePerm os.FileMode = 0o644
+	filePerm os.FileMode = 0o600
 	dirPerm  os.FileMode = 0o700
 )

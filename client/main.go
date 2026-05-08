@@ -18,7 +18,7 @@ var app = struct {
 	cfgDir string
 
 	// config stores the config values read from the ".cfg" file stored in [app.cfgDir]
-	config
+	*config
 
 	// cmd is the root command
 	// during init sub commands are added based on the current [app.state]
@@ -31,13 +31,14 @@ var app = struct {
 		Use:   "depositor {register | authorize | connect }",
 		Short: "The client app for gophkeeper",
 	},
+	config: &config{},
 }
 
 type appState int
 
 const (
 	cfgDirInitialized appState = iota
-	cfgRead
+	cfgFileInitialized
 	pubKeyRegistered
 	appAuthorized
 	appConnected
@@ -72,10 +73,7 @@ func init() {
 		initConfig,
 	)
 
-	switch app.state {
-	case cfgRead:
-		app.cmd.AddCommand(register)
-	}
+	app.cmd.AddCommand(register)
 }
 
 var (
@@ -91,7 +89,10 @@ var (
 )
 
 func main() {
-	app.cmd.Execute()
+	err := app.cmd.Execute()
+	if err != nil {
+		cobra.CheckErr(err)
+	}
 }
 
 func newClient(gophKeeperURL string) (*client, error) {
