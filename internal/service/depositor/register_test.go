@@ -16,7 +16,6 @@ import (
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/service/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
-	"github.com/oleshko-g/gophkeeper/internal/transform"
 )
 
 var refreshTokenTTL time.Duration = time.Hour * 24
@@ -74,7 +73,7 @@ func TestRegister(t *testing.T) {
 			testName = "Empty Pub Key"
 			t.Run(testName, func(t *testing.T) {
 				tests[testName] = testCase{
-					req:     &pb.RegisterRequest{PubKey: transform.ValueToPtr("")},
+					req:     &pb.RegisterRequest{PubKey: new("")},
 					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
 				}
 			})
@@ -87,7 +86,7 @@ func TestRegister(t *testing.T) {
 				}
 
 				tests[testName] = testCase{
-					req:     &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
+					req:     &pb.RegisterRequest{PubKey: new(stringBuilder.String())},
 					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
 				}
 
@@ -102,7 +101,7 @@ func TestRegister(t *testing.T) {
 				}
 
 				tests[testName] = testCase{
-					req:     &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
+					req:     &pb.RegisterRequest{PubKey: new(stringBuilder.String())},
 					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
 				}
 
@@ -118,7 +117,7 @@ func TestRegister(t *testing.T) {
 				}
 
 				tests[testName] = testCase{
-					req:     &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
+					req:     &pb.RegisterRequest{PubKey: new(stringBuilder.String())},
 					wantErr: nil,
 				}
 
@@ -133,7 +132,7 @@ func TestRegister(t *testing.T) {
 				}
 
 				tests[testName] = testCase{
-					req:     &pb.RegisterRequest{PubKey: transform.ValueToPtr(stringBuilder.String())},
+					req:     &pb.RegisterRequest{PubKey: new(stringBuilder.String())},
 					wantErr: nil,
 				}
 
