@@ -88,7 +88,8 @@ func (a appState) String() string {
 var (
 	register = &cobra.Command{
 		Use:      "register",
-		Short:    "Gets the refresh token",
+		Short:    "Registers the client app on the gophkeeper server",
+		Long:     "Generates a new RSA key pair and registers the client app on the gophkeeper server",
 		RunE:     app.registerRunE,
 		PostRunE: app.updateConfig,
 	}
@@ -97,12 +98,14 @@ var (
 		Short: "Authorizes the depositor with the refresh token gotten from register command",
 		Run: func(cmd *cobra.Command, args []string) {
 		},
+		PostRunE: app.updateConfig,
 	}
 	connect = &cobra.Command{
 		Use:   "connect",
 		Short: "Connect the depositor with the authentication token gotten from the authorize command",
 		Run: func(cmd *cobra.Command, args []string) {
 		},
+		PostRunE: app.updateConfig,
 	}
 	upload = &cobra.Command{
 		Use:   "upload",
@@ -147,19 +150,15 @@ func init() {
 	switch app.state {
 	case configSet:
 		app.cmd.AddCommand(register)
-		app.cmd.Use = "depositor {register}"
 		return
 	case pubKeyRegistered:
 		app.cmd.AddCommand(authorize)
-		app.cmd.Use = "depositor {authorize}"
 		return
 	case appAuthorized:
 		app.cmd.AddCommand(connect)
-		app.cmd.Use = "depositor {connect}"
 		return
 	case appConnected:
 		app.cmd.AddCommand(upload, list, delete)
-		app.cmd.Use = "depositor {upload | list | delete}"
 	}
 }
 
