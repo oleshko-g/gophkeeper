@@ -24,6 +24,9 @@ type a struct {
 	// cfgDir is the path to the app's data
 	cfgDir string
 
+	// cfgFilePath is the path to the ".cfg" file stored in [app.cfgDir]
+	cfgFilePath string
+
 	// config stores the config values read from the ".cfg" file stored in [app.cfgDir]
 	*config
 
@@ -63,11 +66,29 @@ const (
 	appConnected
 )
 
+func (a appState) String() string {
+	switch a {
+	case 1:
+		return "cfgDirInitialized"
+	case 2:
+		return "configSet"
+	case 3:
+		return "pubKeyRegistered"
+	case 4:
+		return "appAuthorized"
+	case 5:
+		return "appConnected"
+	default:
+		return "unknown"
+	}
+}
+
 var (
 	register = &cobra.Command{
-		Use:   "register",
-		Short: "Gets the refresh token",
-		RunE:  app.registerRunE(),
+		Use:      "register",
+		Short:    "Gets the refresh token",
+		RunE:     app.registerRunE(),
+		PostRunE: app.updateConfig,
 	}
 	authorize = &cobra.Command{
 		Use:   "authorize",
@@ -109,6 +130,10 @@ func init() {
 			}
 			cobra.CheckErr(fmt.Errorf("error during app initialization %w", err))
 		}
+	}()
+
+	defer func() {
+		app.logger.Info(fmt.Sprintf("app state after init is %q", app.state))
 	}()
 
 	app.initConfigDir()
@@ -171,10 +196,13 @@ type config struct {
 
 // initConfig initializes the configuration for the [app].
 func (app *a) initConfig() {
-	cfgFile, err := os.OpenFile(path.Join(app.cfgDir, ".cfg"), os.O_RDWR|os.O_CREATE, filePerm)
+	app.cfgFilePath = path.Join(app.cfgDir, ".cfg")
+
+	cfgFile, err := os.OpenFile(app.cfgFilePath, os.O_RDWR|os.O_CREATE, filePerm)
 	if err != nil {
 		panic(err)
 	}
+	defer cfgFile.Close()
 
 	cfgData, err := os.ReadFile(cfgFile.Name())
 	if err != nil {
@@ -183,7 +211,7 @@ func (app *a) initConfig() {
 
 	if len(cfgData) == 0 {
 		cfgData, err = json.Marshal(config{
-			GophKeeperURL: ":8080",
+			GophKeeperURL: ":8081",
 		})
 		if err != nil {
 			panic(err)
@@ -201,6 +229,10 @@ func (app *a) initConfig() {
 		panic(err)
 	}
 	app.logger.Info(fmt.Sprintf("config is initialized with values %#v", app.config))
+	if app.config.RegisteredPubKey != nil {
+		app.state = pubKeyRegistered
+		return
+	}
 	app.state = configSet
 }
 
@@ -238,4 +270,18 @@ func main() {
 	if err != nil {
 		cobra.CheckErr(err)
 	}
+}
+
+func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
+	cfgData, err := json.Marshal(app.config)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(app.cfgFilePath, cfgData, filePerm)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

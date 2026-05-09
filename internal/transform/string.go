@@ -20,3 +20,8 @@ func StringFromReader(r io.Reader) iter.Seq[string] {
 		yield(b.String()[:n])
 	}
 }
+
+func StringPtrFromBytes(b []byte) *string {
+	s := string(b)
+	return &s
+}
