@@ -9,14 +9,13 @@ import (
 	"log/slog"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
-	"github.com/oleshko-g/gophkeeper/internal/transform"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// app is the main application struct that holds the app state and configuration.
-var app = struct {
+// a is the main application struct that holds the application state and configuration.
+type a struct {
 	logger *slog.Logger
 
 	// state is used to operate the app flow
@@ -34,9 +33,10 @@ var app = struct {
 
 	// is the gRPC interface to access the gophkeeper server
 	*client
-}{
+}
+
+var app = a{
 	cmd: &cobra.Command{
-		Use:   "depositor {register | authorize | connect }",
 		Short: "The client app for gophkeeper",
 	},
 	config: &config{},
@@ -67,11 +67,7 @@ var (
 	register = &cobra.Command{
 		Use:   "register",
 		Short: "Gets the refresh token",
-		Run: func(cmd *cobra.Command, args []string) {
-			for input := range transform.StringFromReader(cmd.InOrStdin()) {
-				fmt.Println(input)
-			}
-		},
+		RunE:  app.registerRunE(),
 	}
 	authorize = &cobra.Command{
 		Use:   "authorize",
@@ -115,11 +111,11 @@ func init() {
 		}
 	}()
 
-	initConfigDir()
+	app.initConfigDir()
 
-	initConfig()
+	app.initConfig()
 
-	initClient()
+	app.initClient()
 
 	switch app.state {
 	case configSet:
@@ -135,17 +131,13 @@ func init() {
 		app.cmd.Use = "depositor {connect}"
 		return
 	case appConnected:
-		app.cmd.AddCommand(
-			list,
-			upload,
-			delete,
-		)
+		app.cmd.AddCommand(upload, list, delete)
 		app.cmd.Use = "depositor {upload | list | delete}"
 	}
 }
 
 // initConfigDir initializes the configuration directory for the [app].
-func initConfigDir() {
+func (app *a) initConfigDir() {
 	userCfgDir, err := os.UserConfigDir()
 	if err != nil {
 		panic(err)
@@ -178,7 +170,7 @@ type config struct {
 }
 
 // initConfig initializes the configuration for the [app].
-func initConfig() {
+func (app *a) initConfig() {
 	cfgFile, err := os.OpenFile(path.Join(app.cfgDir, ".cfg"), os.O_RDWR|os.O_CREATE, filePerm)
 	if err != nil {
 		panic(err)
@@ -213,7 +205,7 @@ func initConfig() {
 }
 
 // initClient initializes the client for the gophkeeper server.
-func initClient() {
+func (app *a) initClient() {
 	client, err := newClient(app.config.GophKeeperURL)
 	if err != nil {
 		panic(err)
