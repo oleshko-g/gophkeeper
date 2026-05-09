@@ -238,6 +238,20 @@ func (app *a) initConfig() {
 	app.state = configSet
 }
 
+func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
+	cfgData, err := json.Marshal(app.config)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(app.cfgFilePath, cfgData, filePerm)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // initClient initializes the client for the gophkeeper server.
 func (app *a) initClient() {
 	client, err := newClient(app.config.GophKeeperURL)
@@ -276,18 +290,4 @@ func main() {
 	if err != nil {
 		cobra.CheckErr(err)
 	}
-}
-
-func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
-	cfgData, err := json.Marshal(app.config)
-	if err != nil {
-		return err
-	}
-
-	err = os.WriteFile(app.cfgFilePath, cfgData, filePerm)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
