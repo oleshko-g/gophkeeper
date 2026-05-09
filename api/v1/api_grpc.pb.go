@@ -8,7 +8,6 @@ package pb
 
 import (
 	context "context"
-
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -24,7 +23,6 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	DepositorService_Register_FullMethodName  = "/gophkeeper.api.v1.DepositorService/Register"
 	DepositorService_Authorize_FullMethodName = "/gophkeeper.api.v1.DepositorService/Authorize"
-	DepositorService_Connect_FullMethodName   = "/gophkeeper.api.v1.DepositorService/Connect"
 )
 
 // DepositorServiceClient is the client API for DepositorService service.
@@ -34,17 +32,13 @@ const (
 // DepositorService is the interface to:
 //   - [Register] public keys of the Keeper users
 //   - [Authorize] their client apps
-//   - and [Connect] through the authorized apps to [KeeperService]
 type DepositorServiceClient interface {
 	// Register registers an anonymous public key and returns a refresh token.
 	// The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	// Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
-	// The owner of the authentication token can then [Connect] to [KeeperService]
+	// The owner of the authentication token can then make requests to [KeeperService]
 	Authorize(ctx context.Context, in *AuthorizeRequest, opts ...grpc.CallOption) (*AuthorizeResponse, error)
-	// Connect creates a new [Session] for an [Authorize]d client app.
-	// The holder of the session can then make requests to [KeeperService]
-	Connect(ctx context.Context, in *ConnectRequest, opts ...grpc.CallOption) (*ConnectResponse, error)
 }
 
 type depositorServiceClient struct {
@@ -75,16 +69,6 @@ func (c *depositorServiceClient) Authorize(ctx context.Context, in *AuthorizeReq
 	return out, nil
 }
 
-func (c *depositorServiceClient) Connect(ctx context.Context, in *ConnectRequest, opts ...grpc.CallOption) (*ConnectResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ConnectResponse)
-	err := c.cc.Invoke(ctx, DepositorService_Connect_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // DepositorServiceServer is the server API for DepositorService service.
 // All implementations should embed UnimplementedDepositorServiceServer
 // for forward compatibility.
@@ -92,17 +76,13 @@ func (c *depositorServiceClient) Connect(ctx context.Context, in *ConnectRequest
 // DepositorService is the interface to:
 //   - [Register] public keys of the Keeper users
 //   - [Authorize] their client apps
-//   - and [Connect] through the authorized apps to [KeeperService]
 type DepositorServiceServer interface {
 	// Register registers an anonymous public key and returns a refresh token.
 	// The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	// Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
-	// The owner of the authentication token can then [Connect] to [KeeperService]
+	// The owner of the authentication token can then make requests to [KeeperService]
 	Authorize(context.Context, *AuthorizeRequest) (*AuthorizeResponse, error)
-	// Connect creates a new [Session] for an [Authorize]d client app.
-	// The holder of the session can then make requests to [KeeperService]
-	Connect(context.Context, *ConnectRequest) (*ConnectResponse, error)
 }
 
 // UnimplementedDepositorServiceServer should be embedded to have
@@ -117,9 +97,6 @@ func (UnimplementedDepositorServiceServer) Register(context.Context, *RegisterRe
 }
 func (UnimplementedDepositorServiceServer) Authorize(context.Context, *AuthorizeRequest) (*AuthorizeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Authorize not implemented")
-}
-func (UnimplementedDepositorServiceServer) Connect(context.Context, *ConnectRequest) (*ConnectResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method Connect not implemented")
 }
 func (UnimplementedDepositorServiceServer) testEmbeddedByValue() {}
 
@@ -177,24 +154,6 @@ func _DepositorService_Authorize_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DepositorService_Connect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ConnectRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(DepositorServiceServer).Connect(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: DepositorService_Connect_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DepositorServiceServer).Connect(ctx, req.(*ConnectRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // DepositorService_ServiceDesc is the grpc.ServiceDesc for DepositorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -209,10 +168,6 @@ var DepositorService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Authorize",
 			Handler:    _DepositorService_Authorize_Handler,
-		},
-		{
-			MethodName: "Connect",
-			Handler:    _DepositorService_Connect_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

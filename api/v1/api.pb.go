@@ -7,16 +7,15 @@
 package pb
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -788,11 +787,10 @@ const file_api_v1_api_proto_rawDesc = "" +
 	"\aSession\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\"\x15\n" +
-	"\x13DownloadFileRequest2\x91\x02\n" +
+	"\x13DownloadFileRequest2\xbf\x01\n" +
 	"\x10DepositorService\x12S\n" +
 	"\bRegister\x12\".gophkeeper.api.v1.RegisterRequest\x1a#.gophkeeper.api.v1.RegisterResponse\x12V\n" +
-	"\tAuthorize\x12#.gophkeeper.api.v1.AuthorizeRequest\x1a$.gophkeeper.api.v1.AuthorizeResponse\x12P\n" +
-	"\aConnect\x12!.gophkeeper.api.v1.ConnectRequest\x1a\".gophkeeper.api.v1.ConnectResponse2\xc0\x04\n" +
+	"\tAuthorize\x12#.gophkeeper.api.v1.AuthorizeRequest\x1a$.gophkeeper.api.v1.AuthorizeResponse2\xc0\x04\n" +
 	"\rKeeperService\x12Y\n" +
 	"\n" +
 	"UploadData\x12$.gophkeeper.api.v1.UploadDataRequest\x1a%.gophkeeper.api.v1.UploadDataResponse\x12_\n" +
@@ -848,24 +846,22 @@ var file_api_v1_api_proto_depIdxs = []int32{
 	15, // 6: gophkeeper.api.v1.ListDataRequest.session:type_name -> gophkeeper.api.v1.Session
 	0,  // 7: gophkeeper.api.v1.DepositorService.Register:input_type -> gophkeeper.api.v1.RegisterRequest
 	2,  // 8: gophkeeper.api.v1.DepositorService.Authorize:input_type -> gophkeeper.api.v1.AuthorizeRequest
-	4,  // 9: gophkeeper.api.v1.DepositorService.Connect:input_type -> gophkeeper.api.v1.ConnectRequest
-	6,  // 10: gophkeeper.api.v1.KeeperService.UploadData:input_type -> gophkeeper.api.v1.UploadDataRequest
-	8,  // 11: gophkeeper.api.v1.KeeperService.DownloadData:input_type -> gophkeeper.api.v1.DownloadDataRequest
-	12, // 12: gophkeeper.api.v1.KeeperService.ListData:input_type -> gophkeeper.api.v1.ListDataRequest
-	10, // 13: gophkeeper.api.v1.KeeperService.DeleteData:input_type -> gophkeeper.api.v1.DeleteDataRequest
-	16, // 14: gophkeeper.api.v1.KeeperService.DownloadFile:input_type -> gophkeeper.api.v1.DownloadFileRequest
-	17, // 15: gophkeeper.api.v1.KeeperService.UploadFile:input_type -> google.api.HttpBody
-	1,  // 16: gophkeeper.api.v1.DepositorService.Register:output_type -> gophkeeper.api.v1.RegisterResponse
-	3,  // 17: gophkeeper.api.v1.DepositorService.Authorize:output_type -> gophkeeper.api.v1.AuthorizeResponse
-	5,  // 18: gophkeeper.api.v1.DepositorService.Connect:output_type -> gophkeeper.api.v1.ConnectResponse
-	7,  // 19: gophkeeper.api.v1.KeeperService.UploadData:output_type -> gophkeeper.api.v1.UploadDataResponse
-	9,  // 20: gophkeeper.api.v1.KeeperService.DownloadData:output_type -> gophkeeper.api.v1.DownloadDataResponse
-	13, // 21: gophkeeper.api.v1.KeeperService.ListData:output_type -> gophkeeper.api.v1.ListDataResponse
-	11, // 22: gophkeeper.api.v1.KeeperService.DeleteData:output_type -> gophkeeper.api.v1.DeleteDataResponse
-	17, // 23: gophkeeper.api.v1.KeeperService.DownloadFile:output_type -> google.api.HttpBody
-	18, // 24: gophkeeper.api.v1.KeeperService.UploadFile:output_type -> google.protobuf.Empty
-	16, // [16:25] is the sub-list for method output_type
-	7,  // [7:16] is the sub-list for method input_type
+	6,  // 9: gophkeeper.api.v1.KeeperService.UploadData:input_type -> gophkeeper.api.v1.UploadDataRequest
+	8,  // 10: gophkeeper.api.v1.KeeperService.DownloadData:input_type -> gophkeeper.api.v1.DownloadDataRequest
+	12, // 11: gophkeeper.api.v1.KeeperService.ListData:input_type -> gophkeeper.api.v1.ListDataRequest
+	10, // 12: gophkeeper.api.v1.KeeperService.DeleteData:input_type -> gophkeeper.api.v1.DeleteDataRequest
+	16, // 13: gophkeeper.api.v1.KeeperService.DownloadFile:input_type -> gophkeeper.api.v1.DownloadFileRequest
+	17, // 14: gophkeeper.api.v1.KeeperService.UploadFile:input_type -> google.api.HttpBody
+	1,  // 15: gophkeeper.api.v1.DepositorService.Register:output_type -> gophkeeper.api.v1.RegisterResponse
+	3,  // 16: gophkeeper.api.v1.DepositorService.Authorize:output_type -> gophkeeper.api.v1.AuthorizeResponse
+	7,  // 17: gophkeeper.api.v1.KeeperService.UploadData:output_type -> gophkeeper.api.v1.UploadDataResponse
+	9,  // 18: gophkeeper.api.v1.KeeperService.DownloadData:output_type -> gophkeeper.api.v1.DownloadDataResponse
+	13, // 19: gophkeeper.api.v1.KeeperService.ListData:output_type -> gophkeeper.api.v1.ListDataResponse
+	11, // 20: gophkeeper.api.v1.KeeperService.DeleteData:output_type -> gophkeeper.api.v1.DeleteDataResponse
+	17, // 21: gophkeeper.api.v1.KeeperService.DownloadFile:output_type -> google.api.HttpBody
+	18, // 22: gophkeeper.api.v1.KeeperService.UploadFile:output_type -> google.protobuf.Empty
+	15, // [15:23] is the sub-list for method output_type
+	7,  // [7:15] is the sub-list for method input_type
 	7,  // [7:7] is the sub-list for extension type_name
 	7,  // [7:7] is the sub-list for extension extendee
 	0,  // [0:7] is the sub-list for field type_name

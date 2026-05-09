@@ -12,19 +12,14 @@ option go_package = "github.com/oleshko-g/gophkeeper/api/v1;pb";
 // DepositorService is the interface to:
 //  - [Register] public keys of the Keeper users
 //  - [Authorize] their client apps
-//  - and [Connect] through the authorized apps to [KeeperService]
 service DepositorService {
   // Register registers an anonymous public key and returns a refresh token.
   // The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
   rpc Register(RegisterRequest) returns (RegisterResponse);
 
   // Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
-  // The owner of the authentication token can then [Connect] to [KeeperService]
+  // The owner of the authentication token can then make requests to [KeeperService]
   rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse);
-
-  // Connect creates a new [Session] for an [Authorize]d client app.
-  // The holder of the session can then make requests to [KeeperService]
-  rpc Connect(ConnectRequest) returns (ConnectResponse);
 }
 
 // KeeperService is the interface to:
@@ -111,7 +106,7 @@ message ListDataRequest {
 message ListDataResponse {}
 
 message Depositor {
-  string name = 1;
+  string id = 1;
 }
 
 message Session {
