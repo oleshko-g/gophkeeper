@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"path"
+	"time"
 
 	"log/slog"
 
@@ -266,6 +268,10 @@ func newClient(gophKeeperURL string) (*client, error) {
 }
 
 func main() {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	defer cancel()
+
+	app.cmd.SetContext(ctx)
 	err := app.cmd.Execute()
 	if err != nil {
 		cobra.CheckErr(err)
