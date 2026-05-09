@@ -89,7 +89,7 @@ var (
 	register = &cobra.Command{
 		Use:      "register",
 		Short:    "Gets the refresh token",
-		RunE:     app.registerRunE(),
+		RunE:     app.registerRunE,
 		PostRunE: app.updateConfig,
 	}
 	authorize = &cobra.Command{
