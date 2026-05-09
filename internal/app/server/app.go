@@ -81,7 +81,7 @@ func (a *App) SetService(depositor service.Depositor, keeper service.Keeper) {
 
 // Setup initializes [App.Server] with the [App.Service] implementations. If [App.Service] is nil it panics
 func (a *App) SetServer() error {
-	if a.Service == nil {
+	if a.Service == nil || a.Service.Depositor == nil || a.Service.Keeper == nil {
 		return errors.New("field Service is nil. SetService() must be called before SetServer")
 	}
 

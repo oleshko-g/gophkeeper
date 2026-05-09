@@ -93,6 +93,7 @@ func TestApp(t0 *testing.T) {
 		t.Run("Err", func(t *testing.T) {
 			app := app
 			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
 
 			err := app.Run(ctx)
 			if err == nil {
