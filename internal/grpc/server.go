@@ -19,7 +19,11 @@ func New(
 	creds credentials.TransportCredentials,
 ) (*Server, error) {
 	s := &Server{}
-	s.Server = grpc.NewServer(grpc.Creds(creds))
+	s.Server = grpc.NewServer(
+		grpc.Creds(creds),
+		s.authOption(),
+	)
+
 	reflection.Register(s.Server)
 
 	s.Depositor = depositor

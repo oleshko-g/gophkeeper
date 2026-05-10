@@ -44,7 +44,7 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 		nil,
 	)
 	if err != nil {
-		return nil, s.wrapError(methodName, service.ErrInternal, err)
+		return nil, s.wrapError(methodName, service.ErrTypeInternal, err)
 	}
 
 	rsaEncryptedIDBase64Str := base64.RawStdEncoding.EncodeToString(rsaEncryptedID)

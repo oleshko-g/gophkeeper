@@ -23,7 +23,8 @@ const (
 	ErrTypeRequestValidation ErrType = "ERR_TYPE_REQUEST_VALIDATION"
 	ErrTypeStorage           ErrType = "ERR_TYPE_STORAGE"
 	ErrTypeBusinessLogic     ErrType = "ERR_TYPE_BUSINESS_LOGIC"
-	ErrInternal              ErrType = "ERR_TYPE_INTERNAL"
+	ErrTypeInternal          ErrType = "ERR_TYPE_INTERNAL"
+	ErrTypeUnauthenticated   ErrType = "ERR_TYPE_UNAUTHENTICATED"
 )
 
 func (e *Err) Error() string {

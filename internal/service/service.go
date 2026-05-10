@@ -4,6 +4,7 @@ import (
 	"time"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
+	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
 )
 
 type Service struct {
@@ -17,7 +18,10 @@ type Config struct {
 }
 
 //go:generate moq -rm -out depositor_mock.go . Depositor
-type Depositor = pb.DepositorServiceServer
+type Depositor interface {
+	pb.DepositorServiceServer
+	ValidateAuthToken(token string) (*depositor.AuthorizedApp, error)
+}
 
 //go:generate moq -rm -out keeper_mock.go . Keeper
 type Keeper = pb.KeeperServiceServer

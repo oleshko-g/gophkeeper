@@ -6,6 +6,7 @@ package service
 import (
 	"context"
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
+	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
 	"sync"
 )
 
@@ -25,6 +26,9 @@ var _ Depositor = &DepositorMock{}
 //			RegisterFunc: func(contextMoqParam context.Context, registerRequest *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 //				panic("mock out the Register method")
 //			},
+//			ValidateAuthTokenFunc: func(token string) (*depositor.AuthorizedApp, error) {
+//				panic("mock out the ValidateAuthToken method")
+//			},
 //		}
 //
 //		// use mockedDepositor in code that requires Depositor
@@ -37,6 +41,9 @@ type DepositorMock struct {
 
 	// RegisterFunc mocks the Register method.
 	RegisterFunc func(contextMoqParam context.Context, registerRequest *pb.RegisterRequest) (*pb.RegisterResponse, error)
+
+	// ValidateAuthTokenFunc mocks the ValidateAuthToken method.
+	ValidateAuthTokenFunc func(token string) (*depositor.AuthorizedApp, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -54,9 +61,15 @@ type DepositorMock struct {
 			// RegisterRequest is the registerRequest argument value.
 			RegisterRequest *pb.RegisterRequest
 		}
+		// ValidateAuthToken holds details about calls to the ValidateAuthToken method.
+		ValidateAuthToken []struct {
+			// Token is the token argument value.
+			Token string
+		}
 	}
-	lockAuthorize sync.RWMutex
-	lockRegister  sync.RWMutex
+	lockAuthorize         sync.RWMutex
+	lockRegister          sync.RWMutex
+	lockValidateAuthToken sync.RWMutex
 }
 
 // Authorize calls AuthorizeFunc.
@@ -128,5 +141,37 @@ func (mock *DepositorMock) RegisterCalls() []struct {
 	mock.lockRegister.RLock()
 	calls = mock.calls.Register
 	mock.lockRegister.RUnlock()
+	return calls
+}
+
+// ValidateAuthToken calls ValidateAuthTokenFunc.
+func (mock *DepositorMock) ValidateAuthToken(token string) (*depositor.AuthorizedApp, error) {
+	if mock.ValidateAuthTokenFunc == nil {
+		panic("DepositorMock.ValidateAuthTokenFunc: method is nil but Depositor.ValidateAuthToken was just called")
+	}
+	callInfo := struct {
+		Token string
+	}{
+		Token: token,
+	}
+	mock.lockValidateAuthToken.Lock()
+	mock.calls.ValidateAuthToken = append(mock.calls.ValidateAuthToken, callInfo)
+	mock.lockValidateAuthToken.Unlock()
+	return mock.ValidateAuthTokenFunc(token)
+}
+
+// ValidateAuthTokenCalls gets all the calls that were made to ValidateAuthToken.
+// Check the length with:
+//
+//	len(mockedDepositor.ValidateAuthTokenCalls())
+func (mock *DepositorMock) ValidateAuthTokenCalls() []struct {
+	Token string
+} {
+	var calls []struct {
+		Token string
+	}
+	mock.lockValidateAuthToken.RLock()
+	calls = mock.calls.ValidateAuthToken
+	mock.lockValidateAuthToken.RUnlock()
 	return calls
 }

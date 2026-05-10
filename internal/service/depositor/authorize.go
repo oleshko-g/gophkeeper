@@ -50,6 +50,23 @@ func (s *Service) Authorize(ctx context.Context, in *pb.AuthorizeRequest) (*pb.A
 	}, nil
 }
 
+func (s *Service) ValidateAuthToken(token string) (*depositor.AuthorizedApp, error) {
+	methodName := "ValidateAuthToken"
+
+	clms := claims{}
+	jwtToken, err := jwt.ParseWithClaims(token, &clms, func(token *jwt.Token) (any, error) {
+		return s.privKey.Public(), nil
+	})
+	if err != nil {
+		return nil, s.wrapError(methodName, service.ErrTypeUnauthenticated, err)
+	}
+	if !jwtToken.Valid {
+		return nil, s.wrapError(methodName, service.ErrTypeUnauthenticated, errInvalidToken)
+	}
+
+	return &clms.AuthorizedApp, nil
+}
+
 type claims struct {
 	jwt.RegisteredClaims
 	depositor.AuthorizedApp
