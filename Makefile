@@ -3,9 +3,9 @@
 .PHONY: gen
 
 gen: fmt
+	easyp generate
 	go generate ./...
 	sqlc generate
-	easyp generate
 
 fmt:
 	goimports -w .

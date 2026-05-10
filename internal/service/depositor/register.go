@@ -2,19 +2,19 @@ package depositor
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha256"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"errors"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
-	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/service"
-	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 )
 
-// Register registers an anonymous RSA public key and returns a refresh token.
-// The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
+// Register registers an anonymous RSA public key and returns the ID encrypted with the registered key.
 func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 	methodName := "Register"
 
@@ -26,7 +26,8 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 		return nil, s.wrapError(methodName, service.ErrTypeRequestValidation, err)
 	}
 
-	if err := validateRSAPubKey(in.GetPubKey()); err != nil {
+	depositorPubKey, err := parseRSAPubKey(in.GetPubKey())
+	if err != nil {
 		return nil, s.wrapError(methodName, service.ErrTypeRequestValidation, err)
 	}
 
@@ -35,40 +36,48 @@ func (s *Service) Register(ctx context.Context, in *pb.RegisterRequest) (*pb.Reg
 		return nil, s.wrapError(methodName, service.ErrTypeStorage, err)
 	}
 
-	rt := depositor.RefreshToken{
-		PubKeyID: uuidv7.FromString(pubKeyID),
-		ID:       uuidv7.New(),
-		TTL:      s.refreshTokenTTL,
-	}
-	err = s.Depositor.StoreRefreshToken(ctx, rt)
+	rsaEncryptedID, err := rsa.EncryptOAEP(
+		sha256.New(),
+		rand.Reader,
+		depositorPubKey,
+		[]byte(pubKeyID),
+		nil,
+	)
 	if err != nil {
-		return nil, s.wrapError(methodName, service.ErrTypeStorage, err)
+		return nil, s.wrapError(methodName, service.ErrInternal, err)
 	}
 
-	return &pb.RegisterResponse{RefreshToken: &rt.ID.String}, nil
+	rsaEncryptedIDBase64Str := base64.RawStdEncoding.EncodeToString(rsaEncryptedID)
+
+	return &pb.RegisterResponse{
+			EncryptedId: &rsaEncryptedIDBase64Str,
+		},
+		nil
 }
 
-func validateRSAPubKey(s string) error {
+// parseRSAPubKey parses an RSA public key from a PEM-encoded string.
+func parseRSAPubKey(s string) (key *rsa.PublicKey, err error) {
 	pem, _ := pem.Decode([]byte(s))
 	if pem == nil {
-		return errDecodingPEM
+		return nil, errDecodingPEM
 	}
 
-	_, err := x509.ParsePKCS1PublicKey(pem.Bytes)
+	key, err = x509.ParsePKCS1PublicKey(pem.Bytes)
 	if err == nil {
-		return nil
+		return key, nil
 	}
 
 	pub, err := x509.ParsePKIXPublicKey(pem.Bytes)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if _, ok := pub.(*rsa.PublicKey); !ok {
-		return errNotRSA
+	key, ok := pub.(*rsa.PublicKey)
+	if !ok {
+		return nil, errNotRSA
 	}
 
-	return nil
+	return key, nil
 }
 
 var (

@@ -33,10 +33,10 @@ const (
 //   - [Register] public keys of the Keeper users
 //   - [Authorize] their client apps
 type DepositorServiceClient interface {
-	// Register registers an anonymous public key and returns a refresh token.
-	// The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
+	// Register registers an anonymous public key and returns encrypted id of the registered pub key and the public key of [KeeperService].
+	// The owner of the id can then [Authorize] apps to make requests to [KeeperService]
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
-	// Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
+	// Authorize authorizes an app of the registered public key owner's to [KeeperService] and returns an authentication token.
 	// The owner of the authentication token can then make requests to [KeeperService]
 	Authorize(ctx context.Context, in *AuthorizeRequest, opts ...grpc.CallOption) (*AuthorizeResponse, error)
 }
@@ -77,10 +77,10 @@ func (c *depositorServiceClient) Authorize(ctx context.Context, in *AuthorizeReq
 //   - [Register] public keys of the Keeper users
 //   - [Authorize] their client apps
 type DepositorServiceServer interface {
-	// Register registers an anonymous public key and returns a refresh token.
-	// The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
+	// Register registers an anonymous public key and returns encrypted id of the registered pub key and the public key of [KeeperService].
+	// The owner of the id can then [Authorize] apps to make requests to [KeeperService]
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
-	// Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
+	// Authorize authorizes an app of the registered public key owner's to [KeeperService] and returns an authentication token.
 	// The owner of the authentication token can then make requests to [KeeperService]
 	Authorize(context.Context, *AuthorizeRequest) (*AuthorizeResponse, error)
 }

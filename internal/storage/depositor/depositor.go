@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
-	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
 	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 )
@@ -24,7 +23,6 @@ type Depositor struct {
 //go:generate moq -rm -out depositor_querier_mock.go . Querier
 type Querier interface {
 	InsertPubKey(ctx context.Context, arg queries.InsertPubKeyParams) error
-	InsertRefreshToken(ctx context.Context, arg queries.InsertRefreshTokenParams) error
 }
 
 func (d *Depositor) StorePubKey(ctx context.Context, pubKey string) (pub_key_id string, err error) {
@@ -42,19 +40,4 @@ func (d *Depositor) StorePubKey(ctx context.Context, pubKey string) (pub_key_id 
 	}
 
 	return id.Value.String(), nil
-}
-
-func (d *Depositor) StoreRefreshToken(ctx context.Context, rt depositor.RefreshToken) error {
-	return d.InsertRefreshToken(ctx, queries.InsertRefreshTokenParams{
-		Token:             rt.ID.Value,
-		DepositorPubKeyID: rt.PubKeyID.Value,
-	})
-}
-
-func (d *Depositor) GetRefreshToken(ctx context.Context, id string) (*depositor.RefreshToken, error) {
-	if id == "" {
-		return nil, storage.ErrEmptyInput
-	}
-
-	return &depositor.RefreshToken{}, nil
 }

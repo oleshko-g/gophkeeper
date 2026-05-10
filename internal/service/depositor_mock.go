@@ -22,9 +22,6 @@ var _ Depositor = &DepositorMock{}
 //			AuthorizeFunc: func(contextMoqParam context.Context, authorizeRequest *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error) {
 //				panic("mock out the Authorize method")
 //			},
-//			ConnectFunc: func(contextMoqParam context.Context, connectRequest *pb.ConnectRequest) (*pb.ConnectResponse, error) {
-//				panic("mock out the Connect method")
-//			},
 //			RegisterFunc: func(contextMoqParam context.Context, registerRequest *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 //				panic("mock out the Register method")
 //			},
@@ -38,9 +35,6 @@ type DepositorMock struct {
 	// AuthorizeFunc mocks the Authorize method.
 	AuthorizeFunc func(contextMoqParam context.Context, authorizeRequest *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error)
 
-	// ConnectFunc mocks the Connect method.
-	ConnectFunc func(contextMoqParam context.Context, connectRequest *pb.ConnectRequest) (*pb.ConnectResponse, error)
-
 	// RegisterFunc mocks the Register method.
 	RegisterFunc func(contextMoqParam context.Context, registerRequest *pb.RegisterRequest) (*pb.RegisterResponse, error)
 
@@ -53,13 +47,6 @@ type DepositorMock struct {
 			// AuthorizeRequest is the authorizeRequest argument value.
 			AuthorizeRequest *pb.AuthorizeRequest
 		}
-		// Connect holds details about calls to the Connect method.
-		Connect []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// ConnectRequest is the connectRequest argument value.
-			ConnectRequest *pb.ConnectRequest
-		}
 		// Register holds details about calls to the Register method.
 		Register []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -69,7 +56,6 @@ type DepositorMock struct {
 		}
 	}
 	lockAuthorize sync.RWMutex
-	lockConnect   sync.RWMutex
 	lockRegister  sync.RWMutex
 }
 
@@ -106,42 +92,6 @@ func (mock *DepositorMock) AuthorizeCalls() []struct {
 	mock.lockAuthorize.RLock()
 	calls = mock.calls.Authorize
 	mock.lockAuthorize.RUnlock()
-	return calls
-}
-
-// Connect calls ConnectFunc.
-func (mock *DepositorMock) Connect(contextMoqParam context.Context, connectRequest *pb.ConnectRequest) (*pb.ConnectResponse, error) {
-	if mock.ConnectFunc == nil {
-		panic("DepositorMock.ConnectFunc: method is nil but Depositor.Connect was just called")
-	}
-	callInfo := struct {
-		ContextMoqParam context.Context
-		ConnectRequest  *pb.ConnectRequest
-	}{
-		ContextMoqParam: contextMoqParam,
-		ConnectRequest:  connectRequest,
-	}
-	mock.lockConnect.Lock()
-	mock.calls.Connect = append(mock.calls.Connect, callInfo)
-	mock.lockConnect.Unlock()
-	return mock.ConnectFunc(contextMoqParam, connectRequest)
-}
-
-// ConnectCalls gets all the calls that were made to Connect.
-// Check the length with:
-//
-//	len(mockedDepositor.ConnectCalls())
-func (mock *DepositorMock) ConnectCalls() []struct {
-	ContextMoqParam context.Context
-	ConnectRequest  *pb.ConnectRequest
-} {
-	var calls []struct {
-		ContextMoqParam context.Context
-		ConnectRequest  *pb.ConnectRequest
-	}
-	mock.lockConnect.RLock()
-	calls = mock.calls.Connect
-	mock.lockConnect.RUnlock()
 	return calls
 }
 

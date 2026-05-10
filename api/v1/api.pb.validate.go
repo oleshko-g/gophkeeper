@@ -168,7 +168,7 @@ func (m *RegisterResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for RefreshToken
+	// no validation rules for EncryptedId
 
 	if len(errors) > 0 {
 		return RegisterResponseMultiError(errors)
@@ -270,9 +270,9 @@ func (m *AuthorizeRequest) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetRefreshToken()) < 1 {
+	if utf8.RuneCountInString(m.GetDecryptedId()) < 1 {
 		err := AuthorizeRequestValidationError{
-			field:  "RefreshToken",
+			field:  "DecryptedId",
 			reason: "value length must be at least 1 runes",
 		}
 		if !all {
@@ -492,246 +492,6 @@ var _ interface {
 	ErrorName() string
 } = AuthorizeResponseValidationError{}
 
-// Validate checks the field values on ConnectRequest with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *ConnectRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ConnectRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in ConnectRequestMultiError,
-// or nil if none found.
-func (m *ConnectRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ConnectRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if utf8.RuneCountInString(m.GetAuthToken()) < 1 {
-		err := ConnectRequestValidationError{
-			field:  "AuthToken",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if len(errors) > 0 {
-		return ConnectRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// ConnectRequestMultiError is an error wrapping multiple validation errors
-// returned by ConnectRequest.ValidateAll() if the designated constraints
-// aren't met.
-type ConnectRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ConnectRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ConnectRequestMultiError) AllErrors() []error { return m }
-
-// ConnectRequestValidationError is the validation error returned by
-// ConnectRequest.Validate if the designated constraints aren't met.
-type ConnectRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ConnectRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ConnectRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ConnectRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ConnectRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ConnectRequestValidationError) ErrorName() string { return "ConnectRequestValidationError" }
-
-// Error satisfies the builtin error interface
-func (e ConnectRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sConnectRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ConnectRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ConnectRequestValidationError{}
-
-// Validate checks the field values on ConnectResponse with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *ConnectResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on ConnectResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ConnectResponseMultiError, or nil if none found.
-func (m *ConnectResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *ConnectResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if all {
-		switch v := interface{}(m.GetSession()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, ConnectResponseValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, ConnectResponseValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetSession()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ConnectResponseValidationError{
-				field:  "Session",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if len(errors) > 0 {
-		return ConnectResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// ConnectResponseMultiError is an error wrapping multiple validation errors
-// returned by ConnectResponse.ValidateAll() if the designated constraints
-// aren't met.
-type ConnectResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m ConnectResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m ConnectResponseMultiError) AllErrors() []error { return m }
-
-// ConnectResponseValidationError is the validation error returned by
-// ConnectResponse.Validate if the designated constraints aren't met.
-type ConnectResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e ConnectResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e ConnectResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e ConnectResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e ConnectResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e ConnectResponseValidationError) ErrorName() string { return "ConnectResponseValidationError" }
-
-// Error satisfies the builtin error interface
-func (e ConnectResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sConnectResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = ConnectResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = ConnectResponseValidationError{}
-
 // Validate checks the field values on UploadDataRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the
 // first error encountered is returned, or nil if there are no violations.
@@ -754,33 +514,15 @@ func (m *UploadDataRequest) validate(all bool) error {
 
 	var errors []error
 
-	if all {
-		switch v := interface{}(m.GetSession()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, UploadDataRequestValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, UploadDataRequestValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
+	if utf8.RuneCountInString(m.GetAuthToken()) < 1 {
+		err := UploadDataRequestValidationError{
+			field:  "AuthToken",
+			reason: "value length must be at least 1 runes",
 		}
-	} else if v, ok := interface{}(m.GetSession()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return UploadDataRequestValidationError{
-				field:  "Session",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
+		if !all {
+			return err
 		}
+		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {
@@ -987,33 +729,15 @@ func (m *DownloadDataRequest) validate(all bool) error {
 
 	var errors []error
 
-	if all {
-		switch v := interface{}(m.GetSession()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, DownloadDataRequestValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, DownloadDataRequestValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
+	if utf8.RuneCountInString(m.GetAuthToken()) < 1 {
+		err := DownloadDataRequestValidationError{
+			field:  "AuthToken",
+			reason: "value length must be at least 1 runes",
 		}
-	} else if v, ok := interface{}(m.GetSession()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return DownloadDataRequestValidationError{
-				field:  "Session",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
+		if !all {
+			return err
 		}
+		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {
@@ -1118,35 +842,6 @@ func (m *DownloadDataResponse) validate(all bool) error {
 
 	var errors []error
 
-	if all {
-		switch v := interface{}(m.GetSession()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, DownloadDataResponseValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, DownloadDataResponseValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetSession()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return DownloadDataResponseValidationError{
-				field:  "Session",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
 	if len(errors) > 0 {
 		return DownloadDataResponseMultiError(errors)
 	}
@@ -1249,33 +944,15 @@ func (m *DeleteDataRequest) validate(all bool) error {
 
 	var errors []error
 
-	if all {
-		switch v := interface{}(m.GetSession()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, DeleteDataRequestValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, DeleteDataRequestValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
+	if utf8.RuneCountInString(m.GetAuthToken()) < 1 {
+		err := DeleteDataRequestValidationError{
+			field:  "AuthToken",
+			reason: "value length must be at least 1 runes",
 		}
-	} else if v, ok := interface{}(m.GetSession()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return DeleteDataRequestValidationError{
-				field:  "Session",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
+		if !all {
+			return err
 		}
+		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {
@@ -1482,33 +1159,15 @@ func (m *ListDataRequest) validate(all bool) error {
 
 	var errors []error
 
-	if all {
-		switch v := interface{}(m.GetSession()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, ListDataRequestValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, ListDataRequestValidationError{
-					field:  "Session",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
+	if utf8.RuneCountInString(m.GetAuthToken()) < 1 {
+		err := ListDataRequestValidationError{
+			field:  "AuthToken",
+			reason: "value length must be at least 1 runes",
 		}
-	} else if v, ok := interface{}(m.GetSession()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return ListDataRequestValidationError{
-				field:  "Session",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
+		if !all {
+			return err
 		}
+		errors = append(errors, err)
 	}
 
 	if len(errors) > 0 {
@@ -1689,22 +1348,21 @@ var _ interface {
 	ErrorName() string
 } = ListDataResponseValidationError{}
 
-// Validate checks the field values on Depositor with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *Depositor) Validate() error {
+// Validate checks the field values on App with the rules defined in the proto
+// definition for this message. If any rules are violated, the first error
+// encountered is returned, or nil if there are no violations.
+func (m *App) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on Depositor with the rules defined in
-// the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in DepositorMultiError, or nil
-// if none found.
-func (m *Depositor) ValidateAll() error {
+// ValidateAll checks the field values on App with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in AppMultiError, or nil if none found.
+func (m *App) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *Depositor) validate(all bool) error {
+func (m *App) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -1714,18 +1372,18 @@ func (m *Depositor) validate(all bool) error {
 	// no validation rules for Id
 
 	if len(errors) > 0 {
-		return DepositorMultiError(errors)
+		return AppMultiError(errors)
 	}
 
 	return nil
 }
 
-// DepositorMultiError is an error wrapping multiple validation errors returned
-// by Depositor.ValidateAll() if the designated constraints aren't met.
-type DepositorMultiError []error
+// AppMultiError is an error wrapping multiple validation errors returned by
+// App.ValidateAll() if the designated constraints aren't met.
+type AppMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m DepositorMultiError) Error() string {
+func (m AppMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1734,11 +1392,11 @@ func (m DepositorMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m DepositorMultiError) AllErrors() []error { return m }
+func (m AppMultiError) AllErrors() []error { return m }
 
-// DepositorValidationError is the validation error returned by
-// Depositor.Validate if the designated constraints aren't met.
-type DepositorValidationError struct {
+// AppValidationError is the validation error returned by App.Validate if the
+// designated constraints aren't met.
+type AppValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1746,22 +1404,22 @@ type DepositorValidationError struct {
 }
 
 // Field function returns field value.
-func (e DepositorValidationError) Field() string { return e.field }
+func (e AppValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e DepositorValidationError) Reason() string { return e.reason }
+func (e AppValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e DepositorValidationError) Cause() error { return e.cause }
+func (e AppValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e DepositorValidationError) Key() bool { return e.key }
+func (e AppValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e DepositorValidationError) ErrorName() string { return "DepositorValidationError" }
+func (e AppValidationError) ErrorName() string { return "AppValidationError" }
 
 // Error satisfies the builtin error interface
-func (e DepositorValidationError) Error() string {
+func (e AppValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1773,14 +1431,14 @@ func (e DepositorValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sDepositor.%s: %s%s",
+		"invalid %sApp.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = DepositorValidationError{}
+var _ error = AppValidationError{}
 
 var _ interface {
 	Field() string
@@ -1788,107 +1446,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = DepositorValidationError{}
-
-// Validate checks the field values on Session with the rules defined in the
-// proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *Session) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on Session with the rules defined in the
-// proto definition for this message. If any rules are violated, the result is
-// a list of violation errors wrapped in SessionMultiError, or nil if none found.
-func (m *Session) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *Session) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for SessionId
-
-	if len(errors) > 0 {
-		return SessionMultiError(errors)
-	}
-
-	return nil
-}
-
-// SessionMultiError is an error wrapping multiple validation errors returned
-// by Session.ValidateAll() if the designated constraints aren't met.
-type SessionMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m SessionMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m SessionMultiError) AllErrors() []error { return m }
-
-// SessionValidationError is the validation error returned by Session.Validate
-// if the designated constraints aren't met.
-type SessionValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e SessionValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e SessionValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e SessionValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e SessionValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e SessionValidationError) ErrorName() string { return "SessionValidationError" }
-
-// Error satisfies the builtin error interface
-func (e SessionValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sSession.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = SessionValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = SessionValidationError{}
+} = AppValidationError{}
 
 // Validate checks the field values on DownloadFileRequest with the rules
 // defined in the proto definition for this message. If any rules are

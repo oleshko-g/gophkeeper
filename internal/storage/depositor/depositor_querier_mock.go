@@ -22,9 +22,6 @@ var _ Querier = &QuerierMock{}
 //			InsertPubKeyFunc: func(ctx context.Context, arg queries.InsertPubKeyParams) error {
 //				panic("mock out the InsertPubKey method")
 //			},
-//			InsertRefreshTokenFunc: func(ctx context.Context, arg queries.InsertRefreshTokenParams) error {
-//				panic("mock out the InsertRefreshToken method")
-//			},
 //		}
 //
 //		// use mockedQuerier in code that requires Querier
@@ -35,9 +32,6 @@ type QuerierMock struct {
 	// InsertPubKeyFunc mocks the InsertPubKey method.
 	InsertPubKeyFunc func(ctx context.Context, arg queries.InsertPubKeyParams) error
 
-	// InsertRefreshTokenFunc mocks the InsertRefreshToken method.
-	InsertRefreshTokenFunc func(ctx context.Context, arg queries.InsertRefreshTokenParams) error
-
 	// calls tracks calls to the methods.
 	calls struct {
 		// InsertPubKey holds details about calls to the InsertPubKey method.
@@ -47,16 +41,8 @@ type QuerierMock struct {
 			// Arg is the arg argument value.
 			Arg queries.InsertPubKeyParams
 		}
-		// InsertRefreshToken holds details about calls to the InsertRefreshToken method.
-		InsertRefreshToken []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// Arg is the arg argument value.
-			Arg queries.InsertRefreshTokenParams
-		}
 	}
-	lockInsertPubKey       sync.RWMutex
-	lockInsertRefreshToken sync.RWMutex
+	lockInsertPubKey sync.RWMutex
 }
 
 // InsertPubKey calls InsertPubKeyFunc.
@@ -92,41 +78,5 @@ func (mock *QuerierMock) InsertPubKeyCalls() []struct {
 	mock.lockInsertPubKey.RLock()
 	calls = mock.calls.InsertPubKey
 	mock.lockInsertPubKey.RUnlock()
-	return calls
-}
-
-// InsertRefreshToken calls InsertRefreshTokenFunc.
-func (mock *QuerierMock) InsertRefreshToken(ctx context.Context, arg queries.InsertRefreshTokenParams) error {
-	if mock.InsertRefreshTokenFunc == nil {
-		panic("QuerierMock.InsertRefreshTokenFunc: method is nil but Querier.InsertRefreshToken was just called")
-	}
-	callInfo := struct {
-		Ctx context.Context
-		Arg queries.InsertRefreshTokenParams
-	}{
-		Ctx: ctx,
-		Arg: arg,
-	}
-	mock.lockInsertRefreshToken.Lock()
-	mock.calls.InsertRefreshToken = append(mock.calls.InsertRefreshToken, callInfo)
-	mock.lockInsertRefreshToken.Unlock()
-	return mock.InsertRefreshTokenFunc(ctx, arg)
-}
-
-// InsertRefreshTokenCalls gets all the calls that were made to InsertRefreshToken.
-// Check the length with:
-//
-//	len(mockedQuerier.InsertRefreshTokenCalls())
-func (mock *QuerierMock) InsertRefreshTokenCalls() []struct {
-	Ctx context.Context
-	Arg queries.InsertRefreshTokenParams
-} {
-	var calls []struct {
-		Ctx context.Context
-		Arg queries.InsertRefreshTokenParams
-	}
-	mock.lockInsertRefreshToken.RLock()
-	calls = mock.calls.InsertRefreshToken
-	mock.lockInsertRefreshToken.RUnlock()
 	return calls
 }

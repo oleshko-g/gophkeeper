@@ -13,9 +13,6 @@ func TestInsertPubKey(t *testing.T) {
 		InsertPubKeyFunc: func(_ context.Context, _ queries.InsertPubKeyParams) error {
 			return nil
 		},
-		InsertRefreshTokenFunc: func(_ context.Context, _ queries.InsertRefreshTokenParams) error {
-			return nil
-		},
 	}
 	storage := depositor.New(querier)
 

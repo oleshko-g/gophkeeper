@@ -5,8 +5,6 @@
 package queries
 
 import (
-	"database/sql"
-
 	"github.com/google/uuid"
 )
 
@@ -16,27 +14,16 @@ type DepositedDatum struct {
 	EncryptedData     []byte
 }
 
+// depositor_apps are the authorized apps of the registered depositors
 type DepositorApp struct {
+	// id is a UUID v7 value. It includes the timestamp at which the app was authorized
 	ID                uuid.UUID
-	AppName           string
 	DepositorPubKeyID uuid.UUID
 }
 
-type DepositorAppSession struct {
-	// token is a UUID v7 value. It includes the timestamp at which was started
-	ID             uuid.UUID
-	DepositorAppID uuid.UUID
-}
-
+// depositor_pub_keys are the registered public keys of depositors
 type DepositorPubKey struct {
+	// id is a UUID v7 value. It includes the timestamp at which the pub_key was registered
 	ID     uuid.UUID
 	PubKey string
-}
-
-// Refresh tokens for depositors
-type DepositorRefreshToken struct {
-	// token is a UUID v7 value. It includes the timestamp at which the token was issued
-	Token             uuid.UUID
-	DepositorPubKeyID uuid.UUID
-	RevokedAt         sql.NullTime
 }

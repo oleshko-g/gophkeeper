@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"time"
 
 	"log/slog"
 
@@ -94,10 +93,9 @@ var (
 		PostRunE: app.updateConfig,
 	}
 	authorize = &cobra.Command{
-		Use:   "authorize",
-		Short: "Authorizes the depositor with the refresh token gotten from register command",
-		Run: func(cmd *cobra.Command, args []string) {
-		},
+		Use:      "authorize",
+		Short:    "Authorizes the depositor with the refresh token gotten from register command",
+		RunE:     app.authorizeRunE,
 		PostRunE: app.updateConfig,
 	}
 	connect = &cobra.Command{
@@ -190,9 +188,6 @@ type config struct {
 	// AuthToken is the authentication token for the [app] on the gophkeeper server.
 	// The key is the refresh token, the value is the authentication token.
 	AuthToken map[string]string `json:"auth_token"`
-
-	// Session is the session token for the [app] on the gophkeeper server.
-	Session pb.Session `json:"session"`
 }
 
 // initConfig initializes the configuration for the [app].
@@ -281,7 +276,7 @@ func newClient(gophKeeperURL string) (*client, error) {
 }
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	app.cmd.SetContext(ctx)

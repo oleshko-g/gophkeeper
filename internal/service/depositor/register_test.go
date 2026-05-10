@@ -12,7 +12,6 @@ import (
 	"time"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
-	. "github.com/oleshko-g/gophkeeper/internal/model/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/service/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
@@ -36,9 +35,10 @@ func TestRegister(t *testing.T) {
 
 	t.Run("Setup", func(t *testing.T) {
 		t.Run("Service", func(t *testing.T) {
-			svc = depositor.New(&storage.DepositorMock{
-				StorePubKeyFunc:       func(_ context.Context, _ string) (string, error) { return "019dd2b5-0ab9-768b-b1f9-aac25f94d238", nil },
-				StoreRefreshTokenFunc: func(_ context.Context, _ RefreshToken) error { return nil }},
+			svc = depositor.New(
+				&storage.DepositorMock{
+					StorePubKeyFunc: func(_ context.Context, _ string) (string, error) { return "019dd2b5-0ab9-768b-b1f9-aac25f94d238", nil },
+				},
 				refreshTokenTTL,
 			)
 		})

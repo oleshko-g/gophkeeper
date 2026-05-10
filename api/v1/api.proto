@@ -13,11 +13,11 @@ option go_package = "github.com/oleshko-g/gophkeeper/api/v1;pb";
 //  - [Register] public keys of the Keeper users
 //  - [Authorize] their client apps
 service DepositorService {
-  // Register registers an anonymous public key and returns a refresh token.
-  // The owner of the refresh token can then [Authorize] apps to [Connect] to [KeeperService]
+  // Register registers an anonymous public key and returns encrypted id of the registered pub key and the public key of [KeeperService].
+  // The owner of the id can then [Authorize] apps to make requests to [KeeperService]
   rpc Register(RegisterRequest) returns (RegisterResponse);
 
-  // Authorize authorizes an app to [Connect] to [KeeperService] and returns an authentication token.
+  // Authorize authorizes an app of the registered public key owner's to [KeeperService] and returns an authentication token.
   // The owner of the authentication token can then make requests to [KeeperService]
   rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse);
 }
@@ -59,58 +59,44 @@ message RegisterRequest {
 }
 
 message RegisterResponse {
-  string refresh_token = 1;
+  string encrypted_id = 1;
 }
 
 message AuthorizeRequest {
-  string refresh_token = 1 [(validate.rules).string.min_len = 1];
-  Depositor app = 2;
+  string decrypted_id = 1 [(validate.rules).string.min_len = 1];
+  App app = 2;
 }
 
 message AuthorizeResponse {
   string auth_token = 1;
 }
 
-message ConnectRequest {
-  string auth_token = 1 [(validate.rules).string.min_len = 1];
-}
-
-message ConnectResponse {
-  Session session = 1;
-}
-
 message UploadDataRequest {
-  Session session = 1;
+  string auth_token = 1 [(validate.rules).string.min_len = 1];
 }
 
 message UploadDataResponse {}
 
 message DownloadDataRequest {
-  Session session = 1;
+  string auth_token = 1 [(validate.rules).string.min_len = 1];
 }
 
-message DownloadDataResponse {
-  Session session = 1;
-}
+message DownloadDataResponse {}
 
 message DeleteDataRequest {
-  Session session = 1;
+  string auth_token = 1 [(validate.rules).string.min_len = 1];
 }
 
 message DeleteDataResponse {}
 
 message ListDataRequest {
-  Session session = 1;
+  string auth_token = 1 [(validate.rules).string.min_len = 1];
 }
 
 message ListDataResponse {}
 
-message Depositor {
+message App {
   string id = 1;
-}
-
-message Session {
-  string session_id = 1;
 }
 
 message DownloadFileRequest {}

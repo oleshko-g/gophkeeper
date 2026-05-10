@@ -47,12 +47,12 @@ func (app *a) registerRunE(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	refreshToken := res.GetRefreshToken()
-	if refreshToken == "" {
+	encryptedID := res.GetEncryptedId()
+	if encryptedID == "" {
 		return fmt.Errorf("refresh token is empty")
 	}
 
-	err = os.WriteFile(path.Join(app.cfgDir, "refresh_token.txt"), []byte(refreshToken), 0600)
+	err = os.WriteFile(path.Join(app.cfgDir, "refresh_token.txt"), []byte(encryptedID), 0600)
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (app *a) registerRunE(cmd *cobra.Command, _ []string) error {
 	}
 
 	app.config.RegisteredPubKey = map[string]string{
-		encodedPubKey.String(): refreshToken,
+		encodedPubKey.String(): encryptedID,
 	}
 
 	app.state = pubKeyRegistered

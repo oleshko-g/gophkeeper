@@ -1,27 +1,17 @@
 -- +goose Up
 CREATE TABLE depositor_pub_keys (id UUID PRIMARY KEY, pub_key TEXT UNIQUE NOT NULL);
 
-
-CREATE TABLE depositor_refresh_tokens (
-  token UUID PRIMARY KEY,
-  depositor_pub_key_id UUID NOT NULL REFERENCES depositor_pub_keys (id),
-  revoked_at TIMESTAMP WITH TIME ZONE
-);
-
-
-COMMENT ON TABLE depositor_refresh_tokens IS 'Refresh tokens for depositors';
-
-
-COMMENT ON COLUMN depositor_refresh_tokens.token IS 'token is a UUID v7 value. It includes the timestamp at which the token was issued';
+COMMENT ON TABLE depositor_pub_keys IS 'depositor_pub_keys are the registered public keys of depositors';
+COMMENT ON COLUMN depositor_pub_keys.id IS 'id is a UUID v7 value. It includes the timestamp at which the pub_key was registered';
 
 
 CREATE TABLE depositor_apps (
   id UUID PRIMARY KEY,
-  app_name TEXT NOT NULL,
-  depositor_pub_key_id UUID NOT NULL,
-  CONSTRAINT app_name_depositor_pub_key_id UNIQUE (app_name, depositor_pub_key_id)
+  depositor_pub_key_id UUID NOT NULL
 );
 
+COMMENT ON TABLE depositor_apps IS 'depositor_apps are the authorized apps of the registered depositors';
+COMMENT ON COLUMN depositor_apps.id IS 'id is a UUID v7 value. It includes the timestamp at which the app was authorized';
 
 CREATE TABLE deposited_data (
   id UUID PRIMARY KEY,
@@ -30,26 +20,9 @@ CREATE TABLE deposited_data (
 );
 
 
-CREATE TABLE depositor_app_sessions (
-  id UUID PRIMARY KEY,
-  depositor_app_id UUID NOT NULL REFERENCES depositor_apps (id) ON DELETE CASCADE
-);
-
-
-COMMENT ON COLUMN depositor_app_sessions.id IS 'token is a UUID v7 value. It includes the timestamp at which was started';
-
-
 -- +goose Down
-DROP TABLE IF EXISTS depositor_app_sessions;
-
-
 DROP TABLE IF EXISTS deposited_data;
 
-
 DROP TABLE IF EXISTS depositor_apps;
-
-
-DROP TABLE IF EXISTS depositor_refresh_tokens;
-
 
 DROP TABLE IF EXISTS depositor_pub_keys;

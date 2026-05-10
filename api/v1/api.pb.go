@@ -71,7 +71,7 @@ func (x *RegisterRequest) GetPubKey() string {
 
 type RegisterResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RefreshToken  *string                `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken" json:"refresh_token,omitempty"`
+	EncryptedId   *string                `protobuf:"bytes,1,opt,name=encrypted_id,json=encryptedId" json:"encrypted_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -106,17 +106,17 @@ func (*RegisterResponse) Descriptor() ([]byte, []int) {
 	return file_api_v1_api_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *RegisterResponse) GetRefreshToken() string {
-	if x != nil && x.RefreshToken != nil {
-		return *x.RefreshToken
+func (x *RegisterResponse) GetEncryptedId() string {
+	if x != nil && x.EncryptedId != nil {
+		return *x.EncryptedId
 	}
 	return ""
 }
 
 type AuthorizeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RefreshToken  *string                `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken" json:"refresh_token,omitempty"`
-	App           *Depositor             `protobuf:"bytes,2,opt,name=app" json:"app,omitempty"`
+	DecryptedId   *string                `protobuf:"bytes,1,opt,name=decrypted_id,json=decryptedId" json:"decrypted_id,omitempty"`
+	App           *App                   `protobuf:"bytes,2,opt,name=app" json:"app,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -151,14 +151,14 @@ func (*AuthorizeRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_api_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *AuthorizeRequest) GetRefreshToken() string {
-	if x != nil && x.RefreshToken != nil {
-		return *x.RefreshToken
+func (x *AuthorizeRequest) GetDecryptedId() string {
+	if x != nil && x.DecryptedId != nil {
+		return *x.DecryptedId
 	}
 	return ""
 }
 
-func (x *AuthorizeRequest) GetApp() *Depositor {
+func (x *AuthorizeRequest) GetApp() *App {
 	if x != nil {
 		return x.App
 	}
@@ -209,104 +209,16 @@ func (x *AuthorizeResponse) GetAuthToken() string {
 	return ""
 }
 
-type ConnectRequest struct {
+type UploadDataRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AuthToken     *string                `protobuf:"bytes,1,opt,name=auth_token,json=authToken" json:"auth_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ConnectRequest) Reset() {
-	*x = ConnectRequest{}
-	mi := &file_api_v1_api_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ConnectRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ConnectRequest) ProtoMessage() {}
-
-func (x *ConnectRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ConnectRequest.ProtoReflect.Descriptor instead.
-func (*ConnectRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *ConnectRequest) GetAuthToken() string {
-	if x != nil && x.AuthToken != nil {
-		return *x.AuthToken
-	}
-	return ""
-}
-
-type ConnectResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Session       *Session               `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *ConnectResponse) Reset() {
-	*x = ConnectResponse{}
-	mi := &file_api_v1_api_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ConnectResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ConnectResponse) ProtoMessage() {}
-
-func (x *ConnectResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ConnectResponse.ProtoReflect.Descriptor instead.
-func (*ConnectResponse) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *ConnectResponse) GetSession() *Session {
-	if x != nil {
-		return x.Session
-	}
-	return nil
-}
-
-type UploadDataRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Session       *Session               `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
 func (x *UploadDataRequest) Reset() {
 	*x = UploadDataRequest{}
-	mi := &file_api_v1_api_proto_msgTypes[6]
+	mi := &file_api_v1_api_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -318,7 +230,7 @@ func (x *UploadDataRequest) String() string {
 func (*UploadDataRequest) ProtoMessage() {}
 
 func (x *UploadDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[6]
+	mi := &file_api_v1_api_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -331,14 +243,14 @@ func (x *UploadDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadDataRequest.ProtoReflect.Descriptor instead.
 func (*UploadDataRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{6}
+	return file_api_v1_api_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UploadDataRequest) GetSession() *Session {
-	if x != nil {
-		return x.Session
+func (x *UploadDataRequest) GetAuthToken() string {
+	if x != nil && x.AuthToken != nil {
+		return *x.AuthToken
 	}
-	return nil
+	return ""
 }
 
 type UploadDataResponse struct {
@@ -349,7 +261,7 @@ type UploadDataResponse struct {
 
 func (x *UploadDataResponse) Reset() {
 	*x = UploadDataResponse{}
-	mi := &file_api_v1_api_proto_msgTypes[7]
+	mi := &file_api_v1_api_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -361,7 +273,7 @@ func (x *UploadDataResponse) String() string {
 func (*UploadDataResponse) ProtoMessage() {}
 
 func (x *UploadDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[7]
+	mi := &file_api_v1_api_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -374,19 +286,19 @@ func (x *UploadDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadDataResponse.ProtoReflect.Descriptor instead.
 func (*UploadDataResponse) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{7}
+	return file_api_v1_api_proto_rawDescGZIP(), []int{5}
 }
 
 type DownloadDataRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Session       *Session               `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
+	AuthToken     *string                `protobuf:"bytes,1,opt,name=auth_token,json=authToken" json:"auth_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DownloadDataRequest) Reset() {
 	*x = DownloadDataRequest{}
-	mi := &file_api_v1_api_proto_msgTypes[8]
+	mi := &file_api_v1_api_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -398,7 +310,7 @@ func (x *DownloadDataRequest) String() string {
 func (*DownloadDataRequest) ProtoMessage() {}
 
 func (x *DownloadDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[8]
+	mi := &file_api_v1_api_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -411,26 +323,25 @@ func (x *DownloadDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DownloadDataRequest.ProtoReflect.Descriptor instead.
 func (*DownloadDataRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{8}
+	return file_api_v1_api_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *DownloadDataRequest) GetSession() *Session {
-	if x != nil {
-		return x.Session
+func (x *DownloadDataRequest) GetAuthToken() string {
+	if x != nil && x.AuthToken != nil {
+		return *x.AuthToken
 	}
-	return nil
+	return ""
 }
 
 type DownloadDataResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Session       *Session               `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DownloadDataResponse) Reset() {
 	*x = DownloadDataResponse{}
-	mi := &file_api_v1_api_proto_msgTypes[9]
+	mi := &file_api_v1_api_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -442,7 +353,7 @@ func (x *DownloadDataResponse) String() string {
 func (*DownloadDataResponse) ProtoMessage() {}
 
 func (x *DownloadDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[9]
+	mi := &file_api_v1_api_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -455,26 +366,19 @@ func (x *DownloadDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DownloadDataResponse.ProtoReflect.Descriptor instead.
 func (*DownloadDataResponse) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *DownloadDataResponse) GetSession() *Session {
-	if x != nil {
-		return x.Session
-	}
-	return nil
+	return file_api_v1_api_proto_rawDescGZIP(), []int{7}
 }
 
 type DeleteDataRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Session       *Session               `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
+	AuthToken     *string                `protobuf:"bytes,1,opt,name=auth_token,json=authToken" json:"auth_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *DeleteDataRequest) Reset() {
 	*x = DeleteDataRequest{}
-	mi := &file_api_v1_api_proto_msgTypes[10]
+	mi := &file_api_v1_api_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -486,7 +390,7 @@ func (x *DeleteDataRequest) String() string {
 func (*DeleteDataRequest) ProtoMessage() {}
 
 func (x *DeleteDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[10]
+	mi := &file_api_v1_api_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -499,14 +403,14 @@ func (x *DeleteDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDataRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDataRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{10}
+	return file_api_v1_api_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *DeleteDataRequest) GetSession() *Session {
-	if x != nil {
-		return x.Session
+func (x *DeleteDataRequest) GetAuthToken() string {
+	if x != nil && x.AuthToken != nil {
+		return *x.AuthToken
 	}
-	return nil
+	return ""
 }
 
 type DeleteDataResponse struct {
@@ -517,7 +421,7 @@ type DeleteDataResponse struct {
 
 func (x *DeleteDataResponse) Reset() {
 	*x = DeleteDataResponse{}
-	mi := &file_api_v1_api_proto_msgTypes[11]
+	mi := &file_api_v1_api_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -529,7 +433,7 @@ func (x *DeleteDataResponse) String() string {
 func (*DeleteDataResponse) ProtoMessage() {}
 
 func (x *DeleteDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[11]
+	mi := &file_api_v1_api_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -542,19 +446,19 @@ func (x *DeleteDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDataResponse.ProtoReflect.Descriptor instead.
 func (*DeleteDataResponse) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{11}
+	return file_api_v1_api_proto_rawDescGZIP(), []int{9}
 }
 
 type ListDataRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Session       *Session               `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
+	AuthToken     *string                `protobuf:"bytes,1,opt,name=auth_token,json=authToken" json:"auth_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListDataRequest) Reset() {
 	*x = ListDataRequest{}
-	mi := &file_api_v1_api_proto_msgTypes[12]
+	mi := &file_api_v1_api_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -566,7 +470,7 @@ func (x *ListDataRequest) String() string {
 func (*ListDataRequest) ProtoMessage() {}
 
 func (x *ListDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[12]
+	mi := &file_api_v1_api_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -579,14 +483,14 @@ func (x *ListDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDataRequest.ProtoReflect.Descriptor instead.
 func (*ListDataRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{12}
+	return file_api_v1_api_proto_rawDescGZIP(), []int{10}
 }
 
-func (x *ListDataRequest) GetSession() *Session {
-	if x != nil {
-		return x.Session
+func (x *ListDataRequest) GetAuthToken() string {
+	if x != nil && x.AuthToken != nil {
+		return *x.AuthToken
 	}
-	return nil
+	return ""
 }
 
 type ListDataResponse struct {
@@ -597,7 +501,7 @@ type ListDataResponse struct {
 
 func (x *ListDataResponse) Reset() {
 	*x = ListDataResponse{}
-	mi := &file_api_v1_api_proto_msgTypes[13]
+	mi := &file_api_v1_api_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -609,7 +513,7 @@ func (x *ListDataResponse) String() string {
 func (*ListDataResponse) ProtoMessage() {}
 
 func (x *ListDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[13]
+	mi := &file_api_v1_api_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -622,31 +526,31 @@ func (x *ListDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDataResponse.ProtoReflect.Descriptor instead.
 func (*ListDataResponse) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{13}
+	return file_api_v1_api_proto_rawDescGZIP(), []int{11}
 }
 
-type Depositor struct {
+type App struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *string                `protobuf:"bytes,1,opt,name=id" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Depositor) Reset() {
-	*x = Depositor{}
-	mi := &file_api_v1_api_proto_msgTypes[14]
+func (x *App) Reset() {
+	*x = App{}
+	mi := &file_api_v1_api_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *Depositor) String() string {
+func (x *App) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Depositor) ProtoMessage() {}
+func (*App) ProtoMessage() {}
 
-func (x *Depositor) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[14]
+func (x *App) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_api_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -657,58 +561,14 @@ func (x *Depositor) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Depositor.ProtoReflect.Descriptor instead.
-func (*Depositor) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{14}
+// Deprecated: Use App.ProtoReflect.Descriptor instead.
+func (*App) Descriptor() ([]byte, []int) {
+	return file_api_v1_api_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *Depositor) GetId() string {
+func (x *App) GetId() string {
 	if x != nil && x.Id != nil {
 		return *x.Id
-	}
-	return ""
-}
-
-type Session struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     *string                `protobuf:"bytes,1,opt,name=session_id,json=sessionId" json:"session_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Session) Reset() {
-	*x = Session{}
-	mi := &file_api_v1_api_proto_msgTypes[15]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Session) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Session) ProtoMessage() {}
-
-func (x *Session) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[15]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Session.ProtoReflect.Descriptor instead.
-func (*Session) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{15}
-}
-
-func (x *Session) GetSessionId() string {
-	if x != nil && x.SessionId != nil {
-		return *x.SessionId
 	}
 	return ""
 }
@@ -721,7 +581,7 @@ type DownloadFileRequest struct {
 
 func (x *DownloadFileRequest) Reset() {
 	*x = DownloadFileRequest{}
-	mi := &file_api_v1_api_proto_msgTypes[16]
+	mi := &file_api_v1_api_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -733,7 +593,7 @@ func (x *DownloadFileRequest) String() string {
 func (*DownloadFileRequest) ProtoMessage() {}
 
 func (x *DownloadFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_api_proto_msgTypes[16]
+	mi := &file_api_v1_api_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -746,7 +606,7 @@ func (x *DownloadFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DownloadFileRequest.ProtoReflect.Descriptor instead.
 func (*DownloadFileRequest) Descriptor() ([]byte, []int) {
-	return file_api_v1_api_proto_rawDescGZIP(), []int{16}
+	return file_api_v1_api_proto_rawDescGZIP(), []int{13}
 }
 
 var File_api_v1_api_proto protoreflect.FileDescriptor
@@ -755,38 +615,33 @@ const file_api_v1_api_proto_rawDesc = "" +
 	"\n" +
 	"\x10api/v1/api.proto\x12\x11gophkeeper.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x19google/api/httpbody.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\"3\n" +
 	"\x0fRegisterRequest\x12 \n" +
-	"\apub_key\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x06pubKey\"7\n" +
-	"\x10RegisterResponse\x12#\n" +
-	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"p\n" +
-	"\x10AuthorizeRequest\x12,\n" +
-	"\rrefresh_token\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\frefreshToken\x12.\n" +
-	"\x03app\x18\x02 \x01(\v2\x1c.gophkeeper.api.v1.DepositorR\x03app\"2\n" +
+	"\apub_key\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x06pubKey\"5\n" +
+	"\x10RegisterResponse\x12!\n" +
+	"\fencrypted_id\x18\x01 \x01(\tR\vencryptedId\"h\n" +
+	"\x10AuthorizeRequest\x12*\n" +
+	"\fdecrypted_id\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\vdecryptedId\x12(\n" +
+	"\x03app\x18\x02 \x01(\v2\x16.gophkeeper.api.v1.AppR\x03app\"2\n" +
 	"\x11AuthorizeResponse\x12\x1d\n" +
 	"\n" +
-	"auth_token\x18\x01 \x01(\tR\tauthToken\"8\n" +
-	"\x0eConnectRequest\x12&\n" +
+	"auth_token\x18\x01 \x01(\tR\tauthToken\";\n" +
+	"\x11UploadDataRequest\x12&\n" +
 	"\n" +
-	"auth_token\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tauthToken\"G\n" +
-	"\x0fConnectResponse\x124\n" +
-	"\asession\x18\x01 \x01(\v2\x1a.gophkeeper.api.v1.SessionR\asession\"I\n" +
-	"\x11UploadDataRequest\x124\n" +
-	"\asession\x18\x01 \x01(\v2\x1a.gophkeeper.api.v1.SessionR\asession\"\x14\n" +
-	"\x12UploadDataResponse\"K\n" +
-	"\x13DownloadDataRequest\x124\n" +
-	"\asession\x18\x01 \x01(\v2\x1a.gophkeeper.api.v1.SessionR\asession\"L\n" +
-	"\x14DownloadDataResponse\x124\n" +
-	"\asession\x18\x01 \x01(\v2\x1a.gophkeeper.api.v1.SessionR\asession\"I\n" +
-	"\x11DeleteDataRequest\x124\n" +
-	"\asession\x18\x01 \x01(\v2\x1a.gophkeeper.api.v1.SessionR\asession\"\x14\n" +
-	"\x12DeleteDataResponse\"G\n" +
-	"\x0fListDataRequest\x124\n" +
-	"\asession\x18\x01 \x01(\v2\x1a.gophkeeper.api.v1.SessionR\asession\"\x12\n" +
-	"\x10ListDataResponse\"\x1b\n" +
-	"\tDepositor\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"(\n" +
-	"\aSession\x12\x1d\n" +
+	"auth_token\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tauthToken\"\x14\n" +
+	"\x12UploadDataResponse\"=\n" +
+	"\x13DownloadDataRequest\x12&\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tR\tsessionId\"\x15\n" +
+	"auth_token\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tauthToken\"\x16\n" +
+	"\x14DownloadDataResponse\";\n" +
+	"\x11DeleteDataRequest\x12&\n" +
+	"\n" +
+	"auth_token\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tauthToken\"\x14\n" +
+	"\x12DeleteDataResponse\"9\n" +
+	"\x0fListDataRequest\x12&\n" +
+	"\n" +
+	"auth_token\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\tauthToken\"\x12\n" +
+	"\x10ListDataResponse\"\x15\n" +
+	"\x03App\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x15\n" +
 	"\x13DownloadFileRequest2\xbf\x01\n" +
 	"\x10DepositorService\x12S\n" +
 	"\bRegister\x12\".gophkeeper.api.v1.RegisterRequest\x1a#.gophkeeper.api.v1.RegisterResponse\x12V\n" +
@@ -814,57 +669,48 @@ func file_api_v1_api_proto_rawDescGZIP() []byte {
 	return file_api_v1_api_proto_rawDescData
 }
 
-var file_api_v1_api_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_api_v1_api_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_api_v1_api_proto_goTypes = []any{
 	(*RegisterRequest)(nil),      // 0: gophkeeper.api.v1.RegisterRequest
 	(*RegisterResponse)(nil),     // 1: gophkeeper.api.v1.RegisterResponse
 	(*AuthorizeRequest)(nil),     // 2: gophkeeper.api.v1.AuthorizeRequest
 	(*AuthorizeResponse)(nil),    // 3: gophkeeper.api.v1.AuthorizeResponse
-	(*ConnectRequest)(nil),       // 4: gophkeeper.api.v1.ConnectRequest
-	(*ConnectResponse)(nil),      // 5: gophkeeper.api.v1.ConnectResponse
-	(*UploadDataRequest)(nil),    // 6: gophkeeper.api.v1.UploadDataRequest
-	(*UploadDataResponse)(nil),   // 7: gophkeeper.api.v1.UploadDataResponse
-	(*DownloadDataRequest)(nil),  // 8: gophkeeper.api.v1.DownloadDataRequest
-	(*DownloadDataResponse)(nil), // 9: gophkeeper.api.v1.DownloadDataResponse
-	(*DeleteDataRequest)(nil),    // 10: gophkeeper.api.v1.DeleteDataRequest
-	(*DeleteDataResponse)(nil),   // 11: gophkeeper.api.v1.DeleteDataResponse
-	(*ListDataRequest)(nil),      // 12: gophkeeper.api.v1.ListDataRequest
-	(*ListDataResponse)(nil),     // 13: gophkeeper.api.v1.ListDataResponse
-	(*Depositor)(nil),            // 14: gophkeeper.api.v1.Depositor
-	(*Session)(nil),              // 15: gophkeeper.api.v1.Session
-	(*DownloadFileRequest)(nil),  // 16: gophkeeper.api.v1.DownloadFileRequest
-	(*httpbody.HttpBody)(nil),    // 17: google.api.HttpBody
-	(*emptypb.Empty)(nil),        // 18: google.protobuf.Empty
+	(*UploadDataRequest)(nil),    // 4: gophkeeper.api.v1.UploadDataRequest
+	(*UploadDataResponse)(nil),   // 5: gophkeeper.api.v1.UploadDataResponse
+	(*DownloadDataRequest)(nil),  // 6: gophkeeper.api.v1.DownloadDataRequest
+	(*DownloadDataResponse)(nil), // 7: gophkeeper.api.v1.DownloadDataResponse
+	(*DeleteDataRequest)(nil),    // 8: gophkeeper.api.v1.DeleteDataRequest
+	(*DeleteDataResponse)(nil),   // 9: gophkeeper.api.v1.DeleteDataResponse
+	(*ListDataRequest)(nil),      // 10: gophkeeper.api.v1.ListDataRequest
+	(*ListDataResponse)(nil),     // 11: gophkeeper.api.v1.ListDataResponse
+	(*App)(nil),                  // 12: gophkeeper.api.v1.App
+	(*DownloadFileRequest)(nil),  // 13: gophkeeper.api.v1.DownloadFileRequest
+	(*httpbody.HttpBody)(nil),    // 14: google.api.HttpBody
+	(*emptypb.Empty)(nil),        // 15: google.protobuf.Empty
 }
 var file_api_v1_api_proto_depIdxs = []int32{
-	14, // 0: gophkeeper.api.v1.AuthorizeRequest.app:type_name -> gophkeeper.api.v1.Depositor
-	15, // 1: gophkeeper.api.v1.ConnectResponse.session:type_name -> gophkeeper.api.v1.Session
-	15, // 2: gophkeeper.api.v1.UploadDataRequest.session:type_name -> gophkeeper.api.v1.Session
-	15, // 3: gophkeeper.api.v1.DownloadDataRequest.session:type_name -> gophkeeper.api.v1.Session
-	15, // 4: gophkeeper.api.v1.DownloadDataResponse.session:type_name -> gophkeeper.api.v1.Session
-	15, // 5: gophkeeper.api.v1.DeleteDataRequest.session:type_name -> gophkeeper.api.v1.Session
-	15, // 6: gophkeeper.api.v1.ListDataRequest.session:type_name -> gophkeeper.api.v1.Session
-	0,  // 7: gophkeeper.api.v1.DepositorService.Register:input_type -> gophkeeper.api.v1.RegisterRequest
-	2,  // 8: gophkeeper.api.v1.DepositorService.Authorize:input_type -> gophkeeper.api.v1.AuthorizeRequest
-	6,  // 9: gophkeeper.api.v1.KeeperService.UploadData:input_type -> gophkeeper.api.v1.UploadDataRequest
-	8,  // 10: gophkeeper.api.v1.KeeperService.DownloadData:input_type -> gophkeeper.api.v1.DownloadDataRequest
-	12, // 11: gophkeeper.api.v1.KeeperService.ListData:input_type -> gophkeeper.api.v1.ListDataRequest
-	10, // 12: gophkeeper.api.v1.KeeperService.DeleteData:input_type -> gophkeeper.api.v1.DeleteDataRequest
-	16, // 13: gophkeeper.api.v1.KeeperService.DownloadFile:input_type -> gophkeeper.api.v1.DownloadFileRequest
-	17, // 14: gophkeeper.api.v1.KeeperService.UploadFile:input_type -> google.api.HttpBody
-	1,  // 15: gophkeeper.api.v1.DepositorService.Register:output_type -> gophkeeper.api.v1.RegisterResponse
-	3,  // 16: gophkeeper.api.v1.DepositorService.Authorize:output_type -> gophkeeper.api.v1.AuthorizeResponse
-	7,  // 17: gophkeeper.api.v1.KeeperService.UploadData:output_type -> gophkeeper.api.v1.UploadDataResponse
-	9,  // 18: gophkeeper.api.v1.KeeperService.DownloadData:output_type -> gophkeeper.api.v1.DownloadDataResponse
-	13, // 19: gophkeeper.api.v1.KeeperService.ListData:output_type -> gophkeeper.api.v1.ListDataResponse
-	11, // 20: gophkeeper.api.v1.KeeperService.DeleteData:output_type -> gophkeeper.api.v1.DeleteDataResponse
-	17, // 21: gophkeeper.api.v1.KeeperService.DownloadFile:output_type -> google.api.HttpBody
-	18, // 22: gophkeeper.api.v1.KeeperService.UploadFile:output_type -> google.protobuf.Empty
-	15, // [15:23] is the sub-list for method output_type
-	7,  // [7:15] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	12, // 0: gophkeeper.api.v1.AuthorizeRequest.app:type_name -> gophkeeper.api.v1.App
+	0,  // 1: gophkeeper.api.v1.DepositorService.Register:input_type -> gophkeeper.api.v1.RegisterRequest
+	2,  // 2: gophkeeper.api.v1.DepositorService.Authorize:input_type -> gophkeeper.api.v1.AuthorizeRequest
+	4,  // 3: gophkeeper.api.v1.KeeperService.UploadData:input_type -> gophkeeper.api.v1.UploadDataRequest
+	6,  // 4: gophkeeper.api.v1.KeeperService.DownloadData:input_type -> gophkeeper.api.v1.DownloadDataRequest
+	10, // 5: gophkeeper.api.v1.KeeperService.ListData:input_type -> gophkeeper.api.v1.ListDataRequest
+	8,  // 6: gophkeeper.api.v1.KeeperService.DeleteData:input_type -> gophkeeper.api.v1.DeleteDataRequest
+	13, // 7: gophkeeper.api.v1.KeeperService.DownloadFile:input_type -> gophkeeper.api.v1.DownloadFileRequest
+	14, // 8: gophkeeper.api.v1.KeeperService.UploadFile:input_type -> google.api.HttpBody
+	1,  // 9: gophkeeper.api.v1.DepositorService.Register:output_type -> gophkeeper.api.v1.RegisterResponse
+	3,  // 10: gophkeeper.api.v1.DepositorService.Authorize:output_type -> gophkeeper.api.v1.AuthorizeResponse
+	5,  // 11: gophkeeper.api.v1.KeeperService.UploadData:output_type -> gophkeeper.api.v1.UploadDataResponse
+	7,  // 12: gophkeeper.api.v1.KeeperService.DownloadData:output_type -> gophkeeper.api.v1.DownloadDataResponse
+	11, // 13: gophkeeper.api.v1.KeeperService.ListData:output_type -> gophkeeper.api.v1.ListDataResponse
+	9,  // 14: gophkeeper.api.v1.KeeperService.DeleteData:output_type -> gophkeeper.api.v1.DeleteDataResponse
+	14, // 15: gophkeeper.api.v1.KeeperService.DownloadFile:output_type -> google.api.HttpBody
+	15, // 16: gophkeeper.api.v1.KeeperService.UploadFile:output_type -> google.protobuf.Empty
+	9,  // [9:17] is the sub-list for method output_type
+	1,  // [1:9] is the sub-list for method input_type
+	1,  // [1:1] is the sub-list for extension type_name
+	1,  // [1:1] is the sub-list for extension extendee
+	0,  // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_api_proto_init() }
@@ -878,7 +724,7 @@ func file_api_v1_api_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_api_proto_rawDesc), len(file_api_v1_api_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
