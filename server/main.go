@@ -2,26 +2,22 @@ package main
 
 import (
 	"context"
-	"crypto/rsa"
-	"crypto/tls"
 	"fmt"
 	"os"
 
 	"github.com/oleshko-g/gophkeeper/internal/app/server"
 	pgsql "github.com/oleshko-g/gophkeeper/internal/db/pgx"
 	queries "github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
-	"github.com/oleshko-g/gophkeeper/internal/security"
 	"github.com/oleshko-g/gophkeeper/internal/service/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/service/keeper"
 	storageDepositor "github.com/oleshko-g/gophkeeper/internal/storage/depositor"
 	storageKeeper "github.com/oleshko-g/gophkeeper/internal/storage/keeper"
-	"google.golang.org/grpc/credentials"
 )
 
 func main() {
 	app := server.App{}
 
-	err := app.Configure()
+	err := app.I_Configure()
 	if err != nil {
 		panic(err)
 	}
@@ -33,36 +29,22 @@ func main() {
 	app.DB.Conn = pgConn
 
 	q := queries.New(app.DB.Conn)
-	app.SetStorage(
+	app.II_SetStorage(
 		storageDepositor.New(q),
 		storageKeeper.New(q),
 	)
 
-	cert, err := tls.LoadX509KeyPair(security.CertFile, security.KeyFile)
+	err = app.III_SetSecurity()
 	if err != nil {
-		err := security.WriteX509KeyPair()
-		if err != nil {
-			panic(err)
-		}
-		cert, err = tls.LoadX509KeyPair(security.CertFile, security.KeyFile)
-		if err != nil {
-			panic(err)
-		}
+		panic(err)
 	}
 
-	priv, ok := cert.PrivateKey.(*rsa.PrivateKey)
-	if !ok {
-		panic("cert is not an RSA private key")
-	}
-	app.SetService(
-		depositor.New(app.Storage.Depositor, priv),
+	app.IV_SetService(
+		depositor.New(app.Storage.Depositor, app.Security.PrivateKey()),
 		keeper.New(app.Storage.Keeper),
 	)
 
-	creds := credentials.NewTLS(&tls.Config{
-		Certificates: []tls.Certificate{cert},
-	})
-	err = app.SetServer(creds)
+	err = app.V_SetServer(*app.Security.Credentials())
 	if err != nil {
 		panic(err)
 	}
