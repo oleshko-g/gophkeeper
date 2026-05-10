@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/oleshko-g/gophkeeper/internal/app/server"
-	"github.com/oleshko-g/gophkeeper/internal/security"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
 	"google.golang.org/grpc/credentials"
@@ -20,14 +19,18 @@ func TestMain(m *testing.M) {
 
 func TestApp(t0 *testing.T) {
 	app := server.App{}
-	err := app.I_Configure()
+	err := app.I_Configure("testdata/.env")
+	if err != nil {
+		t0.Fatal(err)
+	}
+	err = app.III_SetSecurity()
 	if err != nil {
 		t0.Fatal(err)
 	}
 
-	cert, err := tls.LoadX509KeyPair(security.CertFile, security.KeyFile)
+	cert, err := tls.LoadX509KeyPair(app.Security.Config.CertFile, app.Security.Config.KeyFile)
 	if err != nil {
-		cert, err = tls.LoadX509KeyPair(security.CertFile, security.KeyFile)
+		cert, err = tls.LoadX509KeyPair(app.Security.Config.CertFile, app.Security.Config.KeyFile)
 		if err != nil {
 			panic(err)
 		}
