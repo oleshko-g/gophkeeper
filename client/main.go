@@ -182,13 +182,14 @@ func (app *a) initConfigDir() {
 type config struct {
 	GophKeeperURL string `json:"keeper_url"`
 
-	// RegisteredPubKey is the public key registered on the gophkeeper server.
-	// The key is the public key, the value is the refresh token with which the client must [authorize] the [app].
-	RegisteredPubKey map[string]string `json:"registered_pub_key"`
+	// PrivateKeyFilePath is the path to the private key file used for authentication.
+	PrivateKeyFilePath string `json:"private_key_file_path"`
+	PublicKeyFilePath  string `json:"public_key_file_path"`
+
+	RegisteredPubKeyID string `json:"registered_pub_key_id"`
 
 	// AuthToken is the authentication token for the [app] on the gophkeeper server.
-	// The key is the refresh token, the value is the authentication token.
-	AuthToken map[string]string `json:"auth_token"`
+	AuthToken string `json:"auth_token"`
 }
 
 // initConfig initializes the configuration for the [app].
@@ -226,7 +227,7 @@ func (app *a) initConfig() {
 		panic(err)
 	}
 	app.logger.Info(fmt.Sprintf("config is initialized with values %#v", app.config))
-	if app.config.RegisteredPubKey != nil {
+	if app.config.RegisteredPubKeyID != "" {
 		app.state = pubKeyRegistered
 		return
 	}

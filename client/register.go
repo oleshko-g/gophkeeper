@@ -66,19 +66,19 @@ func (app *a) registerRunE(cmd *cobra.Command, _ []string) error {
 	}
 
 	// write RSA key pair
-	err = os.WriteFile(path.Join(app.cfgDir, "id_rsa"), encodedPrivKey.Bytes(), 0600)
+	app.config.PrivateKeyFilePath = path.Join(app.cfgDir, "id_rsa")
+	err = os.WriteFile(app.config.PrivateKeyFilePath, encodedPrivKey.Bytes(), 0600)
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(path.Join(app.cfgDir, "id_rsa.pub"), encodedPubKey.Bytes(), 0644)
+	app.config.PublicKeyFilePath = path.Join(app.cfgDir, "id_rsa.pub")
+	err = os.WriteFile(app.config.PublicKeyFilePath, encodedPubKey.Bytes(), 0644)
 	if err != nil {
 		return err
 	}
 
-	app.config.RegisteredPubKey = map[string]string{
-		encodedPubKey.String(): encryptedID,
-	}
+	app.config.RegisteredPubKeyID = res.GetEncryptedId()
 
 	app.state = pubKeyRegistered
 
