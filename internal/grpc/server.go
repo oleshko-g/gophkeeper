@@ -8,13 +8,23 @@ import (
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
 )
 
 // New creates a new gRPC server with the gRPC server
-func New(depositor service.Depositor, keeper service.Keeper) *Server {
+func New(depositor service.Depositor, keeper service.Keeper) (*Server, error) {
+	creds, err := credentials.NewServerTLSFromFile(certFile, keyFile)
+	if err != nil {
+		TLSconfig := newTLSConfig()
+		if TLSconfig == nil {
+			return nil, fmt.Errorf("failed to create TLS credentials: %w", err)
+		}
+		creds = credentials.NewTLS(TLSconfig)
+	}
+
 	s := &Server{}
-	s.Server = grpc.NewServer()
+	s.Server = grpc.NewServer(grpc.Creds(creds))
 	reflection.Register(s.Server)
 
 	s.Depositor = depositor
@@ -23,7 +33,7 @@ func New(depositor service.Depositor, keeper service.Keeper) *Server {
 	s.Keeper = keeper
 	pb.RegisterKeeperServiceServer(s.Server, s.Keeper)
 
-	return s
+	return s, nil
 }
 
 // Server is a gRPC server with the implemented [minifier_v1.Keeper] and [minifier_v1.Depositor] services

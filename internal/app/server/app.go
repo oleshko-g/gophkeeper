@@ -85,11 +85,15 @@ func (a *App) SetServer() error {
 		return errors.New("field Service is nil. SetService() must be called before SetServer")
 	}
 
-	a.grpc.Server = grpc.New(
+	srv, err := grpc.New(
 		a.Service.Depositor,
 		a.Service.Keeper,
 	)
+	if err != nil {
+		return err
+	}
 
+	a.grpc.Server = srv
 	return nil
 }
 
