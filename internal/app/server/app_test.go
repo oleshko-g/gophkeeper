@@ -20,12 +20,13 @@ func TestMain(m *testing.M) {
 
 func TestApp(t0 *testing.T) {
 	app := server.App{}
+	err := app.I_Configure()
+	if err != nil {
+		t0.Fatal(err)
+	}
+
 	cert, err := tls.LoadX509KeyPair(security.CertFile, security.KeyFile)
 	if err != nil {
-		err := security.WriteX509KeyPair()
-		if err != nil {
-			panic(err)
-		}
 		cert, err = tls.LoadX509KeyPair(security.CertFile, security.KeyFile)
 		if err != nil {
 			panic(err)
@@ -37,14 +38,14 @@ func TestApp(t0 *testing.T) {
 
 	t0.Run("Configure", func(t *testing.T) {
 		t.Run("Success", func(t *testing.T) {
-			err := app.Configure("testdata/.env")
+			err := app.I_Configure("testdata/.env")
 			if err != nil {
 				t.Error(err)
 			}
 		})
 
 		t.Run("Err", func(t *testing.T) {
-			err := app.Configure("no env file")
+			err := app.I_Configure("no env file")
 			if err == nil {
 				t.Error("expected error, got nil")
 			}
@@ -55,7 +56,7 @@ func TestApp(t0 *testing.T) {
 		if t0.Failed() {
 			t.Skip()
 		}
-		app.SetStorage(&storage.DepositorMock{}, storage.KeeperMock{})
+		app.II_SetStorage(&storage.DepositorMock{}, storage.KeeperMock{})
 	})
 
 	t0.Run("SetService", func(t *testing.T) {
@@ -63,7 +64,7 @@ func TestApp(t0 *testing.T) {
 		if t0.Failed() {
 			t.Skip()
 		}
-		app.SetService(&service.DepositorMock{}, &service.KeeperMock{})
+		app.IV_SetService(&service.DepositorMock{}, &service.KeeperMock{})
 	})
 
 	t0.Run("SetServer", func(t *testing.T) {
@@ -73,11 +74,11 @@ func TestApp(t0 *testing.T) {
 
 		t.Run("Success", func(t *testing.T) {
 			app := app // make a copy for the test
-			app.SetService(&service.DepositorMock{}, &service.KeeperMock{})
+			app.IV_SetService(&service.DepositorMock{}, &service.KeeperMock{})
 		})
 
 		t.Run("Err", func(t *testing.T) {
-			err := app.SetServer(creds)
+			err := app.V_SetServer(creds)
 			if err == nil {
 				t.Error("expected error, got nil")
 			}
@@ -90,11 +91,11 @@ func TestApp(t0 *testing.T) {
 		}
 
 		app := app
-		app.Configure("testdata/.env")
-		app.SetService(&service.DepositorMock{}, &service.KeeperMock{})
+		app.I_Configure("testdata/.env")
+		app.IV_SetService(&service.DepositorMock{}, &service.KeeperMock{})
 
 		t.Run("Success", func(t *testing.T) {
-			err := app.SetServer(creds)
+			err := app.V_SetServer(creds)
 			if err != nil {
 				t0.Error(err)
 			}
