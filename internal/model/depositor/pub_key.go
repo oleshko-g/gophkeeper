@@ -11,8 +11,8 @@ import (
 // PubKey is the model of a registered pub key.
 // It enforces the relationship between a public key and a refresh token.
 type PubKey struct {
-	ID    uuidv7.UUID[uuid.UUID]
-	Value string
+	ID    uuidv7.UUID[uuid.UUID] `json:"pub_key_id"`
+	Value string                 `json:"-"`
 }
 
 // IDValue is the interface that a refresh token value must implement.

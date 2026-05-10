@@ -4,15 +4,6 @@ CREATE TABLE depositor_pub_keys (id UUID PRIMARY KEY, pub_key TEXT UNIQUE NOT NU
 COMMENT ON TABLE depositor_pub_keys IS 'depositor_pub_keys are the registered public keys of depositors';
 COMMENT ON COLUMN depositor_pub_keys.id IS 'id is a UUID v7 value. It includes the timestamp at which the pub_key was registered';
 
-
-CREATE TABLE depositor_apps (
-  id UUID PRIMARY KEY,
-  depositor_pub_key_id UUID NOT NULL
-);
-
-COMMENT ON TABLE depositor_apps IS 'depositor_apps are the authorized apps of the registered depositors';
-COMMENT ON COLUMN depositor_apps.id IS 'id is a UUID v7 value. It includes the timestamp at which the app was authorized';
-
 CREATE TABLE deposited_data (
   id UUID PRIMARY KEY,
   depositor_pub_key_id UUID NOT NULL REFERENCES depositor_pub_keys (id) ON DELETE CASCADE,
@@ -22,7 +13,5 @@ CREATE TABLE deposited_data (
 
 -- +goose Down
 DROP TABLE IF EXISTS deposited_data;
-
-DROP TABLE IF EXISTS depositor_apps;
 
 DROP TABLE IF EXISTS depositor_pub_keys;

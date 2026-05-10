@@ -64,7 +64,6 @@ message RegisterResponse {
 
 message AuthorizeRequest {
   string decrypted_id = 1 [(validate.rules).string.min_len = 1];
-  App app = 2;
 }
 
 message AuthorizeResponse {
@@ -94,9 +93,5 @@ message ListDataRequest {
 }
 
 message ListDataResponse {}
-
-message App {
-  string id = 1;
-}
 
 message DownloadFileRequest {}

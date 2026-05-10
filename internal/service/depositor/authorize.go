@@ -3,8 +3,11 @@ package depositor
 import (
 	"context"
 	"errors"
+	"time"
 
+	jwt "github.com/golang-jwt/jwt/v5"
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
+	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
 	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
@@ -21,9 +24,33 @@ func (s *Service) Authorize(ctx context.Context, in *pb.AuthorizeRequest) (*pb.A
 		return nil, s.wrapError(methodName, service.ErrTypeStorage, err)
 	}
 
-	// issue the JWT with claims: ID, App.UUIDv7
-	// encode JWT to Base64
-	// return as Token
-	_ = pk
-	return &pb.AuthorizeResponse{}, nil
+	clientApp := depositor.AuthorizedApp{
+		ID: uuidv7.New(),
+		PubKey: depositor.PubKey{
+			ID: pk.ID,
+		},
+	}
+
+	token := jwt.NewWithClaims(
+		jwt.SigningMethodRS256,
+		claims{
+			RegisteredClaims: jwt.RegisteredClaims{
+				Issuer:    s.Name,
+				IssuedAt:  jwt.NewNumericDate(clientApp.AuthorizedAt()),
+				ExpiresAt: jwt.NewNumericDate(clientApp.AuthorizedAt().Add(24 * time.Hour)),
+			},
+			AuthorizedApp: clientApp,
+		},
+	)
+
+	signedToken, err := token.SignedString(s.privKey)
+
+	return &pb.AuthorizeResponse{
+		AuthToken: new(signedToken),
+	}, nil
+}
+
+type claims struct {
+	jwt.RegisteredClaims
+	depositor.AuthorizedApp
 }
