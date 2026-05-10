@@ -5,6 +5,7 @@ package depositor
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
 	"sync"
 )
@@ -22,6 +23,9 @@ var _ Querier = &QuerierMock{}
 //			InsertPubKeyFunc: func(ctx context.Context, arg queries.InsertPubKeyParams) error {
 //				panic("mock out the InsertPubKey method")
 //			},
+//			SelectPubKeyByIDFunc: func(ctx context.Context, id uuid.UUID) (queries.DepositorPubKey, error) {
+//				panic("mock out the SelectPubKeyByID method")
+//			},
 //		}
 //
 //		// use mockedQuerier in code that requires Querier
@@ -32,6 +36,9 @@ type QuerierMock struct {
 	// InsertPubKeyFunc mocks the InsertPubKey method.
 	InsertPubKeyFunc func(ctx context.Context, arg queries.InsertPubKeyParams) error
 
+	// SelectPubKeyByIDFunc mocks the SelectPubKeyByID method.
+	SelectPubKeyByIDFunc func(ctx context.Context, id uuid.UUID) (queries.DepositorPubKey, error)
+
 	// calls tracks calls to the methods.
 	calls struct {
 		// InsertPubKey holds details about calls to the InsertPubKey method.
@@ -41,8 +48,16 @@ type QuerierMock struct {
 			// Arg is the arg argument value.
 			Arg queries.InsertPubKeyParams
 		}
+		// SelectPubKeyByID holds details about calls to the SelectPubKeyByID method.
+		SelectPubKeyByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
 	}
-	lockInsertPubKey sync.RWMutex
+	lockInsertPubKey     sync.RWMutex
+	lockSelectPubKeyByID sync.RWMutex
 }
 
 // InsertPubKey calls InsertPubKeyFunc.
@@ -78,5 +93,41 @@ func (mock *QuerierMock) InsertPubKeyCalls() []struct {
 	mock.lockInsertPubKey.RLock()
 	calls = mock.calls.InsertPubKey
 	mock.lockInsertPubKey.RUnlock()
+	return calls
+}
+
+// SelectPubKeyByID calls SelectPubKeyByIDFunc.
+func (mock *QuerierMock) SelectPubKeyByID(ctx context.Context, id uuid.UUID) (queries.DepositorPubKey, error) {
+	if mock.SelectPubKeyByIDFunc == nil {
+		panic("QuerierMock.SelectPubKeyByIDFunc: method is nil but Querier.SelectPubKeyByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockSelectPubKeyByID.Lock()
+	mock.calls.SelectPubKeyByID = append(mock.calls.SelectPubKeyByID, callInfo)
+	mock.lockSelectPubKeyByID.Unlock()
+	return mock.SelectPubKeyByIDFunc(ctx, id)
+}
+
+// SelectPubKeyByIDCalls gets all the calls that were made to SelectPubKeyByID.
+// Check the length with:
+//
+//	len(mockedQuerier.SelectPubKeyByIDCalls())
+func (mock *QuerierMock) SelectPubKeyByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockSelectPubKeyByID.RLock()
+	calls = mock.calls.SelectPubKeyByID
+	mock.lockSelectPubKeyByID.RUnlock()
 	return calls
 }

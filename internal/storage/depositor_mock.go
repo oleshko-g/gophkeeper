@@ -5,6 +5,9 @@ package storage
 
 import (
 	"context"
+	"github.com/google/uuid"
+	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
+	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 	"sync"
 )
 
@@ -18,6 +21,9 @@ var _ Depositor = &DepositorMock{}
 //
 //		// make and configure a mocked Depositor
 //		mockedDepositor := &DepositorMock{
+//			RetrievePubKeyByIDFunc: func(ctx context.Context, id uuidv7.UUID[uuid.UUID]) (*depositor.PubKey, error) {
+//				panic("mock out the RetrievePubKeyByID method")
+//			},
 //			StorePubKeyFunc: func(ctx context.Context, pubKey string) (string, error) {
 //				panic("mock out the StorePubKey method")
 //			},
@@ -28,11 +34,21 @@ var _ Depositor = &DepositorMock{}
 //
 //	}
 type DepositorMock struct {
+	// RetrievePubKeyByIDFunc mocks the RetrievePubKeyByID method.
+	RetrievePubKeyByIDFunc func(ctx context.Context, id uuidv7.UUID[uuid.UUID]) (*depositor.PubKey, error)
+
 	// StorePubKeyFunc mocks the StorePubKey method.
 	StorePubKeyFunc func(ctx context.Context, pubKey string) (string, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// RetrievePubKeyByID holds details about calls to the RetrievePubKeyByID method.
+		RetrievePubKeyByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuidv7.UUID[uuid.UUID]
+		}
 		// StorePubKey holds details about calls to the StorePubKey method.
 		StorePubKey []struct {
 			// Ctx is the ctx argument value.
@@ -41,7 +57,44 @@ type DepositorMock struct {
 			PubKey string
 		}
 	}
-	lockStorePubKey sync.RWMutex
+	lockRetrievePubKeyByID sync.RWMutex
+	lockStorePubKey        sync.RWMutex
+}
+
+// RetrievePubKeyByID calls RetrievePubKeyByIDFunc.
+func (mock *DepositorMock) RetrievePubKeyByID(ctx context.Context, id uuidv7.UUID[uuid.UUID]) (*depositor.PubKey, error) {
+	if mock.RetrievePubKeyByIDFunc == nil {
+		panic("DepositorMock.RetrievePubKeyByIDFunc: method is nil but Depositor.RetrievePubKeyByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuidv7.UUID[uuid.UUID]
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockRetrievePubKeyByID.Lock()
+	mock.calls.RetrievePubKeyByID = append(mock.calls.RetrievePubKeyByID, callInfo)
+	mock.lockRetrievePubKeyByID.Unlock()
+	return mock.RetrievePubKeyByIDFunc(ctx, id)
+}
+
+// RetrievePubKeyByIDCalls gets all the calls that were made to RetrievePubKeyByID.
+// Check the length with:
+//
+//	len(mockedDepositor.RetrievePubKeyByIDCalls())
+func (mock *DepositorMock) RetrievePubKeyByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuidv7.UUID[uuid.UUID]
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuidv7.UUID[uuid.UUID]
+	}
+	mock.lockRetrievePubKeyByID.RLock()
+	calls = mock.calls.RetrievePubKeyByID
+	mock.lockRetrievePubKeyByID.RUnlock()
+	return calls
 }
 
 // StorePubKey calls StorePubKeyFunc.
