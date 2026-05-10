@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -12,7 +13,7 @@ import (
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 )
 
 // a is the main application struct that holds the application state and configuration.
@@ -242,7 +243,7 @@ func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-
+	app.logger.Info(fmt.Sprintf("config is updated to %#v", app.config))
 	return nil
 }
 
@@ -263,7 +264,7 @@ type client struct {
 func newClient(gophKeeperURL string) (*client, error) {
 	conn, err := grpc.NewClient(
 		gophKeeperURL,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})),
 	)
 	if err != nil {
 		return nil, err

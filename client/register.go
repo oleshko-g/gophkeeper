@@ -49,12 +49,7 @@ func (app *a) registerRunE(cmd *cobra.Command, _ []string) error {
 
 	encryptedID := res.GetEncryptedId()
 	if encryptedID == "" {
-		return fmt.Errorf("refresh token is empty")
-	}
-
-	err = os.WriteFile(path.Join(app.cfgDir, "refresh_token.txt"), []byte(encryptedID), 0600)
-	if err != nil {
-		return err
+		return fmt.Errorf("encryptedID is empty")
 	}
 
 	privBytes, err := x509.MarshalPKCS8PrivateKey(priv)
