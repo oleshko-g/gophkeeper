@@ -49,7 +49,7 @@ func (s *Server) authOption() grpc.ServerOption {
 				return nil, err
 			}
 
-			md.Set("private_key_id", authorizedApp.PubKey.ID.String)
+			ctx = context.WithValue(ctx, "public_key_id", authorizedApp.PubKey.ID.String)
 
 			return handler(ctx, req)
 		})
