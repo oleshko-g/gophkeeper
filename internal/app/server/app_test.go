@@ -2,13 +2,16 @@ package server_test
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"testing"
 	"time"
 
 	"github.com/oleshko-g/gophkeeper/internal/app/server"
+	"github.com/oleshko-g/gophkeeper/internal/security"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
+	"google.golang.org/grpc/credentials"
 )
 
 func TestMain(m *testing.M) {
@@ -17,6 +20,20 @@ func TestMain(m *testing.M) {
 
 func TestApp(t0 *testing.T) {
 	app := server.App{}
+	cert, err := tls.LoadX509KeyPair(security.CertFile, security.KeyFile)
+	if err != nil {
+		err := security.WriteX509KeyPair()
+		if err != nil {
+			panic(err)
+		}
+		cert, err = tls.LoadX509KeyPair(security.CertFile, security.KeyFile)
+		if err != nil {
+			panic(err)
+		}
+	}
+	creds := credentials.NewTLS(&tls.Config{
+		Certificates: []tls.Certificate{cert},
+	})
 
 	t0.Run("Configure", func(t *testing.T) {
 		t.Run("Success", func(t *testing.T) {
@@ -60,7 +77,7 @@ func TestApp(t0 *testing.T) {
 		})
 
 		t.Run("Err", func(t *testing.T) {
-			err := app.SetServer()
+			err := app.SetServer(creds)
 			if err == nil {
 				t.Error("expected error, got nil")
 			}
@@ -77,7 +94,7 @@ func TestApp(t0 *testing.T) {
 		app.SetService(&service.DepositorMock{}, &service.KeeperMock{})
 
 		t.Run("Success", func(t *testing.T) {
-			err := app.SetServer()
+			err := app.SetServer(creds)
 			if err != nil {
 				t0.Error(err)
 			}

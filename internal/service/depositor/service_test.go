@@ -9,7 +9,7 @@ import (
 )
 
 func TestAuthorize(t *testing.T) {
-	svc := depositor.New(&storage.DepositorMock{}, refreshTokenTTL)
+	svc := depositor.New(&storage.DepositorMock{}, nil)
 
 	t.Run("Success", func(t *testing.T) {
 		_, err := svc.Authorize(

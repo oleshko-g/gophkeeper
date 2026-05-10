@@ -13,16 +13,11 @@ import (
 )
 
 // New creates a new gRPC server with the gRPC server
-func New(depositor service.Depositor, keeper service.Keeper) (*Server, error) {
-	creds, err := credentials.NewServerTLSFromFile(certFile, keyFile)
-	if err != nil {
-		TLSconfig := newTLSConfig()
-		if TLSconfig == nil {
-			return nil, fmt.Errorf("failed to create TLS credentials: %w", err)
-		}
-		creds = credentials.NewTLS(TLSconfig)
-	}
-
+func New(
+	depositor service.Depositor,
+	keeper service.Keeper,
+	creds credentials.TransportCredentials,
+) (*Server, error) {
 	s := &Server{}
 	s.Server = grpc.NewServer(grpc.Creds(creds))
 	reflection.Register(s.Server)

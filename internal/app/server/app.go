@@ -11,6 +11,7 @@ import (
 	"github.com/oleshko-g/gophkeeper/internal/grpc"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/storage"
+	"google.golang.org/grpc/credentials"
 )
 
 // App is the struct to hold a gophkeeper server implementation.
@@ -80,14 +81,16 @@ func (a *App) SetService(depositor service.Depositor, keeper service.Keeper) {
 }
 
 // Setup initializes [App.Server] with the [App.Service] implementations. If [App.Service] is nil it panics
-func (a *App) SetServer() error {
+func (a *App) SetServer(creds credentials.TransportCredentials) error {
 	if a.Service == nil || a.Service.Depositor == nil || a.Service.Keeper == nil {
 		return errors.New("field Service is nil. SetService() must be called before SetServer")
 	}
 
+
 	srv, err := grpc.New(
 		a.Service.Depositor,
 		a.Service.Keeper,
+		creds,
 	)
 	if err != nil {
 		return err

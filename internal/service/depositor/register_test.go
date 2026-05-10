@@ -26,25 +26,34 @@ func TestRegister(t *testing.T) {
 	}
 
 	var (
-		svc        *depositor.Service
-		methodName string = "Register"
-		priv       *rsa.PrivateKey
-		err        error
-		tests      = make(map[string]testCase)
+		svc                         *depositor.Service
+		methodName                  string = "Register"
+		privServerKey, privCientKey *rsa.PrivateKey
+		err                         error
+		tests                       = make(map[string]testCase)
 	)
 
 	t.Run("Setup", func(t *testing.T) {
+		privServerKey, err = rsa.GenerateKey(rand.Reader, 2048)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		privCientKey, err = rsa.GenerateKey(rand.Reader, 2048)
+		if err != nil {
+			t.Fatal(err)
+		}
 		t.Run("Service", func(t *testing.T) {
 			svc = depositor.New(
 				&storage.DepositorMock{
 					StorePubKeyFunc: func(_ context.Context, _ string) (string, error) { return "019dd2b5-0ab9-768b-b1f9-aac25f94d238", nil },
 				},
-				refreshTokenTTL,
+				privServerKey,
 			)
 		})
 
 		t.Run("Test cases", func(t *testing.T) {
-			priv, err = rsa.GenerateKey(rand.Reader, 2048)
+			privCientKey, err = rsa.GenerateKey(rand.Reader, 2048)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -110,7 +119,7 @@ func TestRegister(t *testing.T) {
 
 			testName = "Valid PKIX Public Key"
 			t.Run(testName, func(t *testing.T) {
-				PKIXPublicKeyBytes, _ := x509.MarshalPKIXPublicKey(&priv.PublicKey)
+				PKIXPublicKeyBytes, _ := x509.MarshalPKIXPublicKey(&privCientKey.PublicKey)
 				err := pem.Encode(stringBuilder, &pem.Block{Type: "PUBLIC KEY", Bytes: PKIXPublicKeyBytes})
 				if err != nil {
 					t.Error(err)
@@ -126,7 +135,7 @@ func TestRegister(t *testing.T) {
 
 			testName = "Valid PKCS1 Public Key"
 			t.Run(testName, func(t *testing.T) {
-				err = pem.Encode(stringBuilder, &pem.Block{Type: "RSA PUBLIC KEY", Bytes: x509.MarshalPKCS1PublicKey(&priv.PublicKey)})
+				err = pem.Encode(stringBuilder, &pem.Block{Type: "RSA PUBLIC KEY", Bytes: x509.MarshalPKCS1PublicKey(&privCientKey.PublicKey)})
 				if err != nil {
 					t.Error(err)
 				}

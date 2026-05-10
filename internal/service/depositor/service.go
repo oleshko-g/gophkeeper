@@ -1,7 +1,7 @@
 package depositor
 
 import (
-	"time"
+	"crypto/rsa"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 
@@ -11,14 +11,14 @@ import (
 
 var _ service.Depositor = (*Service)(nil)
 
-func New(s storage.Depositor, refreshTokenTTL time.Duration) *Service {
-	return &Service{Name: "Depositor", Depositor: s, refreshTokenTTL: refreshTokenTTL}
+func New(s storage.Depositor, priv *rsa.PrivateKey) *Service {
+	return &Service{Name: "Depositor", Depositor: s, privKey: priv}
 }
 
 type Service struct {
 	Name string
 	storage.Depositor
-	refreshTokenTTL time.Duration
+	privKey *rsa.PrivateKey
 	pb.UnimplementedDepositorServiceServer
 }
 

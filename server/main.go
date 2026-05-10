@@ -2,16 +2,20 @@ package main
 
 import (
 	"context"
+	"crypto/rsa"
+	"crypto/tls"
 	"fmt"
 	"os"
 
 	"github.com/oleshko-g/gophkeeper/internal/app/server"
 	pgsql "github.com/oleshko-g/gophkeeper/internal/db/pgx"
 	queries "github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
+	"github.com/oleshko-g/gophkeeper/internal/security"
 	"github.com/oleshko-g/gophkeeper/internal/service/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/service/keeper"
 	storageDepositor "github.com/oleshko-g/gophkeeper/internal/storage/depositor"
 	storageKeeper "github.com/oleshko-g/gophkeeper/internal/storage/keeper"
+	"google.golang.org/grpc/credentials"
 )
 
 func main() {
@@ -34,13 +38,31 @@ func main() {
 		storageKeeper.New(q),
 	)
 
+	cert, err := tls.LoadX509KeyPair(security.CertFile, security.KeyFile)
+	if err != nil {
+		err := security.WriteX509KeyPair()
+		if err != nil {
+			panic(err)
+		}
+		cert, err = tls.LoadX509KeyPair(security.CertFile, security.KeyFile)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	priv, ok := cert.PrivateKey.(*rsa.PrivateKey)
+	if !ok {
+		panic("cert is not an RSA private key")
+	}
 	app.SetService(
-		depositor.New(app.Storage.Depositor,
-			app.Service.Config.RefreshTokenTTL),
+		depositor.New(app.Storage.Depositor, priv),
 		keeper.New(app.Storage.Keeper),
 	)
 
-	err = app.SetServer()
+	creds := credentials.NewTLS(&tls.Config{
+		Certificates: []tls.Certificate{cert},
+	})
+	err = app.SetServer(creds)
 	if err != nil {
 		panic(err)
 	}
