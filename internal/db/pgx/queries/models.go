@@ -8,7 +8,8 @@ import (
 	"github.com/google/uuid"
 )
 
-type DepositedDatum struct {
+type DepositedSecret struct {
+	// id is a UUID v7 value. It includes the timestamp at which the secret was deposited
 	ID                uuid.UUID
 	DepositorPubKeyID uuid.UUID
 	EncryptedData     []byte

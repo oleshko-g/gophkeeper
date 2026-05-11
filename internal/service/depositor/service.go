@@ -12,16 +12,20 @@ import (
 var _ service.Depositor = (*Service)(nil)
 
 func New(s storage.Depositor, priv *rsa.PrivateKey) *Service {
-	return &Service{Name: "Depositor", Depositor: s, privKey: priv}
+	return &Service{name: "Depositor", Depositor: s, privKey: priv}
 }
 
 type Service struct {
-	Name string
+	name string
 	storage.Depositor
 	privKey *rsa.PrivateKey
 	pb.UnimplementedDepositorServiceServer
 }
 
 func (s *Service) wrapError(methodName string, t service.ErrType, err error) error {
-	return service.WrapError(&service.Err{SvcName: s.Name, Method: methodName, Type: t}, err)
+	return service.WrapError(&service.Err{SvcName: s.Name(), Method: methodName, Type: t}, err)
+}
+
+func (s *Service) Name() string {
+	return s.name
 }

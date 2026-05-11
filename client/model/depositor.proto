@@ -1,0 +1,24 @@
+edition = "2023";
+
+package gophkeeper.client.v1;
+
+option go_package = "github.com/oleshko-g/gophkeeper/client/v1;pb";
+
+message OpenSecret {
+  SecretType type = 1;
+  string name = 2;
+  oneof s {
+    bytes raw_data = 3;
+  }
+}
+
+enum SecretType {
+  SECRET_TYPE_UNSPECIFIED = 0;
+  SECRET_TYPE_BLOB = 1;
+}
+
+message Secret {
+  bytes encrypted_dek = 1;
+  bytes encrypted_data = 2;
+  bytes nonce = 3;
+}

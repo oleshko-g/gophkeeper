@@ -3,7 +3,11 @@
 
 package keeper
 
-import ()
+import (
+	"context"
+	"github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
+	"sync"
+)
 
 // Ensure, that QuerierMock does implement Querier.
 // If this is not the case, regenerate this file with moq.
@@ -15,6 +19,9 @@ var _ Querier = &QuerierMock{}
 //
 //		// make and configure a mocked Querier
 //		mockedQuerier := &QuerierMock{
+//			InsertDepositedSecretFunc: func(ctx context.Context, arg queries.InsertDepositedSecretParams) (queries.DepositedSecret, error) {
+//				panic("mock out the InsertDepositedSecret method")
+//			},
 //		}
 //
 //		// use mockedQuerier in code that requires Querier
@@ -22,7 +29,54 @@ var _ Querier = &QuerierMock{}
 //
 //	}
 type QuerierMock struct {
+	// InsertDepositedSecretFunc mocks the InsertDepositedSecret method.
+	InsertDepositedSecretFunc func(ctx context.Context, arg queries.InsertDepositedSecretParams) (queries.DepositedSecret, error)
+
 	// calls tracks calls to the methods.
 	calls struct {
+		// InsertDepositedSecret holds details about calls to the InsertDepositedSecret method.
+		InsertDepositedSecret []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Arg is the arg argument value.
+			Arg queries.InsertDepositedSecretParams
+		}
 	}
+	lockInsertDepositedSecret sync.RWMutex
+}
+
+// InsertDepositedSecret calls InsertDepositedSecretFunc.
+func (mock *QuerierMock) InsertDepositedSecret(ctx context.Context, arg queries.InsertDepositedSecretParams) (queries.DepositedSecret, error) {
+	if mock.InsertDepositedSecretFunc == nil {
+		panic("QuerierMock.InsertDepositedSecretFunc: method is nil but Querier.InsertDepositedSecret was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Arg queries.InsertDepositedSecretParams
+	}{
+		Ctx: ctx,
+		Arg: arg,
+	}
+	mock.lockInsertDepositedSecret.Lock()
+	mock.calls.InsertDepositedSecret = append(mock.calls.InsertDepositedSecret, callInfo)
+	mock.lockInsertDepositedSecret.Unlock()
+	return mock.InsertDepositedSecretFunc(ctx, arg)
+}
+
+// InsertDepositedSecretCalls gets all the calls that were made to InsertDepositedSecret.
+// Check the length with:
+//
+//	len(mockedQuerier.InsertDepositedSecretCalls())
+func (mock *QuerierMock) InsertDepositedSecretCalls() []struct {
+	Ctx context.Context
+	Arg queries.InsertDepositedSecretParams
+} {
+	var calls []struct {
+		Ctx context.Context
+		Arg queries.InsertDepositedSecretParams
+	}
+	mock.lockInsertDepositedSecret.RLock()
+	calls = mock.calls.InsertDepositedSecret
+	mock.lockInsertDepositedSecret.RUnlock()
+	return calls
 }

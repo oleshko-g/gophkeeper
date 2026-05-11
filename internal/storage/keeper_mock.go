@@ -3,7 +3,13 @@
 
 package storage
 
-import ()
+import (
+	"context"
+	"github.com/google/uuid"
+	"github.com/oleshko-g/gophkeeper/internal/model/keeper/secret"
+	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
+	"sync"
+)
 
 // Ensure, that KeeperMock does implement Keeper.
 // If this is not the case, regenerate this file with moq.
@@ -15,6 +21,9 @@ var _ Keeper = &KeeperMock{}
 //
 //		// make and configure a mocked Keeper
 //		mockedKeeper := &KeeperMock{
+//			StoreSecretFunc: func(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], s secret.Data) (*secret.DepositedSecret, error) {
+//				panic("mock out the StoreSecret method")
+//			},
 //		}
 //
 //		// use mockedKeeper in code that requires Keeper
@@ -22,7 +31,60 @@ var _ Keeper = &KeeperMock{}
 //
 //	}
 type KeeperMock struct {
+	// StoreSecretFunc mocks the StoreSecret method.
+	StoreSecretFunc func(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], s secret.Data) (*secret.DepositedSecret, error)
+
 	// calls tracks calls to the methods.
 	calls struct {
+		// StoreSecret holds details about calls to the StoreSecret method.
+		StoreSecret []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PublicKeyID is the publicKeyID argument value.
+			PublicKeyID uuidv7.UUID[uuid.UUID]
+			// S is the s argument value.
+			S secret.Data
+		}
 	}
+	lockStoreSecret sync.RWMutex
+}
+
+// StoreSecret calls StoreSecretFunc.
+func (mock *KeeperMock) StoreSecret(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], s secret.Data) (*secret.DepositedSecret, error) {
+	if mock.StoreSecretFunc == nil {
+		panic("KeeperMock.StoreSecretFunc: method is nil but Keeper.StoreSecret was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		PublicKeyID uuidv7.UUID[uuid.UUID]
+		S           secret.Data
+	}{
+		Ctx:         ctx,
+		PublicKeyID: publicKeyID,
+		S:           s,
+	}
+	mock.lockStoreSecret.Lock()
+	mock.calls.StoreSecret = append(mock.calls.StoreSecret, callInfo)
+	mock.lockStoreSecret.Unlock()
+	return mock.StoreSecretFunc(ctx, publicKeyID, s)
+}
+
+// StoreSecretCalls gets all the calls that were made to StoreSecret.
+// Check the length with:
+//
+//	len(mockedKeeper.StoreSecretCalls())
+func (mock *KeeperMock) StoreSecretCalls() []struct {
+	Ctx         context.Context
+	PublicKeyID uuidv7.UUID[uuid.UUID]
+	S           secret.Data
+} {
+	var calls []struct {
+		Ctx         context.Context
+		PublicKeyID uuidv7.UUID[uuid.UUID]
+		S           secret.Data
+	}
+	mock.lockStoreSecret.RLock()
+	calls = mock.calls.StoreSecret
+	mock.lockStoreSecret.RUnlock()
+	return calls
 }

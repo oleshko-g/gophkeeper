@@ -463,155 +463,44 @@ var _ interface {
 	ErrorName() string
 } = AuthorizeResponseValidationError{}
 
-// Validate checks the field values on UploadDataRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *UploadDataRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UploadDataRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// UploadDataRequestMultiError, or nil if none found.
-func (m *UploadDataRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UploadDataRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if utf8.RuneCountInString(m.GetAuthToken()) < 1 {
-		err := UploadDataRequestValidationError{
-			field:  "AuthToken",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if len(errors) > 0 {
-		return UploadDataRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// UploadDataRequestMultiError is an error wrapping multiple validation errors
-// returned by UploadDataRequest.ValidateAll() if the designated constraints
-// aren't met.
-type UploadDataRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UploadDataRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UploadDataRequestMultiError) AllErrors() []error { return m }
-
-// UploadDataRequestValidationError is the validation error returned by
-// UploadDataRequest.Validate if the designated constraints aren't met.
-type UploadDataRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UploadDataRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UploadDataRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UploadDataRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UploadDataRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UploadDataRequestValidationError) ErrorName() string {
-	return "UploadDataRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UploadDataRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUploadDataRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UploadDataRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UploadDataRequestValidationError{}
-
-// Validate checks the field values on UploadDataResponse with the rules
+// Validate checks the field values on DepositSecretRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UploadDataResponse) Validate() error {
+func (m *DepositSecretRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on UploadDataResponse with the rules
+// ValidateAll checks the field values on DepositSecretRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// UploadDataResponseMultiError, or nil if none found.
-func (m *UploadDataResponse) ValidateAll() error {
+// DepositSecretRequestMultiError, or nil if none found.
+func (m *DepositSecretRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *UploadDataResponse) validate(all bool) error {
+func (m *DepositSecretRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
+	// no validation rules for Payload
+
 	if len(errors) > 0 {
-		return UploadDataResponseMultiError(errors)
+		return DepositSecretRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// UploadDataResponseMultiError is an error wrapping multiple validation errors
-// returned by UploadDataResponse.ValidateAll() if the designated constraints
-// aren't met.
-type UploadDataResponseMultiError []error
+// DepositSecretRequestMultiError is an error wrapping multiple validation
+// errors returned by DepositSecretRequest.ValidateAll() if the designated
+// constraints aren't met.
+type DepositSecretRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m UploadDataResponseMultiError) Error() string {
+func (m DepositSecretRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -620,11 +509,11 @@ func (m UploadDataResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m UploadDataResponseMultiError) AllErrors() []error { return m }
+func (m DepositSecretRequestMultiError) AllErrors() []error { return m }
 
-// UploadDataResponseValidationError is the validation error returned by
-// UploadDataResponse.Validate if the designated constraints aren't met.
-type UploadDataResponseValidationError struct {
+// DepositSecretRequestValidationError is the validation error returned by
+// DepositSecretRequest.Validate if the designated constraints aren't met.
+type DepositSecretRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -632,24 +521,24 @@ type UploadDataResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e UploadDataResponseValidationError) Field() string { return e.field }
+func (e DepositSecretRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e UploadDataResponseValidationError) Reason() string { return e.reason }
+func (e DepositSecretRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e UploadDataResponseValidationError) Cause() error { return e.cause }
+func (e DepositSecretRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e UploadDataResponseValidationError) Key() bool { return e.key }
+func (e DepositSecretRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e UploadDataResponseValidationError) ErrorName() string {
-	return "UploadDataResponseValidationError"
+func (e DepositSecretRequestValidationError) ErrorName() string {
+	return "DepositSecretRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e UploadDataResponseValidationError) Error() string {
+func (e DepositSecretRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -661,14 +550,14 @@ func (e UploadDataResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sUploadDataResponse.%s: %s%s",
+		"invalid %sDepositSecretRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = UploadDataResponseValidationError{}
+var _ error = DepositSecretRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -676,7 +565,138 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = UploadDataResponseValidationError{}
+} = DepositSecretRequestValidationError{}
+
+// Validate checks the field values on DepositSecretResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DepositSecretResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DepositSecretResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DepositSecretResponseMultiError, or nil if none found.
+func (m *DepositSecretResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DepositSecretResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetDepositedSecretId()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, DepositSecretResponseValidationError{
+					field:  "DepositedSecretId",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, DepositSecretResponseValidationError{
+					field:  "DepositedSecretId",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetDepositedSecretId()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return DepositSecretResponseValidationError{
+				field:  "DepositedSecretId",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return DepositSecretResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// DepositSecretResponseMultiError is an error wrapping multiple validation
+// errors returned by DepositSecretResponse.ValidateAll() if the designated
+// constraints aren't met.
+type DepositSecretResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DepositSecretResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DepositSecretResponseMultiError) AllErrors() []error { return m }
+
+// DepositSecretResponseValidationError is the validation error returned by
+// DepositSecretResponse.Validate if the designated constraints aren't met.
+type DepositSecretResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DepositSecretResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DepositSecretResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DepositSecretResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DepositSecretResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DepositSecretResponseValidationError) ErrorName() string {
+	return "DepositSecretResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DepositSecretResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDepositSecretResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DepositSecretResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DepositSecretResponseValidationError{}
 
 // Validate checks the field values on DownloadDataRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -699,17 +719,6 @@ func (m *DownloadDataRequest) validate(all bool) error {
 	}
 
 	var errors []error
-
-	if utf8.RuneCountInString(m.GetAuthToken()) < 1 {
-		err := DownloadDataRequestValidationError{
-			field:  "AuthToken",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
 
 	if len(errors) > 0 {
 		return DownloadDataRequestMultiError(errors)
@@ -915,17 +924,6 @@ func (m *DeleteDataRequest) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetAuthToken()) < 1 {
-		err := DeleteDataRequestValidationError{
-			field:  "AuthToken",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
 	if len(errors) > 0 {
 		return DeleteDataRequestMultiError(errors)
 	}
@@ -1129,17 +1127,6 @@ func (m *ListDataRequest) validate(all bool) error {
 	}
 
 	var errors []error
-
-	if utf8.RuneCountInString(m.GetAuthToken()) < 1 {
-		err := ListDataRequestValidationError{
-			field:  "AuthToken",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
 
 	if len(errors) > 0 {
 		return ListDataRequestMultiError(errors)
@@ -1420,3 +1407,103 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DownloadFileRequestValidationError{}
+
+// Validate checks the field values on UUID with the rules defined in the proto
+// definition for this message. If any rules are violated, the first error
+// encountered is returned, or nil if there are no violations.
+func (m *UUID) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UUID with the rules defined in the
+// proto definition for this message. If any rules are violated, the result is
+// a list of violation errors wrapped in UUIDMultiError, or nil if none found.
+func (m *UUID) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UUID) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Bytes
+
+	if len(errors) > 0 {
+		return UUIDMultiError(errors)
+	}
+
+	return nil
+}
+
+// UUIDMultiError is an error wrapping multiple validation errors returned by
+// UUID.ValidateAll() if the designated constraints aren't met.
+type UUIDMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UUIDMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UUIDMultiError) AllErrors() []error { return m }
+
+// UUIDValidationError is the validation error returned by UUID.Validate if the
+// designated constraints aren't met.
+type UUIDValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UUIDValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UUIDValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UUIDValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UUIDValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UUIDValidationError) ErrorName() string { return "UUIDValidationError" }
+
+// Error satisfies the builtin error interface
+func (e UUIDValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUUID.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UUIDValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UUIDValidationError{}

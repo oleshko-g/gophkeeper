@@ -23,6 +23,9 @@ var _ Depositor = &DepositorMock{}
 //			AuthorizeFunc: func(contextMoqParam context.Context, authorizeRequest *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error) {
 //				panic("mock out the Authorize method")
 //			},
+//			NameFunc: func() string {
+//				panic("mock out the Name method")
+//			},
 //			RegisterFunc: func(contextMoqParam context.Context, registerRequest *pb.RegisterRequest) (*pb.RegisterResponse, error) {
 //				panic("mock out the Register method")
 //			},
@@ -39,6 +42,9 @@ type DepositorMock struct {
 	// AuthorizeFunc mocks the Authorize method.
 	AuthorizeFunc func(contextMoqParam context.Context, authorizeRequest *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error)
 
+	// NameFunc mocks the Name method.
+	NameFunc func() string
+
 	// RegisterFunc mocks the Register method.
 	RegisterFunc func(contextMoqParam context.Context, registerRequest *pb.RegisterRequest) (*pb.RegisterResponse, error)
 
@@ -54,6 +60,9 @@ type DepositorMock struct {
 			// AuthorizeRequest is the authorizeRequest argument value.
 			AuthorizeRequest *pb.AuthorizeRequest
 		}
+		// Name holds details about calls to the Name method.
+		Name []struct {
+		}
 		// Register holds details about calls to the Register method.
 		Register []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -68,6 +77,7 @@ type DepositorMock struct {
 		}
 	}
 	lockAuthorize         sync.RWMutex
+	lockName              sync.RWMutex
 	lockRegister          sync.RWMutex
 	lockValidateAuthToken sync.RWMutex
 }
@@ -105,6 +115,33 @@ func (mock *DepositorMock) AuthorizeCalls() []struct {
 	mock.lockAuthorize.RLock()
 	calls = mock.calls.Authorize
 	mock.lockAuthorize.RUnlock()
+	return calls
+}
+
+// Name calls NameFunc.
+func (mock *DepositorMock) Name() string {
+	if mock.NameFunc == nil {
+		panic("DepositorMock.NameFunc: method is nil but Depositor.Name was just called")
+	}
+	callInfo := struct {
+	}{}
+	mock.lockName.Lock()
+	mock.calls.Name = append(mock.calls.Name, callInfo)
+	mock.lockName.Unlock()
+	return mock.NameFunc()
+}
+
+// NameCalls gets all the calls that were made to Name.
+// Check the length with:
+//
+//	len(mockedDepositor.NameCalls())
+func (mock *DepositorMock) NameCalls() []struct {
+} {
+	var calls []struct {
+	}
+	mock.lockName.RLock()
+	calls = mock.calls.Name
+	mock.lockName.RUnlock()
 	return calls
 }
 

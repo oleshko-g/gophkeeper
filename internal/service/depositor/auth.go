@@ -35,7 +35,7 @@ func (s *Service) Authorize(ctx context.Context, in *pb.AuthorizeRequest) (*pb.A
 		jwt.SigningMethodRS256,
 		claims{
 			RegisteredClaims: jwt.RegisteredClaims{
-				Issuer:    s.Name,
+				Issuer:    s.Name(),
 				IssuedAt:  jwt.NewNumericDate(clientApp.AuthorizedAt()),
 				ExpiresAt: jwt.NewNumericDate(clientApp.AuthorizedAt().Add(24 * time.Hour)),
 			},

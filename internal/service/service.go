@@ -19,9 +19,17 @@ type Config struct {
 
 //go:generate moq -rm -out depositor_mock.go . Depositor
 type Depositor interface {
+	Namer
 	pb.DepositorServiceServer
 	ValidateAuthToken(token string) (*depositor.AuthorizedApp, error)
 }
 
 //go:generate moq -rm -out keeper_mock.go . Keeper
-type Keeper = pb.KeeperServiceServer
+type Keeper interface {
+	Namer
+	pb.KeeperServiceServer
+}
+
+type Namer interface {
+	Name() string
+}

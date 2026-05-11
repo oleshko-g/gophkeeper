@@ -29,7 +29,7 @@ service DepositorService {
 //  - [DeleteData] the uploaded data
 service KeeperService {
   // UploadData uploads data of the owners of the [Register]ed public keys.
-  rpc UploadData(UploadDataRequest) returns (UploadDataResponse);
+  rpc DepositSecret(DepositSecretRequest) returns (DepositSecretResponse);
 
   // DownloadData downloads the [Upload]ed data
   rpc DownloadData(DownloadDataRequest) returns (DownloadDataResponse);
@@ -70,28 +70,28 @@ message AuthorizeResponse {
   string auth_token = 1;
 }
 
-message UploadDataRequest {
-  string auth_token = 1 [(validate.rules).string.min_len = 1];
+message DepositSecretRequest {
+  bytes payload = 1;
 }
 
-message UploadDataResponse {}
-
-message DownloadDataRequest {
-  string auth_token = 1 [(validate.rules).string.min_len = 1];
+message DepositSecretResponse {
+  UUID deposited_secret_id = 1;
 }
+
+message DownloadDataRequest {}
 
 message DownloadDataResponse {}
 
-message DeleteDataRequest {
-  string auth_token = 1 [(validate.rules).string.min_len = 1];
-}
+message DeleteDataRequest {}
 
 message DeleteDataResponse {}
 
-message ListDataRequest {
-  string auth_token = 1 [(validate.rules).string.min_len = 1];
-}
+message ListDataRequest {}
 
 message ListDataResponse {}
 
 message DownloadFileRequest {}
+
+message UUID {
+  bytes bytes = 1;
+}

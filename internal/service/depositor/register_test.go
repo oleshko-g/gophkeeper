@@ -67,7 +67,7 @@ func TestRegister(t *testing.T) {
 			t.Run(testName, func(t *testing.T) {
 				tests[testName] = testCase{
 					req:     nil,
-					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
+					wantErr: &service.Err{SvcName: svc.Name(), Method: methodName, Type: service.ErrTypeRequestValidation},
 				}
 			})
 
@@ -75,7 +75,7 @@ func TestRegister(t *testing.T) {
 			t.Run(testName, func(t *testing.T) {
 				tests[testName] = testCase{
 					req:     &pb.RegisterRequest{PubKey: nil},
-					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
+					wantErr: &service.Err{SvcName: svc.Name(), Method: methodName, Type: service.ErrTypeRequestValidation},
 				}
 			})
 
@@ -83,7 +83,7 @@ func TestRegister(t *testing.T) {
 			t.Run(testName, func(t *testing.T) {
 				tests[testName] = testCase{
 					req:     &pb.RegisterRequest{PubKey: new("")},
-					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
+					wantErr: &service.Err{SvcName: svc.Name(), Method: methodName, Type: service.ErrTypeRequestValidation},
 				}
 			})
 
@@ -96,7 +96,7 @@ func TestRegister(t *testing.T) {
 
 				tests[testName] = testCase{
 					req:     &pb.RegisterRequest{PubKey: new(stringBuilder.String())},
-					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
+					wantErr: &service.Err{SvcName: svc.Name(), Method: methodName, Type: service.ErrTypeRequestValidation},
 				}
 
 				stringBuilder.Reset()
@@ -111,7 +111,7 @@ func TestRegister(t *testing.T) {
 
 				tests[testName] = testCase{
 					req:     &pb.RegisterRequest{PubKey: new(stringBuilder.String())},
-					wantErr: &service.Err{SvcName: svc.Name, Method: methodName, Type: service.ErrTypeRequestValidation},
+					wantErr: &service.Err{SvcName: svc.Name(), Method: methodName, Type: service.ErrTypeRequestValidation},
 				}
 
 				stringBuilder.Reset()

@@ -25,6 +25,9 @@ var _ Keeper = &KeeperMock{}
 //			DeleteDataFunc: func(contextMoqParam context.Context, deleteDataRequest *pb.DeleteDataRequest) (*pb.DeleteDataResponse, error) {
 //				panic("mock out the DeleteData method")
 //			},
+//			DepositSecretFunc: func(contextMoqParam context.Context, depositSecretRequest *pb.DepositSecretRequest) (*pb.DepositSecretResponse, error) {
+//				panic("mock out the DepositSecret method")
+//			},
 //			DownloadDataFunc: func(contextMoqParam context.Context, downloadDataRequest *pb.DownloadDataRequest) (*pb.DownloadDataResponse, error) {
 //				panic("mock out the DownloadData method")
 //			},
@@ -34,8 +37,8 @@ var _ Keeper = &KeeperMock{}
 //			ListDataFunc: func(contextMoqParam context.Context, listDataRequest *pb.ListDataRequest) (*pb.ListDataResponse, error) {
 //				panic("mock out the ListData method")
 //			},
-//			UploadDataFunc: func(contextMoqParam context.Context, uploadDataRequest *pb.UploadDataRequest) (*pb.UploadDataResponse, error) {
-//				panic("mock out the UploadData method")
+//			NameFunc: func() string {
+//				panic("mock out the Name method")
 //			},
 //			UploadFileFunc: func(clientStreamingServer grpc.ClientStreamingServer[httpbody.HttpBody, emptypb.Empty]) error {
 //				panic("mock out the UploadFile method")
@@ -50,6 +53,9 @@ type KeeperMock struct {
 	// DeleteDataFunc mocks the DeleteData method.
 	DeleteDataFunc func(contextMoqParam context.Context, deleteDataRequest *pb.DeleteDataRequest) (*pb.DeleteDataResponse, error)
 
+	// DepositSecretFunc mocks the DepositSecret method.
+	DepositSecretFunc func(contextMoqParam context.Context, depositSecretRequest *pb.DepositSecretRequest) (*pb.DepositSecretResponse, error)
+
 	// DownloadDataFunc mocks the DownloadData method.
 	DownloadDataFunc func(contextMoqParam context.Context, downloadDataRequest *pb.DownloadDataRequest) (*pb.DownloadDataResponse, error)
 
@@ -59,8 +65,8 @@ type KeeperMock struct {
 	// ListDataFunc mocks the ListData method.
 	ListDataFunc func(contextMoqParam context.Context, listDataRequest *pb.ListDataRequest) (*pb.ListDataResponse, error)
 
-	// UploadDataFunc mocks the UploadData method.
-	UploadDataFunc func(contextMoqParam context.Context, uploadDataRequest *pb.UploadDataRequest) (*pb.UploadDataResponse, error)
+	// NameFunc mocks the Name method.
+	NameFunc func() string
 
 	// UploadFileFunc mocks the UploadFile method.
 	UploadFileFunc func(clientStreamingServer grpc.ClientStreamingServer[httpbody.HttpBody, emptypb.Empty]) error
@@ -73,6 +79,13 @@ type KeeperMock struct {
 			ContextMoqParam context.Context
 			// DeleteDataRequest is the deleteDataRequest argument value.
 			DeleteDataRequest *pb.DeleteDataRequest
+		}
+		// DepositSecret holds details about calls to the DepositSecret method.
+		DepositSecret []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// DepositSecretRequest is the depositSecretRequest argument value.
+			DepositSecretRequest *pb.DepositSecretRequest
 		}
 		// DownloadData holds details about calls to the DownloadData method.
 		DownloadData []struct {
@@ -95,12 +108,8 @@ type KeeperMock struct {
 			// ListDataRequest is the listDataRequest argument value.
 			ListDataRequest *pb.ListDataRequest
 		}
-		// UploadData holds details about calls to the UploadData method.
-		UploadData []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// UploadDataRequest is the uploadDataRequest argument value.
-			UploadDataRequest *pb.UploadDataRequest
+		// Name holds details about calls to the Name method.
+		Name []struct {
 		}
 		// UploadFile holds details about calls to the UploadFile method.
 		UploadFile []struct {
@@ -108,12 +117,13 @@ type KeeperMock struct {
 			ClientStreamingServer grpc.ClientStreamingServer[httpbody.HttpBody, emptypb.Empty]
 		}
 	}
-	lockDeleteData   sync.RWMutex
-	lockDownloadData sync.RWMutex
-	lockDownloadFile sync.RWMutex
-	lockListData     sync.RWMutex
-	lockUploadData   sync.RWMutex
-	lockUploadFile   sync.RWMutex
+	lockDeleteData    sync.RWMutex
+	lockDepositSecret sync.RWMutex
+	lockDownloadData  sync.RWMutex
+	lockDownloadFile  sync.RWMutex
+	lockListData      sync.RWMutex
+	lockName          sync.RWMutex
+	lockUploadFile    sync.RWMutex
 }
 
 // DeleteData calls DeleteDataFunc.
@@ -149,6 +159,42 @@ func (mock *KeeperMock) DeleteDataCalls() []struct {
 	mock.lockDeleteData.RLock()
 	calls = mock.calls.DeleteData
 	mock.lockDeleteData.RUnlock()
+	return calls
+}
+
+// DepositSecret calls DepositSecretFunc.
+func (mock *KeeperMock) DepositSecret(contextMoqParam context.Context, depositSecretRequest *pb.DepositSecretRequest) (*pb.DepositSecretResponse, error) {
+	if mock.DepositSecretFunc == nil {
+		panic("KeeperMock.DepositSecretFunc: method is nil but Keeper.DepositSecret was just called")
+	}
+	callInfo := struct {
+		ContextMoqParam      context.Context
+		DepositSecretRequest *pb.DepositSecretRequest
+	}{
+		ContextMoqParam:      contextMoqParam,
+		DepositSecretRequest: depositSecretRequest,
+	}
+	mock.lockDepositSecret.Lock()
+	mock.calls.DepositSecret = append(mock.calls.DepositSecret, callInfo)
+	mock.lockDepositSecret.Unlock()
+	return mock.DepositSecretFunc(contextMoqParam, depositSecretRequest)
+}
+
+// DepositSecretCalls gets all the calls that were made to DepositSecret.
+// Check the length with:
+//
+//	len(mockedKeeper.DepositSecretCalls())
+func (mock *KeeperMock) DepositSecretCalls() []struct {
+	ContextMoqParam      context.Context
+	DepositSecretRequest *pb.DepositSecretRequest
+} {
+	var calls []struct {
+		ContextMoqParam      context.Context
+		DepositSecretRequest *pb.DepositSecretRequest
+	}
+	mock.lockDepositSecret.RLock()
+	calls = mock.calls.DepositSecret
+	mock.lockDepositSecret.RUnlock()
 	return calls
 }
 
@@ -260,39 +306,30 @@ func (mock *KeeperMock) ListDataCalls() []struct {
 	return calls
 }
 
-// UploadData calls UploadDataFunc.
-func (mock *KeeperMock) UploadData(contextMoqParam context.Context, uploadDataRequest *pb.UploadDataRequest) (*pb.UploadDataResponse, error) {
-	if mock.UploadDataFunc == nil {
-		panic("KeeperMock.UploadDataFunc: method is nil but Keeper.UploadData was just called")
+// Name calls NameFunc.
+func (mock *KeeperMock) Name() string {
+	if mock.NameFunc == nil {
+		panic("KeeperMock.NameFunc: method is nil but Keeper.Name was just called")
 	}
 	callInfo := struct {
-		ContextMoqParam   context.Context
-		UploadDataRequest *pb.UploadDataRequest
-	}{
-		ContextMoqParam:   contextMoqParam,
-		UploadDataRequest: uploadDataRequest,
-	}
-	mock.lockUploadData.Lock()
-	mock.calls.UploadData = append(mock.calls.UploadData, callInfo)
-	mock.lockUploadData.Unlock()
-	return mock.UploadDataFunc(contextMoqParam, uploadDataRequest)
+	}{}
+	mock.lockName.Lock()
+	mock.calls.Name = append(mock.calls.Name, callInfo)
+	mock.lockName.Unlock()
+	return mock.NameFunc()
 }
 
-// UploadDataCalls gets all the calls that were made to UploadData.
+// NameCalls gets all the calls that were made to Name.
 // Check the length with:
 //
-//	len(mockedKeeper.UploadDataCalls())
-func (mock *KeeperMock) UploadDataCalls() []struct {
-	ContextMoqParam   context.Context
-	UploadDataRequest *pb.UploadDataRequest
+//	len(mockedKeeper.NameCalls())
+func (mock *KeeperMock) NameCalls() []struct {
 } {
 	var calls []struct {
-		ContextMoqParam   context.Context
-		UploadDataRequest *pb.UploadDataRequest
 	}
-	mock.lockUploadData.RLock()
-	calls = mock.calls.UploadData
-	mock.lockUploadData.RUnlock()
+	mock.lockName.RLock()
+	calls = mock.calls.Name
+	mock.lockName.RUnlock()
 	return calls
 }
 

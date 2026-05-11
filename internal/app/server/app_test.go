@@ -59,7 +59,7 @@ func TestApp(t0 *testing.T) {
 		if t0.Failed() {
 			t.Skip()
 		}
-		app.II_SetStorage(&storage.DepositorMock{}, storage.KeeperMock{})
+		app.II_SetStorage(&storage.DepositorMock{}, &storage.KeeperMock{})
 	})
 
 	t0.Run("SetService", func(t *testing.T) {
