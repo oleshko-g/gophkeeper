@@ -25,6 +25,9 @@
 
 !Makefile
 
+!cspell.yaml
+!project-words.txt
+
 # code gen
 !easyp*
 !sqlc*
