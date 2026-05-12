@@ -42,7 +42,8 @@ type a struct {
 
 var app = a{
 	cmd: &cobra.Command{
-		Short: "The client app for gophkeeper",
+		Short:             "The client app for gophkeeper",
+		PersistentPostRun: nil,
 	},
 	config: &config{},
 	logger: slog.Default(),
@@ -63,9 +64,6 @@ const (
 
 	// appAuthorized means the [app.config.AuthToken] is populated.
 	appAuthorized
-
-	// appConnected means the app has been connected to the server.
-	appConnected
 )
 
 func (a appState) String() string {
@@ -97,13 +95,6 @@ var (
 		Use:      "authorize",
 		Short:    "Authorizes the depositor with the refresh token gotten from register command",
 		RunE:     app.authorizeRunE,
-		PostRunE: app.updateConfig,
-	}
-	connect = &cobra.Command{
-		Use:   "connect",
-		Short: "Connect the depositor with the authentication token gotten from the authorize command",
-		Run: func(cmd *cobra.Command, args []string) {
-		},
 		PostRunE: app.updateConfig,
 	}
 	upload = &cobra.Command{
@@ -154,10 +145,8 @@ func init() {
 		app.cmd.AddCommand(authorize)
 		return
 	case appAuthorized:
-		app.cmd.AddCommand(connect)
-		return
-	case appConnected:
 		app.cmd.AddCommand(upload, list, delete)
+		return
 	}
 }
 
@@ -235,6 +224,8 @@ func (app *a) initConfig() {
 }
 
 func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
+	defer updateState(app)
+
 	cfgData, err := json.Marshal(app.config)
 	if err != nil {
 		return err
@@ -245,7 +236,21 @@ func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	app.logger.Info(fmt.Sprintf("config is updated to %#v", app.config))
+
 	return nil
+}
+
+func updateState(app *a) {
+	switch {
+	case app.cfgDir != "":
+		app.state = cfgDirInitialized
+	case app.config != nil:
+		app.state = configSet
+	case app.config != nil && app.config.AuthToken != "":
+		app.state = appAuthorized
+	case app.config != nil && app.config.RegisteredPubKeyID != "":
+		app.state = pubKeyRegistered
+	}
 }
 
 // initClient initializes the client for the gophkeeper server.
