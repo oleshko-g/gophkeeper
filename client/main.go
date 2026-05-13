@@ -64,20 +64,24 @@ const (
 
 	// appAuthorized means the [app.config.AuthToken] is populated.
 	appAuthorized
+
+	// clientSetUp means the [app.client] is populated.
+	clientSetUp
 )
 
 func (a appState) String() string {
 	switch a {
-	case 1:
+	case cfgDirInitialized:
 		return "cfgDirInitialized"
-	case 2:
+	case configSet:
 		return "configSet"
-	case 3:
+	case pubKeyRegistered:
 		return "pubKeyRegistered"
-	case 4:
+	case appAuthorized:
 		return "appAuthorized"
-	case 5:
+	case clientSetUp:
 		return "appConnected"
+
 	default:
 		return "unknown"
 	}
@@ -128,6 +132,7 @@ func init() {
 	}()
 
 	defer func() {
+		app.initState()
 		app.logger.Info(fmt.Sprintf("app state after init is %q", app.state))
 	}()
 
@@ -164,7 +169,6 @@ func (app *a) initConfigDir() {
 		panic(err)
 	}
 
-	app.state = cfgDirInitialized
 	app.logger.Info(fmt.Sprintf("config dir is initialized at %q", app.cfgDir))
 }
 
@@ -220,12 +224,9 @@ func (app *a) initConfig() {
 		app.state = pubKeyRegistered
 		return
 	}
-	app.state = configSet
 }
 
 func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
-	defer updateState(app)
-
 	cfgData, err := json.Marshal(app.config)
 	if err != nil {
 		return err
@@ -240,7 +241,7 @@ func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func updateState(app *a) {
+func (app *a) initState() {
 	switch {
 	case app.cfgDir != "":
 		app.state = cfgDirInitialized
@@ -250,6 +251,8 @@ func updateState(app *a) {
 		app.state = appAuthorized
 	case app.config != nil && app.config.RegisteredPubKeyID != "":
 		app.state = pubKeyRegistered
+	case app.config != nil && app.client != nil:
+		app.state = clientSetUp
 	}
 }
 

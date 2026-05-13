@@ -59,7 +59,5 @@ func (app *a) authorizeRunE(cmd *cobra.Command, _ []string) error {
 
 	app.config.AuthToken = res.GetAuthToken()
 
-	app.state = appAuthorized
-
 	return nil
 }
