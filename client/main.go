@@ -10,6 +10,7 @@ import (
 
 	"log/slog"
 
+	"github.com/joho/godotenv"
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
@@ -121,6 +122,8 @@ var (
 )
 
 func init() {
+	godotenv.Load()
+
 	defer func() {
 		if v := recover(); v != nil {
 			err, ok := v.(error)
@@ -161,6 +164,9 @@ func (app *a) initConfigDir() {
 	if err != nil {
 		panic(err)
 	}
+	if envDevCfgDir := os.Getenv("GOPHKEEPER_DEV_CFG_DIR"); envDevCfgDir != "" {
+		userCfgDir = envDevCfgDir
+	}
 
 	app.cfgDir = path.Join(userCfgDir, "gophkeeper")
 
@@ -187,7 +193,8 @@ type config struct {
 
 // initConfig initializes the configuration for the [app].
 func (app *a) initConfig() {
-	app.cfgFilePath = path.Join(app.cfgDir, ".cfg")
+	const cfgFileName = ".cfg"
+	app.cfgFilePath = path.Join(app.cfgDir, cfgFileName)
 
 	cfgFile, err := os.OpenFile(app.cfgFilePath, os.O_RDWR|os.O_CREATE, filePerm)
 	if err != nil {
@@ -201,9 +208,7 @@ func (app *a) initConfig() {
 	}
 
 	if len(cfgData) == 0 {
-		cfgData, err = json.Marshal(config{
-			GophKeeperURL: ":8081",
-		})
+		cfgData, err = json.MarshalIndent(config{GophKeeperURL: ":8081"}, "", "  ")
 		if err != nil {
 			panic(err)
 		}

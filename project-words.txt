@@ -2,3 +2,5 @@ goph
 uuidv
 nsec
 gophkeeper
+oleshko
+godotenv
