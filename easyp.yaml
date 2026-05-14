@@ -9,6 +9,7 @@ lint:
 generate:
   inputs:
     - directory: api
+    - directory: client/model
   plugins:
     - name: go
       out: .

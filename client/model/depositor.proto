@@ -2,23 +2,32 @@ edition = "2023";
 
 package gophkeeper.client.v1;
 
+import "validate/validate.proto";
+
 option go_package = "github.com/oleshko-g/gophkeeper/client/v1;pb";
 
 message OpenSecret {
-  SecretType type = 1;
-  string name = 2;
-  oneof s {
-    bytes raw_data = 3;
-  }
+  SecretType type = 1 [(validate.rules).enum.defined_only = true];
+  string name = 2 [(validate.rules).string = {
+    min_len: 1
+    max_len: 150
+  }];
+  bytes data = 3 [(validate.rules).bytes = {
+    min_len: 1
+    max_len: 2048
+  }];
 }
 
 enum SecretType {
   SECRET_TYPE_UNSPECIFIED = 0;
-  SECRET_TYPE_BLOB = 1;
+  SECRET_TYPE_STRING = 1;
 }
 
 message Secret {
-  bytes encrypted_dek = 1;
-  bytes encrypted_data = 2;
-  bytes nonce = 3;
+  bytes encrypted_dek = 1 [(validate.rules).bytes.len = 256];
+  bytes encrypted_data = 2 [(validate.rules).bytes = {
+    min_len: 16 // 16 bytes at least the authentication tag length
+    max_len: 2250 // 2048 data ciphertext + 16 bytes auth tag + secret type and an up to 150 bytes name
+  }];
+  bytes nonce = 3 [(validate.rules).bytes.len = 12];
 }
