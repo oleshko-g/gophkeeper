@@ -80,7 +80,5 @@ func (app *a) registerRunE(cmd *cobra.Command, _ []string) error {
 
 	app.config.RegisteredPubKeyID = res.GetEncryptedId()
 
-	app.state = pubKeyRegistered
-
 	return nil
 }

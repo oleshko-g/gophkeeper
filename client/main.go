@@ -43,8 +43,7 @@ type a struct {
 
 var app = a{
 	cmd: &cobra.Command{
-		Short:             "The client app for gophkeeper",
-		PersistentPostRun: nil,
+		Short: "The client app for gophkeeper",
 	},
 	config: &config{},
 	logger: slog.Default(),
@@ -81,7 +80,7 @@ func (a appState) String() string {
 	case appAuthorized:
 		return "appAuthorized"
 	case clientSetUp:
-		return "appConnected"
+		return "clientSetUp"
 
 	default:
 		return "unknown"
@@ -135,7 +134,6 @@ func init() {
 	}()
 
 	defer func() {
-		app.initState()
 		app.logger.Info(fmt.Sprintf("app state after init is %q", app.state))
 	}()
 
@@ -145,8 +143,10 @@ func init() {
 
 	app.initClient()
 
+	app.initState()
+
 	switch app.state {
-	case configSet:
+	case clientSetUp:
 		app.cmd.AddCommand(register)
 		return
 	case pubKeyRegistered:
@@ -194,6 +194,7 @@ type config struct {
 // initConfig initializes the configuration for the [app].
 func (app *a) initConfig() {
 	const cfgFileName = ".cfg"
+
 	app.cfgFilePath = path.Join(app.cfgDir, cfgFileName)
 
 	cfgFile, err := os.OpenFile(app.cfgFilePath, os.O_RDWR|os.O_CREATE, filePerm)
@@ -217,7 +218,6 @@ func (app *a) initConfig() {
 		if err != nil {
 			panic(err)
 		}
-		app.state = configSet
 	}
 
 	err = json.Unmarshal(cfgData, app.config)
@@ -225,14 +225,10 @@ func (app *a) initConfig() {
 		panic(err)
 	}
 	app.logger.Info(fmt.Sprintf("config is initialized with values %#v", app.config))
-	if app.config.RegisteredPubKeyID != "" {
-		app.state = pubKeyRegistered
-		return
-	}
 }
 
 func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
-	cfgData, err := json.Marshal(app.config)
+	cfgData, err := json.MarshalIndent(app.config, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -247,18 +243,30 @@ func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
 }
 
 func (app *a) initState() {
-	switch {
-	case app.cfgDir != "":
+	if app.cfgDir != "" {
 		app.state = cfgDirInitialized
-	case app.config != nil:
-		app.state = configSet
-	case app.config != nil && app.config.AuthToken != "":
-		app.state = appAuthorized
-	case app.config != nil && app.config.RegisteredPubKeyID != "":
-		app.state = pubKeyRegistered
-	case app.config != nil && app.client != nil:
-		app.state = clientSetUp
 	}
+
+	if app.config == nil {
+		return
+	}
+	app.state = configSet
+
+	if app.client == nil {
+		return
+	}
+	app.state = clientSetUp
+
+	if app.config.RegisteredPubKeyID == "" {
+		return
+	}
+	app.state = pubKeyRegistered
+
+	if app.config.AuthToken == "" {
+		return
+	}
+	app.state = appAuthorized
+
 }
 
 // initClient initializes the client for the gophkeeper server.
