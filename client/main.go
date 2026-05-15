@@ -104,7 +104,7 @@ var (
 	upload = &cobra.Command{
 		Use:   "upload",
 		Short: "Uploads a file to the gophkeeper server",
-		Run:   func(cmd *cobra.Command, args []string) {},
+		RunE:  app.uploadRunE,
 	}
 	list = &cobra.Command{
 		Use:   "list",
@@ -153,6 +153,7 @@ func init() {
 		app.cmd.AddCommand(authorize)
 		return
 	case appAuthorized:
+		upload.SetIn(nil)
 		app.cmd.AddCommand(upload, list, delete)
 		return
 	}
