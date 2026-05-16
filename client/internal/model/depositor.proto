@@ -4,7 +4,7 @@ package gophkeeper.client.v1;
 
 import "validate/validate.proto";
 
-option go_package = "github.com/oleshko-g/gophkeeper/internal/client/model/v1;pb_model";
+option go_package = "github.com/oleshko-g/gophkeeper/client/internal/model";
 
 message OpenSecret {
   SecretType type = 1 [(validate.rules).enum.defined_only = true];

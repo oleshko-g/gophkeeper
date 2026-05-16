@@ -1,13 +1,13 @@
 package main
 
 import (
-	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"io"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
+	"github.com/oleshko-g/gophkeeper/client/internal/model"
 	"github.com/spf13/cobra"
 	"google.golang.org/protobuf/proto"
 )
@@ -18,8 +18,8 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	o := OpenSecret{
-		Type: new(SecretType_SECRET_TYPE_STRING),
+	o := model.OpenSecret{
+		Type: new(model.SecretType_SECRET_TYPE_STRING),
 		Name: new("secret"),
 		Data: []byte(in),
 	}
@@ -33,13 +33,17 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// TODO:
-	encryptedOpenSecret, encryptedDEK, nonce, err := encryptOpenSecret(protoOpenSecretData)
+	encryptedOpenSecret, DEK, nonce, err := encryptOpenSecret(protoOpenSecretData)
 	if err != nil {
 		return err
 	}
 
-	s := Secret{
+	encryptedDEK, err := encryptDEK(DEK)
+	if err != nil {
+		return err
+	}
+
+	s := model.Secret{
 		EncryptedDek:  encryptedDEK,
 		EncryptedData: encryptedOpenSecret,
 		Nonce:         nonce,
@@ -58,35 +62,48 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	_ = protoSecretData
-	_ = res
+	depositedSecretId := res.GetDepositedSecretId()
+	err = storeDepositedSecretID(depositedSecretId)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func encryptOpenSecret(protoSecretData []byte) (encryptedData, DEK, nonce []byte, err error) {
-	buf := make([]byte, 32) // 32 bytes to cipher with AES 256 bit
-	// make DEK
-	b := bytes.NewBuffer(buf)
-	rand.Read(b.Bytes()) // always reads up the len(b)
-	DEK = b.Bytes()
+func encryptOpenSecret(protoOpenSecretData []byte) (encryptedData, DEK, nonce []byte, err error) {
+	const (
+		keyLen   int = 32
+		nonceLen int = 12
+	)
 
-	c, err := aes.NewCipher(DEK)
+	buf := make([]byte, keyLen+nonceLen) // 32 bytes to cipher with AES 256 bit + 12c
+
+	rand.Read(buf) // always reads up the len(b) and never errors
+
+	DEK = buf[:keyLen]
+	nonce = buf[keyLen:]
+
+	cipherBlock, err := aes.NewCipher(DEK)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	awed, err := cipher.NewGCM(c)
+	awed, err := cipher.NewGCM(cipherBlock)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	// make nonce
-	b.Reset()
-	b.Grow(awed.NonceSize())
-	rand.Read(b.Bytes()) // always reads up the len(b)
-	nonce = b.Bytes()
-
-	encryptedData = awed.Seal(protoSecretData[:0], nonce, protoSecretData, nil)
+	encryptedData = awed.Seal(nil, nonce, protoOpenSecretData, nil)
 
 	return encryptedData, DEK, nonce, nil
+}
+
+func encryptDEK(DEK []byte) ([]byte, error) {
+	// TODO
+	return nil, nil
+}
+
+func storeDepositedSecretID(depositedSecretId *pb.UUID) error {
+	// TODO
+	return nil
 }
