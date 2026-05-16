@@ -1,6 +1,10 @@
 package main
 
 import (
+	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"io"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
@@ -59,9 +63,30 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func encryptOpenSecret(protoSecretData []byte) (encryptedData, dek, nonce []byte, err error) {
-	// TODO:
-	// * encrypt protoSecretData with AES-GCM
-	// * encrypt dek
-	return nil, nil, nil, nil
+func encryptOpenSecret(protoSecretData []byte) (encryptedData, DEK, nonce []byte, err error) {
+	buf := make([]byte, 32) // 32 bytes to cipher with AES 256 bit
+	// make DEK
+	b := bytes.NewBuffer(buf)
+	rand.Read(b.Bytes()) // always reads up the len(b)
+	DEK = b.Bytes()
+
+	c, err := aes.NewCipher(DEK)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	awed, err := cipher.NewGCM(c)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	// make nonce
+	b.Reset()
+	b.Grow(awed.NonceSize())
+	rand.Read(b.Bytes()) // always reads up the len(b)
+	nonce = b.Bytes()
+
+	encryptedData = awed.Seal(protoSecretData[:0], nonce, protoSecretData, nil)
+
+	return encryptedData, DEK, nonce, nil
 }
