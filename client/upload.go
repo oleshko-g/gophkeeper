@@ -6,7 +6,10 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
+	"encoding/json"
 	"io"
+	"os"
+	"path"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/client/internal/model"
@@ -71,7 +74,7 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 	}
 
 	depositedSecretId := res.GetDepositedSecretId()
-	err = storeDepositedSecretID(depositedSecretId)
+	err = app.storeDepositedSecretID(depositedSecretId)
 	if err != nil {
 		return err
 	}
@@ -106,7 +109,21 @@ func encryptOpenSecret(protoOpenSecretData []byte) (encryptedData, DEK, nonce []
 	return encryptedData, DEK, nonce, nil
 }
 
-func storeDepositedSecretID(depositedSecretId *pb.UUID) error {
-	// TODO
+func (app *a) storeDepositedSecretID(depositedSecretId *pb.UUID) error {
+	const storageFileName string = "depositedSecrets.json"
+	storageFilePath := path.Join(app.cfgDir, storageFileName)
+	storageFile, err := os.OpenFile(storageFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0x600)
+	if err != nil {
+		return err
+	}
+	defer storageFile.Close()
+
+	id := string(depositedSecretId.Bytes)
+
+	err = json.NewEncoder(storageFile).Encode(model.DepositedSecret{ID: id})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

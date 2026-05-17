@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v0.14.1-v0.16.4-bufbuild-protocompile-easyp-modified
-// source: client/internal/model/depositor.proto
+// source: client/internal/model/model.proto
 
 package model
 
@@ -52,11 +52,11 @@ func (x SecretType) String() string {
 }
 
 func (SecretType) Descriptor() protoreflect.EnumDescriptor {
-	return file_client_internal_model_depositor_proto_enumTypes[0].Descriptor()
+	return file_client_internal_model_model_proto_enumTypes[0].Descriptor()
 }
 
 func (SecretType) Type() protoreflect.EnumType {
-	return &file_client_internal_model_depositor_proto_enumTypes[0]
+	return &file_client_internal_model_model_proto_enumTypes[0]
 }
 
 func (x SecretType) Number() protoreflect.EnumNumber {
@@ -65,7 +65,7 @@ func (x SecretType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SecretType.Descriptor instead.
 func (SecretType) EnumDescriptor() ([]byte, []int) {
-	return file_client_internal_model_depositor_proto_rawDescGZIP(), []int{0}
+	return file_client_internal_model_model_proto_rawDescGZIP(), []int{0}
 }
 
 type OpenSecret struct {
@@ -79,7 +79,7 @@ type OpenSecret struct {
 
 func (x *OpenSecret) Reset() {
 	*x = OpenSecret{}
-	mi := &file_client_internal_model_depositor_proto_msgTypes[0]
+	mi := &file_client_internal_model_model_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -91,7 +91,7 @@ func (x *OpenSecret) String() string {
 func (*OpenSecret) ProtoMessage() {}
 
 func (x *OpenSecret) ProtoReflect() protoreflect.Message {
-	mi := &file_client_internal_model_depositor_proto_msgTypes[0]
+	mi := &file_client_internal_model_model_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -104,7 +104,7 @@ func (x *OpenSecret) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenSecret.ProtoReflect.Descriptor instead.
 func (*OpenSecret) Descriptor() ([]byte, []int) {
-	return file_client_internal_model_depositor_proto_rawDescGZIP(), []int{0}
+	return file_client_internal_model_model_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *OpenSecret) GetType() SecretType {
@@ -139,7 +139,7 @@ type Secret struct {
 
 func (x *Secret) Reset() {
 	*x = Secret{}
-	mi := &file_client_internal_model_depositor_proto_msgTypes[1]
+	mi := &file_client_internal_model_model_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -151,7 +151,7 @@ func (x *Secret) String() string {
 func (*Secret) ProtoMessage() {}
 
 func (x *Secret) ProtoReflect() protoreflect.Message {
-	mi := &file_client_internal_model_depositor_proto_msgTypes[1]
+	mi := &file_client_internal_model_model_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -164,7 +164,7 @@ func (x *Secret) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Secret.ProtoReflect.Descriptor instead.
 func (*Secret) Descriptor() ([]byte, []int) {
-	return file_client_internal_model_depositor_proto_rawDescGZIP(), []int{1}
+	return file_client_internal_model_model_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Secret) GetEncryptedDek() []byte {
@@ -188,11 +188,11 @@ func (x *Secret) GetNonce() []byte {
 	return nil
 }
 
-var File_client_internal_model_depositor_proto protoreflect.FileDescriptor
+var File_client_internal_model_model_proto protoreflect.FileDescriptor
 
-const file_client_internal_model_depositor_proto_rawDesc = "" +
+const file_client_internal_model_model_proto_rawDesc = "" +
 	"\n" +
-	"%client/internal/model/depositor.proto\x12\x14gophkeeper.client.v1\x1a\x17validate/validate.proto\"\x8c\x01\n" +
+	"!client/internal/model/model.proto\x12\x14gophkeeper.client.v1\x1a\x17validate/validate.proto\"\x8c\x01\n" +
 	"\n" +
 	"OpenSecret\x12>\n" +
 	"\x04type\x18\x01 \x01(\x0e2 .gophkeeper.client.v1.SecretTypeB\b\xfaB\x05\x82\x01\x02\x10\x01R\x04type\x12\x1e\n" +
@@ -211,25 +211,25 @@ const file_client_internal_model_depositor_proto_rawDesc = "" +
 	"\x12SECRET_TYPE_STRING\x10\x01B7Z5github.com/oleshko-g/gophkeeper/client/internal/modelb\beditionsp\xe8\a"
 
 var (
-	file_client_internal_model_depositor_proto_rawDescOnce sync.Once
-	file_client_internal_model_depositor_proto_rawDescData []byte
+	file_client_internal_model_model_proto_rawDescOnce sync.Once
+	file_client_internal_model_model_proto_rawDescData []byte
 )
 
-func file_client_internal_model_depositor_proto_rawDescGZIP() []byte {
-	file_client_internal_model_depositor_proto_rawDescOnce.Do(func() {
-		file_client_internal_model_depositor_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_client_internal_model_depositor_proto_rawDesc), len(file_client_internal_model_depositor_proto_rawDesc)))
+func file_client_internal_model_model_proto_rawDescGZIP() []byte {
+	file_client_internal_model_model_proto_rawDescOnce.Do(func() {
+		file_client_internal_model_model_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_client_internal_model_model_proto_rawDesc), len(file_client_internal_model_model_proto_rawDesc)))
 	})
-	return file_client_internal_model_depositor_proto_rawDescData
+	return file_client_internal_model_model_proto_rawDescData
 }
 
-var file_client_internal_model_depositor_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_client_internal_model_depositor_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_client_internal_model_depositor_proto_goTypes = []any{
+var file_client_internal_model_model_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_client_internal_model_model_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_client_internal_model_model_proto_goTypes = []any{
 	(SecretType)(0),    // 0: gophkeeper.client.v1.SecretType
 	(*OpenSecret)(nil), // 1: gophkeeper.client.v1.OpenSecret
 	(*Secret)(nil),     // 2: gophkeeper.client.v1.Secret
 }
-var file_client_internal_model_depositor_proto_depIdxs = []int32{
+var file_client_internal_model_model_proto_depIdxs = []int32{
 	0, // 0: gophkeeper.client.v1.OpenSecret.type:type_name -> gophkeeper.client.v1.SecretType
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
@@ -238,27 +238,27 @@ var file_client_internal_model_depositor_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_client_internal_model_depositor_proto_init() }
-func file_client_internal_model_depositor_proto_init() {
-	if File_client_internal_model_depositor_proto != nil {
+func init() { file_client_internal_model_model_proto_init() }
+func file_client_internal_model_model_proto_init() {
+	if File_client_internal_model_model_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_client_internal_model_depositor_proto_rawDesc), len(file_client_internal_model_depositor_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_client_internal_model_model_proto_rawDesc), len(file_client_internal_model_model_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_client_internal_model_depositor_proto_goTypes,
-		DependencyIndexes: file_client_internal_model_depositor_proto_depIdxs,
-		EnumInfos:         file_client_internal_model_depositor_proto_enumTypes,
-		MessageInfos:      file_client_internal_model_depositor_proto_msgTypes,
+		GoTypes:           file_client_internal_model_model_proto_goTypes,
+		DependencyIndexes: file_client_internal_model_model_proto_depIdxs,
+		EnumInfos:         file_client_internal_model_model_proto_enumTypes,
+		MessageInfos:      file_client_internal_model_model_proto_msgTypes,
 	}.Build()
-	File_client_internal_model_depositor_proto = out.File
-	file_client_internal_model_depositor_proto_goTypes = nil
-	file_client_internal_model_depositor_proto_depIdxs = nil
+	File_client_internal_model_model_proto = out.File
+	file_client_internal_model_model_proto_goTypes = nil
+	file_client_internal_model_model_proto_depIdxs = nil
 }
