@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/rsa"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -183,8 +184,9 @@ type config struct {
 	GophKeeperURL string `json:"keeper_url"`
 
 	// PrivateKeyFilePath is the path to the private key file used for authentication.
-	PrivateKeyFilePath string `json:"private_key_file_path"`
-	PublicKeyFilePath  string `json:"public_key_file_path"`
+	PrivateKeyFilePath string         `json:"private_key_file_path"`
+	PublicKeyFilePath  string         `json:"public_key_file_path"`
+	PublicKey          *rsa.PublicKey `json:"pub_key"`
 
 	RegisteredPubKeyID string `json:"registered_pub_key_id"`
 

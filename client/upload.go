@@ -4,11 +4,14 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha256"
 	"io"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/client/internal/model"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -38,7 +41,9 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	encryptedDEK, err := encryptDEK(DEK)
+	encryptedDEK, err := rsa.EncryptOAEP(sha256.New(), rand.Reader,
+		app.config.PublicKey, DEK, nil,
+	)
 	if err != nil {
 		return err
 	}
@@ -54,7 +59,10 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	ctx := cmd.Context()
+	ctx := metadata.AppendToOutgoingContext(
+		cmd.Context(),
+		"authorization", app.config.AuthToken,
+	)
 	res, err := app.client.DepositSecret(ctx, &pb.DepositSecretRequest{
 		Payload: protoSecretData,
 	})
@@ -96,11 +104,6 @@ func encryptOpenSecret(protoOpenSecretData []byte) (encryptedData, DEK, nonce []
 	encryptedData = awed.Seal(nil, nonce, protoOpenSecretData, nil)
 
 	return encryptedData, DEK, nonce, nil
-}
-
-func encryptDEK(DEK []byte) ([]byte, error) {
-	// TODO
-	return nil, nil
 }
 
 func storeDepositedSecretID(depositedSecretId *pb.UUID) error {
