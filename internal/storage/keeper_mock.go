@@ -5,10 +5,11 @@ package storage
 
 import (
 	"context"
+	"sync"
+
 	"github.com/google/uuid"
 	"github.com/oleshko-g/gophkeeper/internal/model/keeper/secret"
 	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
-	"sync"
 )
 
 // Ensure, that KeeperMock does implement Keeper.

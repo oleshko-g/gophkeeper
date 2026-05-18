@@ -5,11 +5,12 @@ package service
 
 import (
 	"context"
+	"sync"
+
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"google.golang.org/genproto/googleapis/api/httpbody"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"sync"
 )
 
 // Ensure, that KeeperMock does implement Keeper.

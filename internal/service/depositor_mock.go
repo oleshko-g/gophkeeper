@@ -5,9 +5,10 @@ package service
 
 import (
 	"context"
+	"sync"
+
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
-	"sync"
 )
 
 // Ensure, that DepositorMock does implement Depositor.

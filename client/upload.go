@@ -45,7 +45,7 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 	}
 
 	encryptedDEK, err := rsa.EncryptOAEP(sha256.New(), rand.Reader,
-		app.config.PublicKey, DEK, nil,
+		app.PublicKey, DEK, nil,
 	)
 	if err != nil {
 		return err

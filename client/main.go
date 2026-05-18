@@ -4,8 +4,11 @@ import (
 	"context"
 	"crypto/rsa"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path"
 
@@ -37,6 +40,9 @@ type a struct {
 	// cmd is the root command
 	// during init sub commands are added based on the current [app.state]
 	cmd *cobra.Command
+
+	PrivateKey *rsa.PrivateKey
+	PublicKey  *rsa.PublicKey
 
 	// is the gRPC interface to access the gophkeeper server
 	*client
@@ -184,9 +190,8 @@ type config struct {
 	GophKeeperURL string `json:"keeper_url"`
 
 	// PrivateKeyFilePath is the path to the private key file used for authentication.
-	PrivateKeyFilePath string         `json:"private_key_file_path"`
-	PublicKeyFilePath  string         `json:"public_key_file_path"`
-	PublicKey          *rsa.PublicKey `json:"pub_key"`
+	PrivateKeyFilePath string `json:"private_key_file_path"`
+	PublicKeyFilePath  string `json:"public_key_file_path"`
 
 	RegisteredPubKeyID string `json:"registered_pub_key_id"`
 
@@ -243,6 +248,33 @@ func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
 	app.logger.Info(fmt.Sprintf("config is updated to %#v", app.config))
 
 	return nil
+}
+
+func (app *a) initPrivKey() {
+	privKeyFile, err := os.Open(app.config.PrivateKeyFilePath)
+	if err != nil {
+		panic(err)
+	}
+	defer privKeyFile.Close()
+
+	data, err := io.ReadAll(privKeyFile)
+	if err != nil {
+		panic(err)
+	}
+
+	privKey, err := x509.ParsePKCS8PrivateKey(data)
+	if err != nil {
+		panic(err)
+	}
+
+	RSAPrivKey, ok := privKey.(*rsa.PrivateKey)
+
+	if !ok {
+		panic(errors.New("not an RSA Private Key"))
+	}
+
+	app.PrivateKey = RSAPrivKey
+
 }
 
 func (app *a) initState() {
