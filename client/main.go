@@ -6,9 +6,9 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"path"
 
@@ -152,6 +152,12 @@ func init() {
 
 	app.initState()
 
+	if app.state == pubKeyRegistered {
+		app.initKeyPair()
+	}
+
+	app.initState()
+
 	switch app.state {
 	case clientSetUp:
 		app.cmd.AddCommand(register)
@@ -250,30 +256,30 @@ func (app *a) updateConfig(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func (app *a) initPrivKey() {
-	privKeyFile, err := os.Open(app.config.PrivateKeyFilePath)
-	if err != nil {
-		panic(err)
-	}
-	defer privKeyFile.Close()
-
-	data, err := io.ReadAll(privKeyFile)
+// initKeyPair initializes [app.PrivateKey] and [app.PublicKey] from the [config.PrivateKeyPath]
+func (app *a) initKeyPair() {
+	privKeyFileData, err := os.ReadFile(app.config.PrivateKeyFilePath)
 	if err != nil {
 		panic(err)
 	}
 
-	privKey, err := x509.ParsePKCS8PrivateKey(data)
+	block, _ := pem.Decode(privKeyFileData)
+	if block == nil {
+		panic(errors.New("failed to decode PEM"))
+	}
+
+	privKey, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 	if err != nil {
 		panic(err)
 	}
 
 	RSAPrivKey, ok := privKey.(*rsa.PrivateKey)
-
 	if !ok {
 		panic(errors.New("not an RSA Private Key"))
 	}
 
 	app.PrivateKey = RSAPrivKey
+	app.PublicKey = &RSAPrivKey.PublicKey
 
 }
 
