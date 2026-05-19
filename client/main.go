@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"crypto/rsa"
 	"crypto/tls"
@@ -11,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"log/slog"
 
@@ -41,8 +43,11 @@ type a struct {
 	// during init sub commands are added based on the current [app.state]
 	cmd *cobra.Command
 
-	PrivateKey *rsa.PrivateKey
-	PublicKey  *rsa.PublicKey
+	privateKey *rsa.PrivateKey
+	publicKey  *rsa.PublicKey
+
+	depositedSecretsFile *os.File
+	depositedSecrets     []string
 
 	// is the gRPC interface to access the gophkeeper server
 	*client
@@ -152,8 +157,9 @@ func init() {
 
 	app.initState()
 
-	if app.state == pubKeyRegistered {
+	if app.state == pubKeyRegistered || app.state == appAuthorized {
 		app.initKeyPair()
+		app.initDepositedSecrets()
 	}
 
 	app.initState()
@@ -167,6 +173,11 @@ func init() {
 		return
 	case appAuthorized:
 		upload.SetIn(nil)
+		if os.Getenv("GOPHKEEPER_DEBUG_CLIENT") == "true" {
+			upload.SetIn(
+				strings.NewReader("secret"),
+			)
+		}
 		app.cmd.AddCommand(upload, list, delete)
 		return
 	}
@@ -200,6 +211,8 @@ type config struct {
 	PublicKeyFilePath  string `json:"public_key_file_path"`
 
 	RegisteredPubKeyID string `json:"registered_pub_key_id"`
+
+	DepositedSecretsFilePath string `json:"deposited_keys_file_path"`
 
 	// AuthToken is the authentication token for the [app] on the gophkeeper server.
 	AuthToken string `json:"auth_token"`
@@ -278,36 +291,28 @@ func (app *a) initKeyPair() {
 		panic(errors.New("not an RSA Private Key"))
 	}
 
-	app.PrivateKey = RSAPrivKey
-	app.PublicKey = &RSAPrivKey.PublicKey
+	app.privateKey = RSAPrivKey
+	app.publicKey = &RSAPrivKey.PublicKey
 
 }
 
-func (app *a) initState() {
-	if app.cfgDir != "" {
-		app.state = cfgDirInitialized
+// initDepositedSecrets initializes [app.depositedSecrets] from the [config.DepositedKeysFile]
+func (app *a) initDepositedSecrets() {
+	const storageFileName string = "depositedSecrets.txt"
+	depositedSecretsFile, err := os.OpenFile(path.Join(app.cfgDir, storageFileName), os.O_RDWR|os.O_CREATE, 0x600)
+	if err != nil {
+		panic(err)
 	}
 
-	if app.config == nil {
-		return
-	}
-	app.state = configSet
+	app.depositedSecretsFile = depositedSecretsFile
 
-	if app.client == nil {
-		return
+	s := bufio.NewScanner(app.depositedSecretsFile)
+	for s.Scan() {
+		if err := s.Err(); err != nil {
+			panic(err)
+		}
+		app.depositedSecrets = append(app.depositedSecrets, s.Text())
 	}
-	app.state = clientSetUp
-
-	if app.config.RegisteredPubKeyID == "" {
-		return
-	}
-	app.state = pubKeyRegistered
-
-	if app.config.AuthToken == "" {
-		return
-	}
-	app.state = appAuthorized
-
 }
 
 // initClient initializes the client for the gophkeeper server.
@@ -339,7 +344,40 @@ func newClient(gophKeeperURL string) (*client, error) {
 	}, nil
 }
 
+// initState initializes the state of the app based on the app's configuration and client.
+func (app *a) initState() {
+	if app.cfgDir != "" {
+		app.state = cfgDirInitialized
+	}
+
+	if app.config == nil {
+		return
+	}
+	app.state = configSet
+
+	if app.client == nil {
+		return
+	}
+	app.state = clientSetUp
+
+	if app.config.RegisteredPubKeyID == "" {
+		return
+	}
+	app.state = pubKeyRegistered
+
+	if app.config.AuthToken == "" {
+		return
+	}
+	app.state = appAuthorized
+
+}
+
 func main() {
+	defer func() {
+		cobra.CheckErr(
+			app.depositedSecretsFile.Close(),
+		)
+	}()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

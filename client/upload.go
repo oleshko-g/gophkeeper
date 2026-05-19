@@ -6,11 +6,9 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
-	"encoding/json"
 	"io"
-	"os"
-	"path"
 
+	"github.com/google/uuid"
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/client/internal/model"
 	"github.com/spf13/cobra"
@@ -45,7 +43,7 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 	}
 
 	encryptedDEK, err := rsa.EncryptOAEP(sha256.New(), rand.Reader,
-		app.PublicKey, DEK, nil,
+		app.publicKey, DEK, nil,
 	)
 	if err != nil {
 		return err
@@ -110,17 +108,16 @@ func encryptOpenSecret(protoOpenSecretData []byte) (encryptedData, DEK, nonce []
 }
 
 func (app *a) storeDepositedSecretID(depositedSecretId *pb.UUID) error {
-	const storageFileName string = "depositedSecrets.json"
-	storageFilePath := path.Join(app.cfgDir, storageFileName)
-	storageFile, err := os.OpenFile(storageFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0x600)
+	_, err := app.depositedSecretsFile.Seek(0, io.SeekEnd)
 	if err != nil {
 		return err
 	}
-	defer storageFile.Close()
 
-	id := string(depositedSecretId.Bytes)
-
-	err = json.NewEncoder(storageFile).Encode(model.DepositedSecret{ID: id})
+	id, err := uuid.ParseBytes(depositedSecretId.Bytes)
+	if err != nil {
+		return err
+	}
+	_, err = io.WriteString(app.depositedSecretsFile, "\n"+id.String())
 	if err != nil {
 		return err
 	}

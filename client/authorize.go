@@ -20,7 +20,7 @@ func (app *a) authorizeRunE(cmd *cobra.Command, _ []string) error {
 	data, err := rsa.DecryptOAEP(
 		sha256.New(),
 		rand.Reader,
-		app.PrivateKey,
+		app.privateKey,
 		ciphertext,
 		nil)
 	if err != nil {
