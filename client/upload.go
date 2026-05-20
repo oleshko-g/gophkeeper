@@ -113,7 +113,7 @@ func (app *a) storeDepositedSecretID(depositedSecretId *pb.UUID) error {
 		return err
 	}
 
-	id, err := uuid.ParseBytes(depositedSecretId.Bytes)
+	id, err := uuid.FromBytes(depositedSecretId.Bytes)
 	if err != nil {
 		return err
 	}
