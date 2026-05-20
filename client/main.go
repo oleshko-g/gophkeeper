@@ -16,6 +16,7 @@ import (
 
 	"log/slog"
 
+	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/spf13/cobra"
@@ -298,6 +299,8 @@ func (app *a) initKeyPair() {
 
 // initDepositedSecrets initializes [app.depositedSecrets] from the [config.DepositedKeysFile]
 func (app *a) initDepositedSecrets() {
+	l := app.logger.With("func", "initDepositedSecrets")
+
 	const storageFileName string = "depositedSecrets.txt"
 	depositedSecretsFile, err := os.OpenFile(path.Join(app.cfgDir, storageFileName), os.O_RDWR|os.O_CREATE, 0x600)
 	if err != nil {
@@ -307,11 +310,18 @@ func (app *a) initDepositedSecrets() {
 	app.depositedSecretsFile = depositedSecretsFile
 
 	s := bufio.NewScanner(app.depositedSecretsFile)
-	for s.Scan() {
+
+	for c := 1; s.Scan(); c++ {
 		if err := s.Err(); err != nil {
 			panic(err)
 		}
-		app.depositedSecrets = append(app.depositedSecrets, s.Text())
+		yield := s.Text()
+		if _, err := uuid.Parse(yield); err != nil {
+			l.Warn("skipped an invalid deposited secret ID.", "at file line", c)
+			continue
+		}
+
+		app.depositedSecrets = append(app.depositedSecrets, yield)
 	}
 }
 
