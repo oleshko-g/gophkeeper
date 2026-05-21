@@ -394,6 +394,7 @@ func main() {
 	app.cmd.SetContext(ctx)
 	err := app.cmd.Execute()
 	if err != nil {
-		cobra.CheckErr(err)
+		app.logger.Error(err.Error())
+		os.Exit(1)
 	}
 }
