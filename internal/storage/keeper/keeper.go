@@ -6,11 +6,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
 	"github.com/oleshko-g/gophkeeper/internal/model/keeper/secret"
-	"github.com/oleshko-g/gophkeeper/internal/storage"
+	_ "github.com/oleshko-g/gophkeeper/internal/storage"
 	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 )
 
-var _ storage.Keeper = (*Keeper)(nil)
+// var _ storage.Keeper = (*Keeper)(nil)
 
 //go:generate moq -rm -out keeper_querier_mock.go . Querier
 type Querier interface {

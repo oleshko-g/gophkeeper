@@ -22,22 +22,18 @@ service DepositorService {
   rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse);
 }
 
-// KeeperService is the interface to:
-//  - [UploadData] of the owners of the [Register]ed public keys
-//  - [DownloadData] the uploaded data
-//  - [ListData] the uploaded data
-//  - [DeleteData] the uploaded data
+// KeeperService is the service that deposits and retrieves secrets.
 service KeeperService {
-  // UploadData uploads data of the owners of the [Register]ed public keys.
+  // DepositSecret deposits a secret into the Keeper.
   rpc DepositSecret(DepositSecretRequest) returns (DepositSecretResponse);
+
+  // ListSecrets lists the deposited secrets of the authenticated user.
+  rpc ListSecrets(ListSecretsRequest) returns (ListSecretsResponse);
 
   // DownloadData downloads the [Upload]ed data
   rpc DownloadData(DownloadDataRequest) returns (DownloadDataResponse);
 
-  // DownloadData lists the [Upload]ed data
-  rpc ListData(ListDataRequest) returns (ListDataResponse);
-
-  // Delete deletes the [Upload]ed data from the [KeeperService]
+  // DeleteData deletes the [Upload]ed data from the [KeeperService]
   rpc DeleteData(DeleteDataRequest) returns (DeleteDataResponse);
 
   // DownloadFile downloads a file from the [KeeperService]
@@ -78,6 +74,12 @@ message DepositSecretResponse {
   UUID deposited_secret_id = 1;
 }
 
+message ListSecretsRequest {}
+
+message ListSecretsResponse {
+  repeated UUID secret_ids = 1;
+}
+
 message DownloadDataRequest {}
 
 message DownloadDataResponse {}
@@ -86,9 +88,6 @@ message DeleteDataRequest {}
 
 message DeleteDataResponse {}
 
-message ListDataRequest {}
-
-message ListDataResponse {}
 
 message DownloadFileRequest {}
 

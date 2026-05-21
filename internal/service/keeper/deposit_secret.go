@@ -16,9 +16,9 @@ func (s *Service) DepositSecret(ctx context.Context, req *pb.DepositSecretReques
 		return nil, service.WrapError(&service.Err{Type: service.ErrTypeUnauthenticated, SvcName: s.Name()}, errEmptyPubKeyID)
 	}
 
-	sec := secret.FromProto(req)
+	secretData := secret.FromProto(req)
 
-	depositedSecret, err := s.Keeper.StoreSecret(ctx, uuidv7.FromString(publicKeyID), sec)
+	depositedSecret, err := s.Keeper.StoreSecret(ctx, uuidv7.FromString(publicKeyID), secretData)
 	if err != nil {
 		return nil, service.WrapError(&service.Err{Type: service.ErrTypeStorage, SvcName: s.Name()}, err)
 	}

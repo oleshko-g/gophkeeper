@@ -22,6 +22,9 @@ var _ Keeper = &KeeperMock{}
 //
 //		// make and configure a mocked Keeper
 //		mockedKeeper := &KeeperMock{
+//			RetrieveSecretsFunc: func(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID]) ([]secret.DepositedSecret, error) {
+//				panic("mock out the RetrieveSecrets method")
+//			},
 //			StoreSecretFunc: func(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], s secret.Data) (*secret.DepositedSecret, error) {
 //				panic("mock out the StoreSecret method")
 //			},
@@ -32,11 +35,21 @@ var _ Keeper = &KeeperMock{}
 //
 //	}
 type KeeperMock struct {
+	// RetrieveSecretsFunc mocks the RetrieveSecrets method.
+	RetrieveSecretsFunc func(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID]) ([]secret.DepositedSecret, error)
+
 	// StoreSecretFunc mocks the StoreSecret method.
 	StoreSecretFunc func(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], s secret.Data) (*secret.DepositedSecret, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// RetrieveSecrets holds details about calls to the RetrieveSecrets method.
+		RetrieveSecrets []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PublicKeyID is the publicKeyID argument value.
+			PublicKeyID uuidv7.UUID[uuid.UUID]
+		}
 		// StoreSecret holds details about calls to the StoreSecret method.
 		StoreSecret []struct {
 			// Ctx is the ctx argument value.
@@ -47,7 +60,44 @@ type KeeperMock struct {
 			S secret.Data
 		}
 	}
-	lockStoreSecret sync.RWMutex
+	lockRetrieveSecrets sync.RWMutex
+	lockStoreSecret     sync.RWMutex
+}
+
+// RetrieveSecrets calls RetrieveSecretsFunc.
+func (mock *KeeperMock) RetrieveSecrets(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID]) ([]secret.DepositedSecret, error) {
+	if mock.RetrieveSecretsFunc == nil {
+		panic("KeeperMock.RetrieveSecretsFunc: method is nil but Keeper.RetrieveSecrets was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		PublicKeyID uuidv7.UUID[uuid.UUID]
+	}{
+		Ctx:         ctx,
+		PublicKeyID: publicKeyID,
+	}
+	mock.lockRetrieveSecrets.Lock()
+	mock.calls.RetrieveSecrets = append(mock.calls.RetrieveSecrets, callInfo)
+	mock.lockRetrieveSecrets.Unlock()
+	return mock.RetrieveSecretsFunc(ctx, publicKeyID)
+}
+
+// RetrieveSecretsCalls gets all the calls that were made to RetrieveSecrets.
+// Check the length with:
+//
+//	len(mockedKeeper.RetrieveSecretsCalls())
+func (mock *KeeperMock) RetrieveSecretsCalls() []struct {
+	Ctx         context.Context
+	PublicKeyID uuidv7.UUID[uuid.UUID]
+} {
+	var calls []struct {
+		Ctx         context.Context
+		PublicKeyID uuidv7.UUID[uuid.UUID]
+	}
+	mock.lockRetrieveSecrets.RLock()
+	calls = mock.calls.RetrieveSecrets
+	mock.lockRetrieveSecrets.RUnlock()
+	return calls
 }
 
 // StoreSecret calls StoreSecretFunc.

@@ -35,8 +35,8 @@ var _ Keeper = &KeeperMock{}
 //			DownloadFileFunc: func(downloadFileRequest *pb.DownloadFileRequest, serverStreamingServer grpc.ServerStreamingServer[httpbody.HttpBody]) error {
 //				panic("mock out the DownloadFile method")
 //			},
-//			ListDataFunc: func(contextMoqParam context.Context, listDataRequest *pb.ListDataRequest) (*pb.ListDataResponse, error) {
-//				panic("mock out the ListData method")
+//			ListSecretsFunc: func(contextMoqParam context.Context, listSecretsRequest *pb.ListSecretsRequest) (*pb.ListSecretsResponse, error) {
+//				panic("mock out the ListSecrets method")
 //			},
 //			NameFunc: func() string {
 //				panic("mock out the Name method")
@@ -63,8 +63,8 @@ type KeeperMock struct {
 	// DownloadFileFunc mocks the DownloadFile method.
 	DownloadFileFunc func(downloadFileRequest *pb.DownloadFileRequest, serverStreamingServer grpc.ServerStreamingServer[httpbody.HttpBody]) error
 
-	// ListDataFunc mocks the ListData method.
-	ListDataFunc func(contextMoqParam context.Context, listDataRequest *pb.ListDataRequest) (*pb.ListDataResponse, error)
+	// ListSecretsFunc mocks the ListSecrets method.
+	ListSecretsFunc func(contextMoqParam context.Context, listSecretsRequest *pb.ListSecretsRequest) (*pb.ListSecretsResponse, error)
 
 	// NameFunc mocks the Name method.
 	NameFunc func() string
@@ -102,12 +102,12 @@ type KeeperMock struct {
 			// ServerStreamingServer is the serverStreamingServer argument value.
 			ServerStreamingServer grpc.ServerStreamingServer[httpbody.HttpBody]
 		}
-		// ListData holds details about calls to the ListData method.
-		ListData []struct {
+		// ListSecrets holds details about calls to the ListSecrets method.
+		ListSecrets []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
-			// ListDataRequest is the listDataRequest argument value.
-			ListDataRequest *pb.ListDataRequest
+			// ListSecretsRequest is the listSecretsRequest argument value.
+			ListSecretsRequest *pb.ListSecretsRequest
 		}
 		// Name holds details about calls to the Name method.
 		Name []struct {
@@ -122,7 +122,7 @@ type KeeperMock struct {
 	lockDepositSecret sync.RWMutex
 	lockDownloadData  sync.RWMutex
 	lockDownloadFile  sync.RWMutex
-	lockListData      sync.RWMutex
+	lockListSecrets   sync.RWMutex
 	lockName          sync.RWMutex
 	lockUploadFile    sync.RWMutex
 }
@@ -271,39 +271,39 @@ func (mock *KeeperMock) DownloadFileCalls() []struct {
 	return calls
 }
 
-// ListData calls ListDataFunc.
-func (mock *KeeperMock) ListData(contextMoqParam context.Context, listDataRequest *pb.ListDataRequest) (*pb.ListDataResponse, error) {
-	if mock.ListDataFunc == nil {
-		panic("KeeperMock.ListDataFunc: method is nil but Keeper.ListData was just called")
+// ListSecrets calls ListSecretsFunc.
+func (mock *KeeperMock) ListSecrets(contextMoqParam context.Context, listSecretsRequest *pb.ListSecretsRequest) (*pb.ListSecretsResponse, error) {
+	if mock.ListSecretsFunc == nil {
+		panic("KeeperMock.ListSecretsFunc: method is nil but Keeper.ListSecrets was just called")
 	}
 	callInfo := struct {
-		ContextMoqParam context.Context
-		ListDataRequest *pb.ListDataRequest
+		ContextMoqParam    context.Context
+		ListSecretsRequest *pb.ListSecretsRequest
 	}{
-		ContextMoqParam: contextMoqParam,
-		ListDataRequest: listDataRequest,
+		ContextMoqParam:    contextMoqParam,
+		ListSecretsRequest: listSecretsRequest,
 	}
-	mock.lockListData.Lock()
-	mock.calls.ListData = append(mock.calls.ListData, callInfo)
-	mock.lockListData.Unlock()
-	return mock.ListDataFunc(contextMoqParam, listDataRequest)
+	mock.lockListSecrets.Lock()
+	mock.calls.ListSecrets = append(mock.calls.ListSecrets, callInfo)
+	mock.lockListSecrets.Unlock()
+	return mock.ListSecretsFunc(contextMoqParam, listSecretsRequest)
 }
 
-// ListDataCalls gets all the calls that were made to ListData.
+// ListSecretsCalls gets all the calls that were made to ListSecrets.
 // Check the length with:
 //
-//	len(mockedKeeper.ListDataCalls())
-func (mock *KeeperMock) ListDataCalls() []struct {
-	ContextMoqParam context.Context
-	ListDataRequest *pb.ListDataRequest
+//	len(mockedKeeper.ListSecretsCalls())
+func (mock *KeeperMock) ListSecretsCalls() []struct {
+	ContextMoqParam    context.Context
+	ListSecretsRequest *pb.ListSecretsRequest
 } {
 	var calls []struct {
-		ContextMoqParam context.Context
-		ListDataRequest *pb.ListDataRequest
+		ContextMoqParam    context.Context
+		ListSecretsRequest *pb.ListSecretsRequest
 	}
-	mock.lockListData.RLock()
-	calls = mock.calls.ListData
-	mock.lockListData.RUnlock()
+	mock.lockListSecrets.RLock()
+	calls = mock.calls.ListSecrets
+	mock.lockListSecrets.RUnlock()
 	return calls
 }
 
