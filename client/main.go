@@ -315,13 +315,13 @@ func (app *a) initDepositedSecrets() {
 		if err := s.Err(); err != nil {
 			panic(err)
 		}
-		yield := s.Text()
-		if _, err := uuid.Parse(yield); err != nil {
+		line := s.Text()
+		if _, err := uuid.Parse(line); err != nil {
 			l.Warn("skipped an invalid deposited secret ID.", "at file line", c)
 			continue
 		}
 
-		app.depositedSecrets = append(app.depositedSecrets, yield)
+		app.depositedSecrets = append(app.depositedSecrets, line)
 	}
 }
 

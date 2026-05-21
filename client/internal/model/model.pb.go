@@ -189,6 +189,66 @@ func (x *Secret) GetNonce() []byte {
 	return nil
 }
 
+type DepositedSecret struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Type          *SecretType            `protobuf:"varint,1,opt,name=type,enum=gophkeeper.client.v1.SecretType" json:"type,omitempty"`
+	Id            *string                `protobuf:"bytes,2,opt,name=id" json:"id,omitempty"` // Keeper service ID
+	Name          *string                `protobuf:"bytes,3,opt,name=name" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DepositedSecret) Reset() {
+	*x = DepositedSecret{}
+	mi := &file_client_internal_model_model_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DepositedSecret) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DepositedSecret) ProtoMessage() {}
+
+func (x *DepositedSecret) ProtoReflect() protoreflect.Message {
+	mi := &file_client_internal_model_model_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DepositedSecret.ProtoReflect.Descriptor instead.
+func (*DepositedSecret) Descriptor() ([]byte, []int) {
+	return file_client_internal_model_model_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *DepositedSecret) GetType() SecretType {
+	if x != nil && x.Type != nil {
+		return *x.Type
+	}
+	return SecretType_SECRET_TYPE_UNSPECIFIED
+}
+
+func (x *DepositedSecret) GetId() string {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return ""
+}
+
+func (x *DepositedSecret) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
 var File_client_internal_model_model_proto protoreflect.FileDescriptor
 
 const file_client_internal_model_model_proto_rawDesc = "" +
@@ -205,7 +265,11 @@ const file_client_internal_model_model_proto_rawDesc = "" +
 	"\rencrypted_dek\x18\x01 \x01(\fB\b\xfaB\x05z\x03h\x80\x02R\fencryptedDek\x121\n" +
 	"\x0eencrypted_data\x18\x02 \x01(\fB\n" +
 	"\xfaB\az\x05\x10\x10\x18\xca\x11R\rencryptedData\x12\x1d\n" +
-	"\x05nonce\x18\x03 \x01(\fB\a\xfaB\x04z\x02h\fR\x05nonce*A\n" +
+	"\x05nonce\x18\x03 \x01(\fB\a\xfaB\x04z\x02h\fR\x05nonce\"k\n" +
+	"\x0fDepositedSecret\x124\n" +
+	"\x04type\x18\x01 \x01(\x0e2 .gophkeeper.client.v1.SecretTypeR\x04type\x12\x0e\n" +
+	"\x02id\x18\x02 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name*A\n" +
 	"\n" +
 	"SecretType\x12\x1b\n" +
 	"\x17SECRET_TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
@@ -224,19 +288,21 @@ func file_client_internal_model_model_proto_rawDescGZIP() []byte {
 }
 
 var file_client_internal_model_model_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_client_internal_model_model_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_client_internal_model_model_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_client_internal_model_model_proto_goTypes = []any{
-	(SecretType)(0),    // 0: gophkeeper.client.v1.SecretType
-	(*OpenSecret)(nil), // 1: gophkeeper.client.v1.OpenSecret
-	(*Secret)(nil),     // 2: gophkeeper.client.v1.Secret
+	(SecretType)(0),         // 0: gophkeeper.client.v1.SecretType
+	(*OpenSecret)(nil),      // 1: gophkeeper.client.v1.OpenSecret
+	(*Secret)(nil),          // 2: gophkeeper.client.v1.Secret
+	(*DepositedSecret)(nil), // 3: gophkeeper.client.v1.DepositedSecret
 }
 var file_client_internal_model_model_proto_depIdxs = []int32{
 	0, // 0: gophkeeper.client.v1.OpenSecret.type:type_name -> gophkeeper.client.v1.SecretType
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	0, // 1: gophkeeper.client.v1.DepositedSecret.type:type_name -> gophkeeper.client.v1.SecretType
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_client_internal_model_model_proto_init() }
@@ -250,7 +316,7 @@ func file_client_internal_model_model_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_client_internal_model_model_proto_rawDesc), len(file_client_internal_model_model_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

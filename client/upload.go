@@ -17,6 +17,7 @@ import (
 )
 
 func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
+	// TODO: add readWithTimeout
 	in, err := io.ReadAll(cmd.InOrStdin())
 	if err != nil {
 		return err
@@ -27,7 +28,7 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 		Name: new("secret"),
 		Data: []byte(in),
 	}
-	err = o.ValidateAll()
+	err = o.Validate()
 	if err != nil {
 		return err
 	}
@@ -72,6 +73,7 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 	}
 
 	depositedSecretId := res.GetDepositedSecretId()
+	// TODO: marshal into byte model.DepositedSecret, WriteFile
 	err = app.storeDepositedSecretID(depositedSecretId)
 	if err != nil {
 		return err

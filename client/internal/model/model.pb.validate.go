@@ -297,3 +297,109 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = SecretValidationError{}
+
+// Validate checks the field values on DepositedSecret with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *DepositedSecret) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DepositedSecret with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DepositedSecretMultiError, or nil if none found.
+func (m *DepositedSecret) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DepositedSecret) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Type
+
+	// no validation rules for Id
+
+	// no validation rules for Name
+
+	if len(errors) > 0 {
+		return DepositedSecretMultiError(errors)
+	}
+
+	return nil
+}
+
+// DepositedSecretMultiError is an error wrapping multiple validation errors
+// returned by DepositedSecret.ValidateAll() if the designated constraints
+// aren't met.
+type DepositedSecretMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DepositedSecretMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DepositedSecretMultiError) AllErrors() []error { return m }
+
+// DepositedSecretValidationError is the validation error returned by
+// DepositedSecret.Validate if the designated constraints aren't met.
+type DepositedSecretValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DepositedSecretValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DepositedSecretValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DepositedSecretValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DepositedSecretValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DepositedSecretValidationError) ErrorName() string { return "DepositedSecretValidationError" }
+
+// Error satisfies the builtin error interface
+func (e DepositedSecretValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDepositedSecret.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DepositedSecretValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DepositedSecretValidationError{}

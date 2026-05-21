@@ -31,3 +31,9 @@ message Secret {
   }];
   bytes nonce = 3 [(validate.rules).bytes.len = 12];
 }
+
+message DepositedSecret {
+  SecretType type = 1;
+  string id = 2; // Keeper service ID
+  string name = 3;
+}
