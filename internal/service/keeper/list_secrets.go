@@ -3,8 +3,8 @@ package keeper
 import (
 	"context"
 
+	"github.com/google/uuid"
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
-	"github.com/oleshko-g/gophkeeper/internal/model/keeper/secret"
 	_ "github.com/oleshko-g/gophkeeper/internal/model/keeper/secret"
 	"github.com/oleshko-g/gophkeeper/internal/service"
 	"github.com/oleshko-g/gophkeeper/internal/transform"
@@ -17,21 +17,21 @@ func (s *Service) ListSecrets(ctx context.Context, r *pb.ListSecretsRequest) (*p
 		return nil, service.WrapError(&service.Err{Type: service.ErrTypeUnauthenticated, SvcName: s.Name()}, errEmptyPubKeyID)
 	}
 
-	secrets, err := s.RetrieveSecrets(ctx, uuidv7.FromString(publicKeyID))
+	secretIDs, err := s.Keeper.RetrieveSecretIDs(ctx, uuidv7.FromString(publicKeyID))
 	if err != nil {
 		return nil, service.WrapError(
 			&service.Err{Type: service.ErrTypeStorage, SvcName: s.Name()},
 			err)
 	}
 
-	secretIDs := transform.SliceToSlice(secrets, func(s secret.DepositedSecret) *pb.UUID {
-		bytes, _ := s.ID.Value.MarshalBinary()
+	secretIDsBytes := transform.SliceToSlice(secretIDs, func(s uuid.UUID) *pb.UUID {
+		bytes, _ := s.MarshalBinary()
 		return &pb.UUID{
 			Bytes: bytes,
 		}
 	})
 
 	return &pb.ListSecretsResponse{
-		SecretIds: secretIDs,
+		SecretIds: secretIDsBytes,
 	}, nil
 }

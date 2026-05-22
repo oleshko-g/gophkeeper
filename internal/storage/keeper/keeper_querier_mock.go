@@ -7,6 +7,7 @@ import (
 	"context"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
 )
 
@@ -23,6 +24,9 @@ var _ Querier = &QuerierMock{}
 //			InsertDepositedSecretFunc: func(ctx context.Context, arg queries.InsertDepositedSecretParams) (queries.DepositedSecret, error) {
 //				panic("mock out the InsertDepositedSecret method")
 //			},
+//			SelectDepositedSecretIDsFunc: func(ctx context.Context, depositorPubKeyID uuid.UUID) ([]uuid.UUID, error) {
+//				panic("mock out the SelectDepositedSecretIDs method")
+//			},
 //		}
 //
 //		// use mockedQuerier in code that requires Querier
@@ -33,6 +37,9 @@ type QuerierMock struct {
 	// InsertDepositedSecretFunc mocks the InsertDepositedSecret method.
 	InsertDepositedSecretFunc func(ctx context.Context, arg queries.InsertDepositedSecretParams) (queries.DepositedSecret, error)
 
+	// SelectDepositedSecretIDsFunc mocks the SelectDepositedSecretIDs method.
+	SelectDepositedSecretIDsFunc func(ctx context.Context, depositorPubKeyID uuid.UUID) ([]uuid.UUID, error)
+
 	// calls tracks calls to the methods.
 	calls struct {
 		// InsertDepositedSecret holds details about calls to the InsertDepositedSecret method.
@@ -42,8 +49,16 @@ type QuerierMock struct {
 			// Arg is the arg argument value.
 			Arg queries.InsertDepositedSecretParams
 		}
+		// SelectDepositedSecretIDs holds details about calls to the SelectDepositedSecretIDs method.
+		SelectDepositedSecretIDs []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// DepositorPubKeyID is the depositorPubKeyID argument value.
+			DepositorPubKeyID uuid.UUID
+		}
 	}
-	lockInsertDepositedSecret sync.RWMutex
+	lockInsertDepositedSecret    sync.RWMutex
+	lockSelectDepositedSecretIDs sync.RWMutex
 }
 
 // InsertDepositedSecret calls InsertDepositedSecretFunc.
@@ -79,5 +94,41 @@ func (mock *QuerierMock) InsertDepositedSecretCalls() []struct {
 	mock.lockInsertDepositedSecret.RLock()
 	calls = mock.calls.InsertDepositedSecret
 	mock.lockInsertDepositedSecret.RUnlock()
+	return calls
+}
+
+// SelectDepositedSecretIDs calls SelectDepositedSecretIDsFunc.
+func (mock *QuerierMock) SelectDepositedSecretIDs(ctx context.Context, depositorPubKeyID uuid.UUID) ([]uuid.UUID, error) {
+	if mock.SelectDepositedSecretIDsFunc == nil {
+		panic("QuerierMock.SelectDepositedSecretIDsFunc: method is nil but Querier.SelectDepositedSecretIDs was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		DepositorPubKeyID uuid.UUID
+	}{
+		Ctx:               ctx,
+		DepositorPubKeyID: depositorPubKeyID,
+	}
+	mock.lockSelectDepositedSecretIDs.Lock()
+	mock.calls.SelectDepositedSecretIDs = append(mock.calls.SelectDepositedSecretIDs, callInfo)
+	mock.lockSelectDepositedSecretIDs.Unlock()
+	return mock.SelectDepositedSecretIDsFunc(ctx, depositorPubKeyID)
+}
+
+// SelectDepositedSecretIDsCalls gets all the calls that were made to SelectDepositedSecretIDs.
+// Check the length with:
+//
+//	len(mockedQuerier.SelectDepositedSecretIDsCalls())
+func (mock *QuerierMock) SelectDepositedSecretIDsCalls() []struct {
+	Ctx               context.Context
+	DepositorPubKeyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx               context.Context
+		DepositorPubKeyID uuid.UUID
+	}
+	mock.lockSelectDepositedSecretIDs.RLock()
+	calls = mock.calls.SelectDepositedSecretIDs
+	mock.lockSelectDepositedSecretIDs.RUnlock()
 	return calls
 }
