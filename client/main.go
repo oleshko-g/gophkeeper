@@ -49,7 +49,7 @@ type a struct {
 	publicKey  *rsa.PublicKey
 
 	depositedSecretsFile *os.File
-	depositedSecrets     []string
+	depositedSecrets     map[string]struct{}
 
 	// is the gRPC interface to access the gophkeeper server
 	*client
@@ -302,6 +302,8 @@ func (app *a) initKeyPair() {
 func (app *a) initDepositedSecrets() {
 	l := app.logger.With("func", "initDepositedSecrets")
 
+	app.depositedSecrets = make(map[string]struct{})
+
 	const storageFileName string = "depositedSecrets.txt"
 	depositedSecretsFile, err := file.RWOpenCreatePrivate(path.Join(app.cfgDir, storageFileName))
 	if err != nil {
@@ -321,9 +323,10 @@ func (app *a) initDepositedSecrets() {
 			l.Warn("skipped an invalid deposited secret ID.", "at file line", c)
 			continue
 		}
-
-		app.depositedSecrets = append(app.depositedSecrets, line)
+		app.depositedSecrets[line] = struct{}{}
 	}
+
+	fmt.Fprintln(os.Stdout, app.depositedSecrets)
 }
 
 // initClient initializes the client for the gophkeeper server.
