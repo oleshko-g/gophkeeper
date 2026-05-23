@@ -2,20 +2,23 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc/metadata"
 )
 
 // listRunE requests the deposited secrets and outputs their IDs to an [io.Writer]
-func (app *a) listRunE(cmd cobra.Command, _ []string) error {
+func (app *a) listRunE(cmd *cobra.Command, _ []string) error {
 	l := app.logger.WithGroup("listRunE")
 
 	ctx, cancel := context.WithTimeout(cmd.Context(), 100*time.Millisecond)
 	defer cancel()
-
+	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", app.AuthToken)
 	depositedSecretIDs, err := app.client.ListSecrets(ctx, &pb.ListSecretsRequest{})
 	if err != nil {
 		l.Error("list secrets", "error", err)
@@ -36,5 +39,6 @@ func (app *a) listRunE(cmd cobra.Command, _ []string) error {
 		app.depositedSecrets[id.String()] = struct{}{}
 	}
 
+	fmt.Fprintln(os.Stdout, app.depositedSecrets)
 	return nil
 }

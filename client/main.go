@@ -123,8 +123,7 @@ var (
 	list = &cobra.Command{
 		Use:   "list",
 		Short: "Lists the data stored on the gophkeeper server",
-		Run: func(cmd *cobra.Command, args []string) {
-		},
+		RunE:   app.listRunE,
 	}
 	delete = &cobra.Command{
 		Use:   "delete",
