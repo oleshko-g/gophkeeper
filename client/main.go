@@ -19,6 +19,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
+	"github.com/oleshko-g/gophkeeper/internal/file"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -302,7 +303,7 @@ func (app *a) initDepositedSecrets() {
 	l := app.logger.With("func", "initDepositedSecrets")
 
 	const storageFileName string = "depositedSecrets.txt"
-	depositedSecretsFile, err := os.OpenFile(path.Join(app.cfgDir, storageFileName), os.O_RDWR|os.O_CREATE, 0x600)
+	depositedSecretsFile, err := file.RWOpenCreatePrivate(path.Join(app.cfgDir, storageFileName))
 	if err != nil {
 		panic(err)
 	}
