@@ -10,6 +10,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"strings"
@@ -119,11 +120,13 @@ var (
 		Use:   "upload",
 		Short: "Uploads a file to the gophkeeper server",
 		RunE:  app.uploadRunE,
+		PostRunE: app.updateDepositedSecrets,
 	}
 	list = &cobra.Command{
 		Use:   "list",
 		Short: "Lists the data stored on the gophkeeper server",
-		RunE:   app.listRunE,
+		RunE:  app.listRunE,
+		PostRunE: app.updateDepositedSecrets,
 	}
 	delete = &cobra.Command{
 		Use:   "delete",
@@ -326,6 +329,28 @@ func (app *a) initDepositedSecrets() {
 	}
 
 	fmt.Fprintln(os.Stdout, app.depositedSecrets)
+}
+
+// updateDepositedSecrets saves [app.depositedSecrets] into [app.depositedSecretsFile]
+func (app *a) updateDepositedSecrets(_ *cobra.Command, _ []string) error {
+	err := app.depositedSecretsFile.Truncate(0)
+	if err != nil {
+		return err
+	}
+
+	_, err = app.depositedSecretsFile.Seek(0, io.SeekStart)
+	if err != nil {
+		return err
+	}
+
+	for depositedSecretID, _ := range app.depositedSecrets {
+		_, err = app.depositedSecretsFile.WriteString(depositedSecretID + "\n")
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // initClient initializes the client for the gophkeeper server.
