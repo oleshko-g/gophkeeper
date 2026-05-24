@@ -110,7 +110,7 @@ func encryptOpenSecret(protoOpenSecretData []byte) (encryptedData, DEK, nonce []
 }
 
 func (app *a) storeDepositedSecretID(depositedSecretId *pb.UUID) error {
-	_, err := app.depositedSecretsFile.Seek(0, io.SeekEnd)
+	_, err := app.storager.Seek(0, io.SeekEnd)
 	if err != nil {
 		return err
 	}
@@ -119,7 +119,7 @@ func (app *a) storeDepositedSecretID(depositedSecretId *pb.UUID) error {
 	if err != nil {
 		return err
 	}
-	_, err = io.WriteString(app.depositedSecretsFile, "\n"+id.String())
+	_, err = io.WriteString(app.storager, "\n"+id.String())
 	if err != nil {
 		return err
 	}

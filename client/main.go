@@ -49,8 +49,9 @@ type a struct {
 	privateKey *rsa.PrivateKey
 	publicKey  *rsa.PublicKey
 
-	depositedSecretsFile *os.File
-	depositedSecrets     map[string]struct{}
+	storager
+
+	depositedSecrets map[string]struct{}
 
 	// is the gRPC interface to access the gophkeeper server
 	*client
@@ -117,15 +118,15 @@ var (
 		PostRunE: app.updateConfig,
 	}
 	upload = &cobra.Command{
-		Use:   "upload",
-		Short: "Uploads a file to the gophkeeper server",
-		RunE:  app.uploadRunE,
+		Use:      "upload",
+		Short:    "Uploads a file to the gophkeeper server",
+		RunE:     app.uploadRunE,
 		PostRunE: app.updateDepositedSecrets,
 	}
 	list = &cobra.Command{
-		Use:   "list",
-		Short: "Lists the data stored on the gophkeeper server",
-		RunE:  app.listRunE,
+		Use:      "list",
+		Short:    "Lists the data stored on the gophkeeper server",
+		RunE:     app.listRunE,
 		PostRunE: app.updateDepositedSecrets,
 	}
 	delete = &cobra.Command{
@@ -312,9 +313,9 @@ func (app *a) initDepositedSecrets() {
 		panic(err)
 	}
 
-	app.depositedSecretsFile = depositedSecretsFile
+	app.storager = depositedSecretsFile
 
-	s := bufio.NewScanner(app.depositedSecretsFile)
+	s := bufio.NewScanner(app.storager)
 
 	for c := 1; s.Scan(); c++ {
 		if err := s.Err(); err != nil {
@@ -333,18 +334,18 @@ func (app *a) initDepositedSecrets() {
 
 // updateDepositedSecrets saves [app.depositedSecrets] into [app.depositedSecretsFile]
 func (app *a) updateDepositedSecrets(_ *cobra.Command, _ []string) error {
-	err := app.depositedSecretsFile.Truncate(0)
+	err := app.storager.Truncate(0)
 	if err != nil {
 		return err
 	}
 
-	_, err = app.depositedSecretsFile.Seek(0, io.SeekStart)
+	_, err = app.storager.Seek(0, io.SeekStart)
 	if err != nil {
 		return err
 	}
 
 	for depositedSecretID, _ := range app.depositedSecrets {
-		_, err = app.depositedSecretsFile.WriteString(depositedSecretID + "\n")
+		_, err = app.storager.Write([]byte(depositedSecretID + "\n"))
 		if err != nil {
 			return err
 		}
@@ -413,7 +414,7 @@ func (app *a) initState() {
 func main() {
 	defer func() {
 		cobra.CheckErr(
-			app.depositedSecretsFile.Close(),
+			app.storager.Close(),
 		)
 	}()
 	ctx, cancel := context.WithCancel(context.Background())

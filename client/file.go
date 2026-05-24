@@ -1,6 +1,16 @@
 package main
 
-import "os"
+import (
+	"io"
+	"os"
+)
+
+// storager is an interface for a file-like storage object.
+type storager interface {
+	io.ReadWriteSeeker
+	io.Closer
+	Truncate(size int64) error
+}
 
 // UNIX permissions
 const (
