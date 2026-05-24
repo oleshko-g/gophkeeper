@@ -49,6 +49,8 @@ type a struct {
 	privateKey *rsa.PrivateKey
 	publicKey  *rsa.PublicKey
 
+	// storager is the file-like storage object used to store deposited secrets.
+	// It is initialized by [app.initDepositedSecrets]
 	storager
 
 	depositedSecrets map[string]struct{}
