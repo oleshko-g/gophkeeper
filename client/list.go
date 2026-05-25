@@ -2,11 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"os"
 	"time"
 
-	"github.com/google/uuid"
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc/metadata"
@@ -31,14 +28,12 @@ func (app *a) listRunE(cmd *cobra.Command, _ []string) error {
 			continue
 		}
 
-		id, err := uuid.FromBytes(secretID.Bytes)
+		err := app.saveDepositedSecretID(secretID)
 		if err != nil {
 			l.Error("unmarshalling secret ID bytes", "id number", i+1)
 			return err
 		}
-		app.depositedSecrets[id.String()] = struct{}{}
 	}
 
-	fmt.Fprintln(os.Stdout, app.depositedSecrets)
 	return nil
 }

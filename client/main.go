@@ -415,9 +415,11 @@ func (app *a) initState() {
 
 func main() {
 	defer func() {
-		cobra.CheckErr(
-			app.storager.Close(),
-		)
+		if app.storager != nil {
+			cobra.CheckErr(
+				app.storager.Close(),
+			)
+		}
 	}()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

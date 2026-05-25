@@ -8,7 +8,6 @@ import (
 	"crypto/sha256"
 	"io"
 
-	"github.com/google/uuid"
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/client/internal/model"
 	"github.com/spf13/cobra"
@@ -74,7 +73,7 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 
 	depositedSecretId := res.GetDepositedSecretId()
 	// TODO: marshal into byte model.DepositedSecret, WriteFile
-	err = app.storeDepositedSecretID(depositedSecretId)
+	err = app.saveDepositedSecretID(depositedSecretId)
 	if err != nil {
 		return err
 	}
@@ -107,22 +106,4 @@ func encryptOpenSecret(protoOpenSecretData []byte) (encryptedData, DEK, nonce []
 	encryptedData = awed.Seal(nil, nonce, protoOpenSecretData, nil)
 
 	return encryptedData, DEK, nonce, nil
-}
-
-func (app *a) storeDepositedSecretID(depositedSecretId *pb.UUID) error {
-	_, err := app.storager.Seek(0, io.SeekEnd)
-	if err != nil {
-		return err
-	}
-
-	id, err := uuid.FromBytes(depositedSecretId.Bytes)
-	if err != nil {
-		return err
-	}
-	_, err = io.WriteString(app.storager, "\n"+id.String())
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
