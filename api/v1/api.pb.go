@@ -7,16 +7,15 @@
 package pb
 
 import (
-	reflect "reflect"
-	sync "sync"
-	unsafe "unsafe"
-
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
+	unsafe "unsafe"
 )
 
 const (
@@ -370,26 +369,27 @@ func (x *ListSecretsResponse) GetSecretIds() []*UUID {
 	return nil
 }
 
-type DownloadDataRequest struct {
+type RetrieveSecretRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	SecretId      *UUID                  `protobuf:"bytes,1,opt,name=secret_id,json=secretId" json:"secret_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DownloadDataRequest) Reset() {
-	*x = DownloadDataRequest{}
+func (x *RetrieveSecretRequest) Reset() {
+	*x = RetrieveSecretRequest{}
 	mi := &file_api_v1_api_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DownloadDataRequest) String() string {
+func (x *RetrieveSecretRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DownloadDataRequest) ProtoMessage() {}
+func (*RetrieveSecretRequest) ProtoMessage() {}
 
-func (x *DownloadDataRequest) ProtoReflect() protoreflect.Message {
+func (x *RetrieveSecretRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_v1_api_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -401,31 +401,39 @@ func (x *DownloadDataRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DownloadDataRequest.ProtoReflect.Descriptor instead.
-func (*DownloadDataRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use RetrieveSecretRequest.ProtoReflect.Descriptor instead.
+func (*RetrieveSecretRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_api_proto_rawDescGZIP(), []int{8}
 }
 
-type DownloadDataResponse struct {
+func (x *RetrieveSecretRequest) GetSecretId() *UUID {
+	if x != nil {
+		return x.SecretId
+	}
+	return nil
+}
+
+type RetrieveSecretResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Payload       []byte                 `protobuf:"bytes,1,opt,name=payload" json:"payload,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DownloadDataResponse) Reset() {
-	*x = DownloadDataResponse{}
+func (x *RetrieveSecretResponse) Reset() {
+	*x = RetrieveSecretResponse{}
 	mi := &file_api_v1_api_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DownloadDataResponse) String() string {
+func (x *RetrieveSecretResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DownloadDataResponse) ProtoMessage() {}
+func (*RetrieveSecretResponse) ProtoMessage() {}
 
-func (x *DownloadDataResponse) ProtoReflect() protoreflect.Message {
+func (x *RetrieveSecretResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_api_v1_api_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -437,9 +445,16 @@ func (x *DownloadDataResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DownloadDataResponse.ProtoReflect.Descriptor instead.
-func (*DownloadDataResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use RetrieveSecretResponse.ProtoReflect.Descriptor instead.
+func (*RetrieveSecretResponse) Descriptor() ([]byte, []int) {
 	return file_api_v1_api_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *RetrieveSecretResponse) GetPayload() []byte {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
 }
 
 type DeleteDataRequest struct {
@@ -615,9 +630,11 @@ const file_api_v1_api_proto_rawDesc = "" +
 	"\x12ListSecretsRequest\"M\n" +
 	"\x13ListSecretsResponse\x126\n" +
 	"\n" +
-	"secret_ids\x18\x01 \x03(\v2\x17.gophkeeper.api.v1.UUIDR\tsecretIds\"\x15\n" +
-	"\x13DownloadDataRequest\"\x16\n" +
-	"\x14DownloadDataResponse\"\x13\n" +
+	"secret_ids\x18\x01 \x03(\v2\x17.gophkeeper.api.v1.UUIDR\tsecretIds\"M\n" +
+	"\x15RetrieveSecretRequest\x124\n" +
+	"\tsecret_id\x18\x01 \x01(\v2\x17.gophkeeper.api.v1.UUIDR\bsecretId\"2\n" +
+	"\x16RetrieveSecretResponse\x12\x18\n" +
+	"\apayload\x18\x01 \x01(\fR\apayload\"\x13\n" +
 	"\x11DeleteDataRequest\"\x14\n" +
 	"\x12DeleteDataResponse\"\x15\n" +
 	"\x13DownloadFileRequest\"\x1c\n" +
@@ -625,11 +642,11 @@ const file_api_v1_api_proto_rawDesc = "" +
 	"\x05bytes\x18\x01 \x01(\fR\x05bytes2\xbf\x01\n" +
 	"\x10DepositorService\x12S\n" +
 	"\bRegister\x12\".gophkeeper.api.v1.RegisterRequest\x1a#.gophkeeper.api.v1.RegisterResponse\x12V\n" +
-	"\tAuthorize\x12#.gophkeeper.api.v1.AuthorizeRequest\x1a$.gophkeeper.api.v1.AuthorizeResponse2\xd2\x04\n" +
+	"\tAuthorize\x12#.gophkeeper.api.v1.AuthorizeRequest\x1a$.gophkeeper.api.v1.AuthorizeResponse2\xd8\x04\n" +
 	"\rKeeperService\x12b\n" +
 	"\rDepositSecret\x12'.gophkeeper.api.v1.DepositSecretRequest\x1a(.gophkeeper.api.v1.DepositSecretResponse\x12\\\n" +
-	"\vListSecrets\x12%.gophkeeper.api.v1.ListSecretsRequest\x1a&.gophkeeper.api.v1.ListSecretsResponse\x12_\n" +
-	"\fDownloadData\x12&.gophkeeper.api.v1.DownloadDataRequest\x1a'.gophkeeper.api.v1.DownloadDataResponse\x12Y\n" +
+	"\vListSecrets\x12%.gophkeeper.api.v1.ListSecretsRequest\x1a&.gophkeeper.api.v1.ListSecretsResponse\x12e\n" +
+	"\x0eRetrieveSecret\x12(.gophkeeper.api.v1.RetrieveSecretRequest\x1a).gophkeeper.api.v1.RetrieveSecretResponse\x12Y\n" +
 	"\n" +
 	"DeleteData\x12$.gophkeeper.api.v1.DeleteDataRequest\x1a%.gophkeeper.api.v1.DeleteDataResponse\x12i\n" +
 	"\fDownloadFile\x12&.gophkeeper.api.v1.DownloadFileRequest\x1a\x14.google.api.HttpBody\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/file/download0\x01\x12X\n" +
@@ -650,47 +667,48 @@ func file_api_v1_api_proto_rawDescGZIP() []byte {
 
 var file_api_v1_api_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_api_v1_api_proto_goTypes = []any{
-	(*RegisterRequest)(nil),       // 0: gophkeeper.api.v1.RegisterRequest
-	(*RegisterResponse)(nil),      // 1: gophkeeper.api.v1.RegisterResponse
-	(*AuthorizeRequest)(nil),      // 2: gophkeeper.api.v1.AuthorizeRequest
-	(*AuthorizeResponse)(nil),     // 3: gophkeeper.api.v1.AuthorizeResponse
-	(*DepositSecretRequest)(nil),  // 4: gophkeeper.api.v1.DepositSecretRequest
-	(*DepositSecretResponse)(nil), // 5: gophkeeper.api.v1.DepositSecretResponse
-	(*ListSecretsRequest)(nil),    // 6: gophkeeper.api.v1.ListSecretsRequest
-	(*ListSecretsResponse)(nil),   // 7: gophkeeper.api.v1.ListSecretsResponse
-	(*DownloadDataRequest)(nil),   // 8: gophkeeper.api.v1.DownloadDataRequest
-	(*DownloadDataResponse)(nil),  // 9: gophkeeper.api.v1.DownloadDataResponse
-	(*DeleteDataRequest)(nil),     // 10: gophkeeper.api.v1.DeleteDataRequest
-	(*DeleteDataResponse)(nil),    // 11: gophkeeper.api.v1.DeleteDataResponse
-	(*DownloadFileRequest)(nil),   // 12: gophkeeper.api.v1.DownloadFileRequest
-	(*UUID)(nil),                  // 13: gophkeeper.api.v1.UUID
-	(*httpbody.HttpBody)(nil),     // 14: google.api.HttpBody
-	(*emptypb.Empty)(nil),         // 15: google.protobuf.Empty
+	(*RegisterRequest)(nil),        // 0: gophkeeper.api.v1.RegisterRequest
+	(*RegisterResponse)(nil),       // 1: gophkeeper.api.v1.RegisterResponse
+	(*AuthorizeRequest)(nil),       // 2: gophkeeper.api.v1.AuthorizeRequest
+	(*AuthorizeResponse)(nil),      // 3: gophkeeper.api.v1.AuthorizeResponse
+	(*DepositSecretRequest)(nil),   // 4: gophkeeper.api.v1.DepositSecretRequest
+	(*DepositSecretResponse)(nil),  // 5: gophkeeper.api.v1.DepositSecretResponse
+	(*ListSecretsRequest)(nil),     // 6: gophkeeper.api.v1.ListSecretsRequest
+	(*ListSecretsResponse)(nil),    // 7: gophkeeper.api.v1.ListSecretsResponse
+	(*RetrieveSecretRequest)(nil),  // 8: gophkeeper.api.v1.RetrieveSecretRequest
+	(*RetrieveSecretResponse)(nil), // 9: gophkeeper.api.v1.RetrieveSecretResponse
+	(*DeleteDataRequest)(nil),      // 10: gophkeeper.api.v1.DeleteDataRequest
+	(*DeleteDataResponse)(nil),     // 11: gophkeeper.api.v1.DeleteDataResponse
+	(*DownloadFileRequest)(nil),    // 12: gophkeeper.api.v1.DownloadFileRequest
+	(*UUID)(nil),                   // 13: gophkeeper.api.v1.UUID
+	(*httpbody.HttpBody)(nil),      // 14: google.api.HttpBody
+	(*emptypb.Empty)(nil),          // 15: google.protobuf.Empty
 }
 var file_api_v1_api_proto_depIdxs = []int32{
 	13, // 0: gophkeeper.api.v1.DepositSecretResponse.deposited_secret_id:type_name -> gophkeeper.api.v1.UUID
 	13, // 1: gophkeeper.api.v1.ListSecretsResponse.secret_ids:type_name -> gophkeeper.api.v1.UUID
-	0,  // 2: gophkeeper.api.v1.DepositorService.Register:input_type -> gophkeeper.api.v1.RegisterRequest
-	2,  // 3: gophkeeper.api.v1.DepositorService.Authorize:input_type -> gophkeeper.api.v1.AuthorizeRequest
-	4,  // 4: gophkeeper.api.v1.KeeperService.DepositSecret:input_type -> gophkeeper.api.v1.DepositSecretRequest
-	6,  // 5: gophkeeper.api.v1.KeeperService.ListSecrets:input_type -> gophkeeper.api.v1.ListSecretsRequest
-	8,  // 6: gophkeeper.api.v1.KeeperService.DownloadData:input_type -> gophkeeper.api.v1.DownloadDataRequest
-	10, // 7: gophkeeper.api.v1.KeeperService.DeleteData:input_type -> gophkeeper.api.v1.DeleteDataRequest
-	12, // 8: gophkeeper.api.v1.KeeperService.DownloadFile:input_type -> gophkeeper.api.v1.DownloadFileRequest
-	14, // 9: gophkeeper.api.v1.KeeperService.UploadFile:input_type -> google.api.HttpBody
-	1,  // 10: gophkeeper.api.v1.DepositorService.Register:output_type -> gophkeeper.api.v1.RegisterResponse
-	3,  // 11: gophkeeper.api.v1.DepositorService.Authorize:output_type -> gophkeeper.api.v1.AuthorizeResponse
-	5,  // 12: gophkeeper.api.v1.KeeperService.DepositSecret:output_type -> gophkeeper.api.v1.DepositSecretResponse
-	7,  // 13: gophkeeper.api.v1.KeeperService.ListSecrets:output_type -> gophkeeper.api.v1.ListSecretsResponse
-	9,  // 14: gophkeeper.api.v1.KeeperService.DownloadData:output_type -> gophkeeper.api.v1.DownloadDataResponse
-	11, // 15: gophkeeper.api.v1.KeeperService.DeleteData:output_type -> gophkeeper.api.v1.DeleteDataResponse
-	14, // 16: gophkeeper.api.v1.KeeperService.DownloadFile:output_type -> google.api.HttpBody
-	15, // 17: gophkeeper.api.v1.KeeperService.UploadFile:output_type -> google.protobuf.Empty
-	10, // [10:18] is the sub-list for method output_type
-	2,  // [2:10] is the sub-list for method input_type
-	2,  // [2:2] is the sub-list for extension type_name
-	2,  // [2:2] is the sub-list for extension extendee
-	0,  // [0:2] is the sub-list for field type_name
+	13, // 2: gophkeeper.api.v1.RetrieveSecretRequest.secret_id:type_name -> gophkeeper.api.v1.UUID
+	0,  // 3: gophkeeper.api.v1.DepositorService.Register:input_type -> gophkeeper.api.v1.RegisterRequest
+	2,  // 4: gophkeeper.api.v1.DepositorService.Authorize:input_type -> gophkeeper.api.v1.AuthorizeRequest
+	4,  // 5: gophkeeper.api.v1.KeeperService.DepositSecret:input_type -> gophkeeper.api.v1.DepositSecretRequest
+	6,  // 6: gophkeeper.api.v1.KeeperService.ListSecrets:input_type -> gophkeeper.api.v1.ListSecretsRequest
+	8,  // 7: gophkeeper.api.v1.KeeperService.RetrieveSecret:input_type -> gophkeeper.api.v1.RetrieveSecretRequest
+	10, // 8: gophkeeper.api.v1.KeeperService.DeleteData:input_type -> gophkeeper.api.v1.DeleteDataRequest
+	12, // 9: gophkeeper.api.v1.KeeperService.DownloadFile:input_type -> gophkeeper.api.v1.DownloadFileRequest
+	14, // 10: gophkeeper.api.v1.KeeperService.UploadFile:input_type -> google.api.HttpBody
+	1,  // 11: gophkeeper.api.v1.DepositorService.Register:output_type -> gophkeeper.api.v1.RegisterResponse
+	3,  // 12: gophkeeper.api.v1.DepositorService.Authorize:output_type -> gophkeeper.api.v1.AuthorizeResponse
+	5,  // 13: gophkeeper.api.v1.KeeperService.DepositSecret:output_type -> gophkeeper.api.v1.DepositSecretResponse
+	7,  // 14: gophkeeper.api.v1.KeeperService.ListSecrets:output_type -> gophkeeper.api.v1.ListSecretsResponse
+	9,  // 15: gophkeeper.api.v1.KeeperService.RetrieveSecret:output_type -> gophkeeper.api.v1.RetrieveSecretResponse
+	11, // 16: gophkeeper.api.v1.KeeperService.DeleteData:output_type -> gophkeeper.api.v1.DeleteDataResponse
+	14, // 17: gophkeeper.api.v1.KeeperService.DownloadFile:output_type -> google.api.HttpBody
+	15, // 18: gophkeeper.api.v1.KeeperService.UploadFile:output_type -> google.protobuf.Empty
+	11, // [11:19] is the sub-list for method output_type
+	3,  // [3:11] is the sub-list for method input_type
+	3,  // [3:3] is the sub-list for extension type_name
+	3,  // [3:3] is the sub-list for extension extendee
+	0,  // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_api_proto_init() }

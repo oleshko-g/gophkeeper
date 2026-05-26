@@ -8,7 +8,6 @@ package pb
 
 import (
 	context "context"
-
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -176,12 +175,12 @@ var DepositorService_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	KeeperService_DepositSecret_FullMethodName = "/gophkeeper.api.v1.KeeperService/DepositSecret"
-	KeeperService_ListSecrets_FullMethodName   = "/gophkeeper.api.v1.KeeperService/ListSecrets"
-	KeeperService_DownloadData_FullMethodName  = "/gophkeeper.api.v1.KeeperService/DownloadData"
-	KeeperService_DeleteData_FullMethodName    = "/gophkeeper.api.v1.KeeperService/DeleteData"
-	KeeperService_DownloadFile_FullMethodName  = "/gophkeeper.api.v1.KeeperService/DownloadFile"
-	KeeperService_UploadFile_FullMethodName    = "/gophkeeper.api.v1.KeeperService/UploadFile"
+	KeeperService_DepositSecret_FullMethodName  = "/gophkeeper.api.v1.KeeperService/DepositSecret"
+	KeeperService_ListSecrets_FullMethodName    = "/gophkeeper.api.v1.KeeperService/ListSecrets"
+	KeeperService_RetrieveSecret_FullMethodName = "/gophkeeper.api.v1.KeeperService/RetrieveSecret"
+	KeeperService_DeleteData_FullMethodName     = "/gophkeeper.api.v1.KeeperService/DeleteData"
+	KeeperService_DownloadFile_FullMethodName   = "/gophkeeper.api.v1.KeeperService/DownloadFile"
+	KeeperService_UploadFile_FullMethodName     = "/gophkeeper.api.v1.KeeperService/UploadFile"
 )
 
 // KeeperServiceClient is the client API for KeeperService service.
@@ -194,8 +193,8 @@ type KeeperServiceClient interface {
 	DepositSecret(ctx context.Context, in *DepositSecretRequest, opts ...grpc.CallOption) (*DepositSecretResponse, error)
 	// ListSecrets lists the deposited secrets of the authenticated user.
 	ListSecrets(ctx context.Context, in *ListSecretsRequest, opts ...grpc.CallOption) (*ListSecretsResponse, error)
-	// DownloadData downloads the [Upload]ed data
-	DownloadData(ctx context.Context, in *DownloadDataRequest, opts ...grpc.CallOption) (*DownloadDataResponse, error)
+	// RetrieveSecret retrieves a secret by its ID.
+	RetrieveSecret(ctx context.Context, in *RetrieveSecretRequest, opts ...grpc.CallOption) (*RetrieveSecretResponse, error)
 	// DeleteData deletes the [Upload]ed data from the [KeeperService]
 	DeleteData(ctx context.Context, in *DeleteDataRequest, opts ...grpc.CallOption) (*DeleteDataResponse, error)
 	// DownloadFile downloads a file from the [KeeperService]
@@ -232,10 +231,10 @@ func (c *keeperServiceClient) ListSecrets(ctx context.Context, in *ListSecretsRe
 	return out, nil
 }
 
-func (c *keeperServiceClient) DownloadData(ctx context.Context, in *DownloadDataRequest, opts ...grpc.CallOption) (*DownloadDataResponse, error) {
+func (c *keeperServiceClient) RetrieveSecret(ctx context.Context, in *RetrieveSecretRequest, opts ...grpc.CallOption) (*RetrieveSecretResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DownloadDataResponse)
-	err := c.cc.Invoke(ctx, KeeperService_DownloadData_FullMethodName, in, out, cOpts...)
+	out := new(RetrieveSecretResponse)
+	err := c.cc.Invoke(ctx, KeeperService_RetrieveSecret_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -294,8 +293,8 @@ type KeeperServiceServer interface {
 	DepositSecret(context.Context, *DepositSecretRequest) (*DepositSecretResponse, error)
 	// ListSecrets lists the deposited secrets of the authenticated user.
 	ListSecrets(context.Context, *ListSecretsRequest) (*ListSecretsResponse, error)
-	// DownloadData downloads the [Upload]ed data
-	DownloadData(context.Context, *DownloadDataRequest) (*DownloadDataResponse, error)
+	// RetrieveSecret retrieves a secret by its ID.
+	RetrieveSecret(context.Context, *RetrieveSecretRequest) (*RetrieveSecretResponse, error)
 	// DeleteData deletes the [Upload]ed data from the [KeeperService]
 	DeleteData(context.Context, *DeleteDataRequest) (*DeleteDataResponse, error)
 	// DownloadFile downloads a file from the [KeeperService]
@@ -317,8 +316,8 @@ func (UnimplementedKeeperServiceServer) DepositSecret(context.Context, *DepositS
 func (UnimplementedKeeperServiceServer) ListSecrets(context.Context, *ListSecretsRequest) (*ListSecretsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListSecrets not implemented")
 }
-func (UnimplementedKeeperServiceServer) DownloadData(context.Context, *DownloadDataRequest) (*DownloadDataResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method DownloadData not implemented")
+func (UnimplementedKeeperServiceServer) RetrieveSecret(context.Context, *RetrieveSecretRequest) (*RetrieveSecretResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RetrieveSecret not implemented")
 }
 func (UnimplementedKeeperServiceServer) DeleteData(context.Context, *DeleteDataRequest) (*DeleteDataResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteData not implemented")
@@ -385,20 +384,20 @@ func _KeeperService_ListSecrets_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _KeeperService_DownloadData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DownloadDataRequest)
+func _KeeperService_RetrieveSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RetrieveSecretRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(KeeperServiceServer).DownloadData(ctx, in)
+		return srv.(KeeperServiceServer).RetrieveSecret(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: KeeperService_DownloadData_FullMethodName,
+		FullMethod: KeeperService_RetrieveSecret_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeeperServiceServer).DownloadData(ctx, req.(*DownloadDataRequest))
+		return srv.(KeeperServiceServer).RetrieveSecret(ctx, req.(*RetrieveSecretRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -455,8 +454,8 @@ var KeeperService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _KeeperService_ListSecrets_Handler,
 		},
 		{
-			MethodName: "DownloadData",
-			Handler:    _KeeperService_DownloadData_Handler,
+			MethodName: "RetrieveSecret",
+			Handler:    _KeeperService_RetrieveSecret_Handler,
 		},
 		{
 			MethodName: "DeleteData",

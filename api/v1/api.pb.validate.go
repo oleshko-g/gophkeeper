@@ -936,42 +936,71 @@ var _ interface {
 	ErrorName() string
 } = ListSecretsResponseValidationError{}
 
-// Validate checks the field values on DownloadDataRequest with the rules
+// Validate checks the field values on RetrieveSecretRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *DownloadDataRequest) Validate() error {
+func (m *RetrieveSecretRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on DownloadDataRequest with the rules
+// ValidateAll checks the field values on RetrieveSecretRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// DownloadDataRequestMultiError, or nil if none found.
-func (m *DownloadDataRequest) ValidateAll() error {
+// RetrieveSecretRequestMultiError, or nil if none found.
+func (m *RetrieveSecretRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *DownloadDataRequest) validate(all bool) error {
+func (m *RetrieveSecretRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
+	if all {
+		switch v := interface{}(m.GetSecretId()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, RetrieveSecretRequestValidationError{
+					field:  "SecretId",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, RetrieveSecretRequestValidationError{
+					field:  "SecretId",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSecretId()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return RetrieveSecretRequestValidationError{
+				field:  "SecretId",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if len(errors) > 0 {
-		return DownloadDataRequestMultiError(errors)
+		return RetrieveSecretRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// DownloadDataRequestMultiError is an error wrapping multiple validation
-// errors returned by DownloadDataRequest.ValidateAll() if the designated
+// RetrieveSecretRequestMultiError is an error wrapping multiple validation
+// errors returned by RetrieveSecretRequest.ValidateAll() if the designated
 // constraints aren't met.
-type DownloadDataRequestMultiError []error
+type RetrieveSecretRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m DownloadDataRequestMultiError) Error() string {
+func (m RetrieveSecretRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -980,11 +1009,11 @@ func (m DownloadDataRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m DownloadDataRequestMultiError) AllErrors() []error { return m }
+func (m RetrieveSecretRequestMultiError) AllErrors() []error { return m }
 
-// DownloadDataRequestValidationError is the validation error returned by
-// DownloadDataRequest.Validate if the designated constraints aren't met.
-type DownloadDataRequestValidationError struct {
+// RetrieveSecretRequestValidationError is the validation error returned by
+// RetrieveSecretRequest.Validate if the designated constraints aren't met.
+type RetrieveSecretRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -992,24 +1021,24 @@ type DownloadDataRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e DownloadDataRequestValidationError) Field() string { return e.field }
+func (e RetrieveSecretRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e DownloadDataRequestValidationError) Reason() string { return e.reason }
+func (e RetrieveSecretRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e DownloadDataRequestValidationError) Cause() error { return e.cause }
+func (e RetrieveSecretRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e DownloadDataRequestValidationError) Key() bool { return e.key }
+func (e RetrieveSecretRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e DownloadDataRequestValidationError) ErrorName() string {
-	return "DownloadDataRequestValidationError"
+func (e RetrieveSecretRequestValidationError) ErrorName() string {
+	return "RetrieveSecretRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e DownloadDataRequestValidationError) Error() string {
+func (e RetrieveSecretRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1021,14 +1050,14 @@ func (e DownloadDataRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sDownloadDataRequest.%s: %s%s",
+		"invalid %sRetrieveSecretRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = DownloadDataRequestValidationError{}
+var _ error = RetrieveSecretRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -1036,44 +1065,46 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = DownloadDataRequestValidationError{}
+} = RetrieveSecretRequestValidationError{}
 
-// Validate checks the field values on DownloadDataResponse with the rules
+// Validate checks the field values on RetrieveSecretResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *DownloadDataResponse) Validate() error {
+func (m *RetrieveSecretResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on DownloadDataResponse with the rules
+// ValidateAll checks the field values on RetrieveSecretResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// DownloadDataResponseMultiError, or nil if none found.
-func (m *DownloadDataResponse) ValidateAll() error {
+// RetrieveSecretResponseMultiError, or nil if none found.
+func (m *RetrieveSecretResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *DownloadDataResponse) validate(all bool) error {
+func (m *RetrieveSecretResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
+	// no validation rules for Payload
+
 	if len(errors) > 0 {
-		return DownloadDataResponseMultiError(errors)
+		return RetrieveSecretResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// DownloadDataResponseMultiError is an error wrapping multiple validation
-// errors returned by DownloadDataResponse.ValidateAll() if the designated
+// RetrieveSecretResponseMultiError is an error wrapping multiple validation
+// errors returned by RetrieveSecretResponse.ValidateAll() if the designated
 // constraints aren't met.
-type DownloadDataResponseMultiError []error
+type RetrieveSecretResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m DownloadDataResponseMultiError) Error() string {
+func (m RetrieveSecretResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1082,11 +1113,11 @@ func (m DownloadDataResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m DownloadDataResponseMultiError) AllErrors() []error { return m }
+func (m RetrieveSecretResponseMultiError) AllErrors() []error { return m }
 
-// DownloadDataResponseValidationError is the validation error returned by
-// DownloadDataResponse.Validate if the designated constraints aren't met.
-type DownloadDataResponseValidationError struct {
+// RetrieveSecretResponseValidationError is the validation error returned by
+// RetrieveSecretResponse.Validate if the designated constraints aren't met.
+type RetrieveSecretResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1094,24 +1125,24 @@ type DownloadDataResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e DownloadDataResponseValidationError) Field() string { return e.field }
+func (e RetrieveSecretResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e DownloadDataResponseValidationError) Reason() string { return e.reason }
+func (e RetrieveSecretResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e DownloadDataResponseValidationError) Cause() error { return e.cause }
+func (e RetrieveSecretResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e DownloadDataResponseValidationError) Key() bool { return e.key }
+func (e RetrieveSecretResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e DownloadDataResponseValidationError) ErrorName() string {
-	return "DownloadDataResponseValidationError"
+func (e RetrieveSecretResponseValidationError) ErrorName() string {
+	return "RetrieveSecretResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e DownloadDataResponseValidationError) Error() string {
+func (e RetrieveSecretResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1123,14 +1154,14 @@ func (e DownloadDataResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sDownloadDataResponse.%s: %s%s",
+		"invalid %sRetrieveSecretResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = DownloadDataResponseValidationError{}
+var _ error = RetrieveSecretResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -1138,7 +1169,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = DownloadDataResponseValidationError{}
+} = RetrieveSecretResponseValidationError{}
 
 // Validate checks the field values on DeleteDataRequest with the rules defined
 // in the proto definition for this message. If any rules are violated, the

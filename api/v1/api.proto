@@ -30,8 +30,8 @@ service KeeperService {
   // ListSecrets lists the deposited secrets of the authenticated user.
   rpc ListSecrets(ListSecretsRequest) returns (ListSecretsResponse);
 
-  // DownloadData downloads the [Upload]ed data
-  rpc DownloadData(DownloadDataRequest) returns (DownloadDataResponse);
+  // RetrieveSecret retrieves a secret by its ID.
+  rpc RetrieveSecret(RetrieveSecretRequest) returns (RetrieveSecretResponse);
 
   // DeleteData deletes the [Upload]ed data from the [KeeperService]
   rpc DeleteData(DeleteDataRequest) returns (DeleteDataResponse);
@@ -80,9 +80,13 @@ message ListSecretsResponse {
   repeated UUID secret_ids = 1;
 }
 
-message DownloadDataRequest {}
+message RetrieveSecretRequest {
+  UUID secret_id = 1;
+}
 
-message DownloadDataResponse {}
+message RetrieveSecretResponse {
+  bytes payload = 1;
+}
 
 message DeleteDataRequest {}
 
