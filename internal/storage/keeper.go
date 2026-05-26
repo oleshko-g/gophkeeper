@@ -8,8 +8,8 @@ import (
 	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 )
 
-//go:generate moq -rm -out keeper_mock.go . Keeper
 type Keeper interface {
 	StoreSecret(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], s secret.Data) (*secret.DepositedSecret, error)
 	RetrieveSecretIDs(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID]) (uuid.UUIDs, error)
+	RetrieveSecret(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID]) (secret.Data, error)
 }

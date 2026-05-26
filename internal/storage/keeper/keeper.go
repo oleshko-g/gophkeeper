@@ -16,6 +16,7 @@ var _ storage.Keeper = (*Keeper)(nil)
 type Querier interface {
 	InsertDepositedSecret(ctx context.Context, arg queries.InsertDepositedSecretParams) (queries.DepositedSecret, error)
 	SelectDepositedSecretIDs(ctx context.Context, depositorPubKeyID uuid.UUID) ([]uuid.UUID, error)
+	SelectDepositedSecretData(ctx context.Context, id uuid.UUID) ([]byte, error)
 }
 
 func New(q Querier) *Keeper {
@@ -43,4 +44,8 @@ func (k *Keeper) StoreSecret(ctx context.Context, pkID uuidv7.UUID[uuid.UUID], s
 
 func (k Keeper) RetrieveSecretIDs(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID]) (uuid.UUIDs, error) {
 	return k.Querier.SelectDepositedSecretIDs(ctx, publicKeyID.Value)
+}
+
+func (k *Keeper) RetrieveSecret(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID]) (secret.Data, error) {
+	return k.Querier.SelectDepositedSecretData(ctx, publicKeyID.Value)
 }

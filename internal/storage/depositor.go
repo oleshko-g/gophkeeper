@@ -8,7 +8,6 @@ import (
 	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
 )
 
-//go:generate moq -rm -out depositor_mock.go . Depositor
 type Depositor interface {
 	PubKeyer
 }
