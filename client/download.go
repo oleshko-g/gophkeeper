@@ -2,7 +2,12 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha256"
+	"fmt"
 	"io"
+	"os"
 	"time"
 
 	"github.com/oleshko-g/gophkeeper/client/internal/model"
@@ -41,22 +46,34 @@ func (app *a) downloadRunE(cmd *cobra.Command, _ []string) error {
 	}
 
 	// unmarshal the data into the [model.DepositedSecret]
-	depositedSecret := &model.DepositedSecret{}
+	secret := &model.Secret{}
 	payload := res.GetPayload()
-	err = proto.Unmarshal(payload, depositedSecret)
+	err = proto.Unmarshal(payload, secret)
 	if err != nil {
 		return err
 	}
 
 	// decrypt the DEK
+	decryptedDEK, err := rsa.DecryptOAEP(sha256.New(), rand.Reader, app.privateKey, secret.EncryptedDek, nil)
+	if err != nil {
+		return err
+	}
 
 	// decrypt tht Data
+	protoOpenSecretData, err := decryptSecret(secret.EncryptedData, decryptedDEK, secret.Nonce)
+	if err != nil {
+		return err
+	}
 
 	// unmarshal into [model.OpenSecret]
+	openSecret := &model.OpenSecret{}
+	err = proto.Unmarshal(protoOpenSecretData, openSecret)
+	if err != nil {
+		return err
+	}
 
 	// print the opened secret
+	fmt.Fprintf(os.Stdout, "%+v", openSecret)
 
-	_ = secretID
-	_ = res
 	return nil
 }
