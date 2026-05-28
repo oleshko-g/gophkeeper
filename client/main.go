@@ -133,7 +133,7 @@ var (
 	}
 	download = &cobra.Command{
 		Use:   "download",
-		Short: "Downloads the secret by it's ID",
+		Short: "Downloads the secret by its ID",
 		RunE:  app.downloadRunE,
 	}
 	delete = &cobra.Command{

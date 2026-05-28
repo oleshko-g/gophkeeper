@@ -20,20 +20,25 @@ import (
 
 // downloadRunE reads a deposited secret ID from the standard input, downloads the deposited secret data, decrypts it and prints to the standard output
 func (app *a) downloadRunE(cmd *cobra.Command, _ []string) error {
+	l := app.logger.With("func", "downloadRunE")
 	// read the input
 	secretIDByteString, err := io.ReadAll(cmd.InOrStdin())
 	if err != nil {
+		l.Error(err.Error())
 		return nil
 	}
+
+	l.Info(fmt.Sprintf("read in the %q", secretIDByteString))
 
 	// validate the input
 	secretID, err := depositedSecretID(secretIDByteString)
 	if err != nil {
+		l.Error(err.Error())
 		return err
 	}
 
 	// prepare the ctx
-	ctx, cancel := context.WithTimeout(cmd.Context(), 100*time.Millisecond)
+	ctx, cancel := context.WithTimeout(cmd.Context(), 150*time.Millisecond)
 	defer cancel()
 	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", app.config.AuthToken)
 
@@ -42,6 +47,7 @@ func (app *a) downloadRunE(cmd *cobra.Command, _ []string) error {
 		SecretId: secretID,
 	})
 	if err != nil {
+		l.Error(err.Error())
 		return err
 	}
 
@@ -50,18 +56,21 @@ func (app *a) downloadRunE(cmd *cobra.Command, _ []string) error {
 	payload := res.GetPayload()
 	err = proto.Unmarshal(payload, secret)
 	if err != nil {
+		l.Error(err.Error())
 		return err
 	}
 
 	// decrypt the DEK
 	decryptedDEK, err := rsa.DecryptOAEP(sha256.New(), rand.Reader, app.privateKey, secret.EncryptedDek, nil)
 	if err != nil {
+		l.Error(err.Error())
 		return err
 	}
 
 	// decrypt tht Data
 	protoOpenSecretData, err := decryptSecret(secret.EncryptedData, decryptedDEK, secret.Nonce)
 	if err != nil {
+		l.Error(err.Error())
 		return err
 	}
 
@@ -69,6 +78,7 @@ func (app *a) downloadRunE(cmd *cobra.Command, _ []string) error {
 	openSecret := &model.OpenSecret{}
 	err = proto.Unmarshal(protoOpenSecretData, openSecret)
 	if err != nil {
+		l.Error(err.Error())
 		return err
 	}
 
