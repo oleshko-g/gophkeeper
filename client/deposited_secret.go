@@ -15,3 +15,18 @@ func (app *a) saveDepositedSecretID(depositedSecretId *pb.UUID) error {
 
 	return nil
 }
+
+func depositedSecretID(uuidByteString []byte) (*pb.UUID, error) {
+	id, err := uuid.ParseBytes(uuidByteString)
+	if err != nil {
+		return nil, err
+	}
+
+	idBytes, err := id.MarshalBinary()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.UUID{
+		Bytes: idBytes,
+	}, nil
+}
