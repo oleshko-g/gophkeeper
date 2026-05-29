@@ -958,6 +958,17 @@ func (m *RetrieveSecretRequest) validate(all bool) error {
 
 	var errors []error
 
+	if m.GetSecretId() == nil {
+		err := RetrieveSecretRequestValidationError{
+			field:  "SecretId",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if all {
 		switch v := interface{}(m.GetSecretId()).(type) {
 		case interface{ ValidateAll() error }:
@@ -1498,7 +1509,16 @@ func (m *UUID) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Bytes
+	if len(m.GetBytes()) != 16 {
+		err := UUIDValidationError{
+			field:  "Bytes",
+			reason: "value length must be 16 bytes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return UUIDMultiError(errors)

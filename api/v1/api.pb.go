@@ -631,16 +631,16 @@ const file_api_v1_api_proto_rawDesc = "" +
 	"\x12ListSecretsRequest\"M\n" +
 	"\x13ListSecretsResponse\x126\n" +
 	"\n" +
-	"secret_ids\x18\x01 \x03(\v2\x17.gophkeeper.api.v1.UUIDR\tsecretIds\"M\n" +
-	"\x15RetrieveSecretRequest\x124\n" +
-	"\tsecret_id\x18\x01 \x01(\v2\x17.gophkeeper.api.v1.UUIDR\bsecretId\"2\n" +
+	"secret_ids\x18\x01 \x03(\v2\x17.gophkeeper.api.v1.UUIDR\tsecretIds\"W\n" +
+	"\x15RetrieveSecretRequest\x12>\n" +
+	"\tsecret_id\x18\x01 \x01(\v2\x17.gophkeeper.api.v1.UUIDB\b\xfaB\x05\x8a\x01\x02\x10\x01R\bsecretId\"2\n" +
 	"\x16RetrieveSecretResponse\x12\x18\n" +
 	"\apayload\x18\x01 \x01(\fR\apayload\"\x13\n" +
 	"\x11DeleteDataRequest\"\x14\n" +
 	"\x12DeleteDataResponse\"\x15\n" +
-	"\x13DownloadFileRequest\"\x1c\n" +
-	"\x04UUID\x12\x14\n" +
-	"\x05bytes\x18\x01 \x01(\fR\x05bytes2\xbf\x01\n" +
+	"\x13DownloadFileRequest\"'\n" +
+	"\x04UUID\x12\x1f\n" +
+	"\x05bytes\x18\x01 \x01(\fB\t\xfaB\x06z\x04\x10\x10\x18\x10R\x05bytes2\xbf\x01\n" +
 	"\x10DepositorService\x12S\n" +
 	"\bRegister\x12\".gophkeeper.api.v1.RegisterRequest\x1a#.gophkeeper.api.v1.RegisterResponse\x12V\n" +
 	"\tAuthorize\x12#.gophkeeper.api.v1.AuthorizeRequest\x1a$.gophkeeper.api.v1.AuthorizeResponse2\xd8\x04\n" +

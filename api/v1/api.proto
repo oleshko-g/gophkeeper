@@ -81,7 +81,7 @@ message ListSecretsResponse {
 }
 
 message RetrieveSecretRequest {
-  UUID secret_id = 1;
+  UUID secret_id = 1 [(validate.rules).message.required = true];
 }
 
 message RetrieveSecretResponse {
@@ -92,9 +92,11 @@ message DeleteDataRequest {}
 
 message DeleteDataResponse {}
 
-
 message DownloadFileRequest {}
 
 message UUID {
-  bytes bytes = 1;
+  bytes bytes = 1 [(validate.rules).bytes = {
+    min_len: 16 // byte UUID representation MUST be exactly 16 bytes
+    max_len: 16 // byte UUID representation MUST be exactly 16 bytes
+  }];
 }

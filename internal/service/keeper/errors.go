@@ -5,3 +5,4 @@ import (
 )
 
 var errEmptyPubKeyID = errors.New("empty public key ID")
+var errEmptySecretID = errors.New("empty secret ID")

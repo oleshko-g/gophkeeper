@@ -24,7 +24,7 @@ var _ Querier = &QuerierMock{}
 //			InsertDepositedSecretFunc: func(ctx context.Context, arg queries.InsertDepositedSecretParams) (queries.DepositedSecret, error) {
 //				panic("mock out the InsertDepositedSecret method")
 //			},
-//			SelectDepositedSecretDataFunc: func(ctx context.Context, id uuid.UUID) ([]byte, error) {
+//			SelectDepositedSecretDataFunc: func(ctx context.Context, id uuid.UUID) (queries.SelectDepositedSecretDataRow, error) {
 //				panic("mock out the SelectDepositedSecretData method")
 //			},
 //			SelectDepositedSecretIDsFunc: func(ctx context.Context, depositorPubKeyID uuid.UUID) ([]uuid.UUID, error) {
@@ -41,7 +41,7 @@ type QuerierMock struct {
 	InsertDepositedSecretFunc func(ctx context.Context, arg queries.InsertDepositedSecretParams) (queries.DepositedSecret, error)
 
 	// SelectDepositedSecretDataFunc mocks the SelectDepositedSecretData method.
-	SelectDepositedSecretDataFunc func(ctx context.Context, id uuid.UUID) ([]byte, error)
+	SelectDepositedSecretDataFunc func(ctx context.Context, id uuid.UUID) (queries.SelectDepositedSecretDataRow, error)
 
 	// SelectDepositedSecretIDsFunc mocks the SelectDepositedSecretIDs method.
 	SelectDepositedSecretIDsFunc func(ctx context.Context, depositorPubKeyID uuid.UUID) ([]uuid.UUID, error)
@@ -112,7 +112,7 @@ func (mock *QuerierMock) InsertDepositedSecretCalls() []struct {
 }
 
 // SelectDepositedSecretData calls SelectDepositedSecretDataFunc.
-func (mock *QuerierMock) SelectDepositedSecretData(ctx context.Context, id uuid.UUID) ([]byte, error) {
+func (mock *QuerierMock) SelectDepositedSecretData(ctx context.Context, id uuid.UUID) (queries.SelectDepositedSecretDataRow, error) {
 	if mock.SelectDepositedSecretDataFunc == nil {
 		panic("QuerierMock.SelectDepositedSecretDataFunc: method is nil but Querier.SelectDepositedSecretData was just called")
 	}

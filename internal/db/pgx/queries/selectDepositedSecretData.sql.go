@@ -12,12 +12,23 @@ import (
 )
 
 const selectDepositedSecretData = `-- name: SelectDepositedSecretData :one
-SELECT encrypted_data FROM deposited_secrets WHERE id = $1
+SELECT
+  depositor_pub_key_id,
+  encrypted_data
+FROM
+  deposited_secrets
+WHERE
+  id = $1
 `
 
-func (q *Queries) SelectDepositedSecretData(ctx context.Context, id uuid.UUID) ([]byte, error) {
+type SelectDepositedSecretDataRow struct {
+	DepositorPubKeyID uuid.UUID
+	EncryptedData     []byte
+}
+
+func (q *Queries) SelectDepositedSecretData(ctx context.Context, id uuid.UUID) (SelectDepositedSecretDataRow, error) {
 	row := q.db.QueryRow(ctx, selectDepositedSecretData, id)
-	var encrypted_data []byte
-	err := row.Scan(&encrypted_data)
-	return encrypted_data, err
+	var i SelectDepositedSecretDataRow
+	err := row.Scan(&i.DepositorPubKeyID, &i.EncryptedData)
+	return i, err
 }
