@@ -33,8 +33,9 @@ service KeeperService {
   // RetrieveSecret retrieves a secret by its ID.
   rpc RetrieveSecret(RetrieveSecretRequest) returns (RetrieveSecretResponse);
 
-  // DeleteData deletes the [Upload]ed data from the [KeeperService]
-  rpc DeleteData(DeleteDataRequest) returns (DeleteDataResponse);
+  // PurgeSecret permanently removes the deposited secret from KeeperService's active storage.
+  // After a successful purge, the secret can no longer be retrieved through KeeperService.
+  rpc PurgeSecret(PurgeSecretRequest) returns (PurgeSecretResponse);
 
   // DownloadFile downloads a file from the [KeeperService]
   rpc DownloadFile(DownloadFileRequest) returns (stream google.api.HttpBody) {
@@ -88,9 +89,11 @@ message RetrieveSecretResponse {
   bytes payload = 1;
 }
 
-message DeleteDataRequest {}
+message PurgeSecretRequest {
+  UUID secret_id = 1 [(validate.rules).message.required = true];
+}
 
-message DeleteDataResponse {}
+message PurgeSecretResponse {}
 
 message DownloadFileRequest {}
 

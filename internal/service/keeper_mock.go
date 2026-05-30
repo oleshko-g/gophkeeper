@@ -23,9 +23,6 @@ var _ Keeper = &KeeperMock{}
 //
 //		// make and configure a mocked Keeper
 //		mockedKeeper := &KeeperMock{
-//			DeleteDataFunc: func(contextMoqParam context.Context, deleteDataRequest *pb.DeleteDataRequest) (*pb.DeleteDataResponse, error) {
-//				panic("mock out the DeleteData method")
-//			},
 //			DepositSecretFunc: func(contextMoqParam context.Context, depositSecretRequest *pb.DepositSecretRequest) (*pb.DepositSecretResponse, error) {
 //				panic("mock out the DepositSecret method")
 //			},
@@ -37,6 +34,9 @@ var _ Keeper = &KeeperMock{}
 //			},
 //			NameFunc: func() string {
 //				panic("mock out the Name method")
+//			},
+//			PurgeSecretFunc: func(contextMoqParam context.Context, purgeSecretRequest *pb.PurgeSecretRequest) (*pb.PurgeSecretResponse, error) {
+//				panic("mock out the PurgeSecret method")
 //			},
 //			RetrieveSecretFunc: func(contextMoqParam context.Context, retrieveSecretRequest *pb.RetrieveSecretRequest) (*pb.RetrieveSecretResponse, error) {
 //				panic("mock out the RetrieveSecret method")
@@ -51,9 +51,6 @@ var _ Keeper = &KeeperMock{}
 //
 //	}
 type KeeperMock struct {
-	// DeleteDataFunc mocks the DeleteData method.
-	DeleteDataFunc func(contextMoqParam context.Context, deleteDataRequest *pb.DeleteDataRequest) (*pb.DeleteDataResponse, error)
-
 	// DepositSecretFunc mocks the DepositSecret method.
 	DepositSecretFunc func(contextMoqParam context.Context, depositSecretRequest *pb.DepositSecretRequest) (*pb.DepositSecretResponse, error)
 
@@ -66,6 +63,9 @@ type KeeperMock struct {
 	// NameFunc mocks the Name method.
 	NameFunc func() string
 
+	// PurgeSecretFunc mocks the PurgeSecret method.
+	PurgeSecretFunc func(contextMoqParam context.Context, purgeSecretRequest *pb.PurgeSecretRequest) (*pb.PurgeSecretResponse, error)
+
 	// RetrieveSecretFunc mocks the RetrieveSecret method.
 	RetrieveSecretFunc func(contextMoqParam context.Context, retrieveSecretRequest *pb.RetrieveSecretRequest) (*pb.RetrieveSecretResponse, error)
 
@@ -74,13 +74,6 @@ type KeeperMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// DeleteData holds details about calls to the DeleteData method.
-		DeleteData []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// DeleteDataRequest is the deleteDataRequest argument value.
-			DeleteDataRequest *pb.DeleteDataRequest
-		}
 		// DepositSecret holds details about calls to the DepositSecret method.
 		DepositSecret []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -105,6 +98,13 @@ type KeeperMock struct {
 		// Name holds details about calls to the Name method.
 		Name []struct {
 		}
+		// PurgeSecret holds details about calls to the PurgeSecret method.
+		PurgeSecret []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// PurgeSecretRequest is the purgeSecretRequest argument value.
+			PurgeSecretRequest *pb.PurgeSecretRequest
+		}
 		// RetrieveSecret holds details about calls to the RetrieveSecret method.
 		RetrieveSecret []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -118,49 +118,13 @@ type KeeperMock struct {
 			ClientStreamingServer grpc.ClientStreamingServer[httpbody.HttpBody, emptypb.Empty]
 		}
 	}
-	lockDeleteData     sync.RWMutex
 	lockDepositSecret  sync.RWMutex
 	lockDownloadFile   sync.RWMutex
 	lockListSecrets    sync.RWMutex
 	lockName           sync.RWMutex
+	lockPurgeSecret    sync.RWMutex
 	lockRetrieveSecret sync.RWMutex
 	lockUploadFile     sync.RWMutex
-}
-
-// DeleteData calls DeleteDataFunc.
-func (mock *KeeperMock) DeleteData(contextMoqParam context.Context, deleteDataRequest *pb.DeleteDataRequest) (*pb.DeleteDataResponse, error) {
-	if mock.DeleteDataFunc == nil {
-		panic("KeeperMock.DeleteDataFunc: method is nil but Keeper.DeleteData was just called")
-	}
-	callInfo := struct {
-		ContextMoqParam   context.Context
-		DeleteDataRequest *pb.DeleteDataRequest
-	}{
-		ContextMoqParam:   contextMoqParam,
-		DeleteDataRequest: deleteDataRequest,
-	}
-	mock.lockDeleteData.Lock()
-	mock.calls.DeleteData = append(mock.calls.DeleteData, callInfo)
-	mock.lockDeleteData.Unlock()
-	return mock.DeleteDataFunc(contextMoqParam, deleteDataRequest)
-}
-
-// DeleteDataCalls gets all the calls that were made to DeleteData.
-// Check the length with:
-//
-//	len(mockedKeeper.DeleteDataCalls())
-func (mock *KeeperMock) DeleteDataCalls() []struct {
-	ContextMoqParam   context.Context
-	DeleteDataRequest *pb.DeleteDataRequest
-} {
-	var calls []struct {
-		ContextMoqParam   context.Context
-		DeleteDataRequest *pb.DeleteDataRequest
-	}
-	mock.lockDeleteData.RLock()
-	calls = mock.calls.DeleteData
-	mock.lockDeleteData.RUnlock()
-	return calls
 }
 
 // DepositSecret calls DepositSecretFunc.
@@ -295,6 +259,42 @@ func (mock *KeeperMock) NameCalls() []struct {
 	mock.lockName.RLock()
 	calls = mock.calls.Name
 	mock.lockName.RUnlock()
+	return calls
+}
+
+// PurgeSecret calls PurgeSecretFunc.
+func (mock *KeeperMock) PurgeSecret(contextMoqParam context.Context, purgeSecretRequest *pb.PurgeSecretRequest) (*pb.PurgeSecretResponse, error) {
+	if mock.PurgeSecretFunc == nil {
+		panic("KeeperMock.PurgeSecretFunc: method is nil but Keeper.PurgeSecret was just called")
+	}
+	callInfo := struct {
+		ContextMoqParam    context.Context
+		PurgeSecretRequest *pb.PurgeSecretRequest
+	}{
+		ContextMoqParam:    contextMoqParam,
+		PurgeSecretRequest: purgeSecretRequest,
+	}
+	mock.lockPurgeSecret.Lock()
+	mock.calls.PurgeSecret = append(mock.calls.PurgeSecret, callInfo)
+	mock.lockPurgeSecret.Unlock()
+	return mock.PurgeSecretFunc(contextMoqParam, purgeSecretRequest)
+}
+
+// PurgeSecretCalls gets all the calls that were made to PurgeSecret.
+// Check the length with:
+//
+//	len(mockedKeeper.PurgeSecretCalls())
+func (mock *KeeperMock) PurgeSecretCalls() []struct {
+	ContextMoqParam    context.Context
+	PurgeSecretRequest *pb.PurgeSecretRequest
+} {
+	var calls []struct {
+		ContextMoqParam    context.Context
+		PurgeSecretRequest *pb.PurgeSecretRequest
+	}
+	mock.lockPurgeSecret.RLock()
+	calls = mock.calls.PurgeSecret
+	mock.lockPurgeSecret.RUnlock()
 	return calls
 }
 

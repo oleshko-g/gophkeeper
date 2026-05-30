@@ -5,7 +5,6 @@ import (
 	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
 )
 
-//go:generate moq -rm -out depositor_mock.go . Depositor
 type Depositor interface {
 	Namer
 	pb.DepositorServiceServer

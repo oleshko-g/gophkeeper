@@ -179,7 +179,7 @@ const (
 	KeeperService_DepositSecret_FullMethodName  = "/gophkeeper.api.v1.KeeperService/DepositSecret"
 	KeeperService_ListSecrets_FullMethodName    = "/gophkeeper.api.v1.KeeperService/ListSecrets"
 	KeeperService_RetrieveSecret_FullMethodName = "/gophkeeper.api.v1.KeeperService/RetrieveSecret"
-	KeeperService_DeleteData_FullMethodName     = "/gophkeeper.api.v1.KeeperService/DeleteData"
+	KeeperService_PurgeSecret_FullMethodName    = "/gophkeeper.api.v1.KeeperService/PurgeSecret"
 	KeeperService_DownloadFile_FullMethodName   = "/gophkeeper.api.v1.KeeperService/DownloadFile"
 	KeeperService_UploadFile_FullMethodName     = "/gophkeeper.api.v1.KeeperService/UploadFile"
 )
@@ -196,8 +196,9 @@ type KeeperServiceClient interface {
 	ListSecrets(ctx context.Context, in *ListSecretsRequest, opts ...grpc.CallOption) (*ListSecretsResponse, error)
 	// RetrieveSecret retrieves a secret by its ID.
 	RetrieveSecret(ctx context.Context, in *RetrieveSecretRequest, opts ...grpc.CallOption) (*RetrieveSecretResponse, error)
-	// DeleteData deletes the [Upload]ed data from the [KeeperService]
-	DeleteData(ctx context.Context, in *DeleteDataRequest, opts ...grpc.CallOption) (*DeleteDataResponse, error)
+	// PurgeSecret permanently removes the deposited secret from KeeperService's active storage.
+	// After a successful purge, the secret can no longer be retrieved through KeeperService.
+	PurgeSecret(ctx context.Context, in *PurgeSecretRequest, opts ...grpc.CallOption) (*PurgeSecretResponse, error)
 	// DownloadFile downloads a file from the [KeeperService]
 	DownloadFile(ctx context.Context, in *DownloadFileRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[httpbody.HttpBody], error)
 	// UploadFile uploads a file to the [KeeperService]
@@ -242,10 +243,10 @@ func (c *keeperServiceClient) RetrieveSecret(ctx context.Context, in *RetrieveSe
 	return out, nil
 }
 
-func (c *keeperServiceClient) DeleteData(ctx context.Context, in *DeleteDataRequest, opts ...grpc.CallOption) (*DeleteDataResponse, error) {
+func (c *keeperServiceClient) PurgeSecret(ctx context.Context, in *PurgeSecretRequest, opts ...grpc.CallOption) (*PurgeSecretResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(DeleteDataResponse)
-	err := c.cc.Invoke(ctx, KeeperService_DeleteData_FullMethodName, in, out, cOpts...)
+	out := new(PurgeSecretResponse)
+	err := c.cc.Invoke(ctx, KeeperService_PurgeSecret_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -296,8 +297,9 @@ type KeeperServiceServer interface {
 	ListSecrets(context.Context, *ListSecretsRequest) (*ListSecretsResponse, error)
 	// RetrieveSecret retrieves a secret by its ID.
 	RetrieveSecret(context.Context, *RetrieveSecretRequest) (*RetrieveSecretResponse, error)
-	// DeleteData deletes the [Upload]ed data from the [KeeperService]
-	DeleteData(context.Context, *DeleteDataRequest) (*DeleteDataResponse, error)
+	// PurgeSecret permanently removes the deposited secret from KeeperService's active storage.
+	// After a successful purge, the secret can no longer be retrieved through KeeperService.
+	PurgeSecret(context.Context, *PurgeSecretRequest) (*PurgeSecretResponse, error)
 	// DownloadFile downloads a file from the [KeeperService]
 	DownloadFile(*DownloadFileRequest, grpc.ServerStreamingServer[httpbody.HttpBody]) error
 	// UploadFile uploads a file to the [KeeperService]
@@ -320,8 +322,8 @@ func (UnimplementedKeeperServiceServer) ListSecrets(context.Context, *ListSecret
 func (UnimplementedKeeperServiceServer) RetrieveSecret(context.Context, *RetrieveSecretRequest) (*RetrieveSecretResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RetrieveSecret not implemented")
 }
-func (UnimplementedKeeperServiceServer) DeleteData(context.Context, *DeleteDataRequest) (*DeleteDataResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method DeleteData not implemented")
+func (UnimplementedKeeperServiceServer) PurgeSecret(context.Context, *PurgeSecretRequest) (*PurgeSecretResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method PurgeSecret not implemented")
 }
 func (UnimplementedKeeperServiceServer) DownloadFile(*DownloadFileRequest, grpc.ServerStreamingServer[httpbody.HttpBody]) error {
 	return status.Error(codes.Unimplemented, "method DownloadFile not implemented")
@@ -403,20 +405,20 @@ func _KeeperService_RetrieveSecret_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _KeeperService_DeleteData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteDataRequest)
+func _KeeperService_PurgeSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PurgeSecretRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(KeeperServiceServer).DeleteData(ctx, in)
+		return srv.(KeeperServiceServer).PurgeSecret(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: KeeperService_DeleteData_FullMethodName,
+		FullMethod: KeeperService_PurgeSecret_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(KeeperServiceServer).DeleteData(ctx, req.(*DeleteDataRequest))
+		return srv.(KeeperServiceServer).PurgeSecret(ctx, req.(*PurgeSecretRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -459,8 +461,8 @@ var KeeperService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _KeeperService_RetrieveSecret_Handler,
 		},
 		{
-			MethodName: "DeleteData",
-			Handler:    _KeeperService_DeleteData_Handler,
+			MethodName: "PurgeSecret",
+			Handler:    _KeeperService_PurgeSecret_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

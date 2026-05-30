@@ -458,26 +458,27 @@ func (x *RetrieveSecretResponse) GetPayload() []byte {
 	return nil
 }
 
-type DeleteDataRequest struct {
+type PurgeSecretRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	SecretId      *UUID                  `protobuf:"bytes,1,opt,name=secret_id,json=secretId" json:"secret_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DeleteDataRequest) Reset() {
-	*x = DeleteDataRequest{}
+func (x *PurgeSecretRequest) Reset() {
+	*x = PurgeSecretRequest{}
 	mi := &file_api_v1_api_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DeleteDataRequest) String() string {
+func (x *PurgeSecretRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DeleteDataRequest) ProtoMessage() {}
+func (*PurgeSecretRequest) ProtoMessage() {}
 
-func (x *DeleteDataRequest) ProtoReflect() protoreflect.Message {
+func (x *PurgeSecretRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_api_v1_api_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -489,31 +490,38 @@ func (x *DeleteDataRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteDataRequest.ProtoReflect.Descriptor instead.
-func (*DeleteDataRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use PurgeSecretRequest.ProtoReflect.Descriptor instead.
+func (*PurgeSecretRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_api_proto_rawDescGZIP(), []int{10}
 }
 
-type DeleteDataResponse struct {
+func (x *PurgeSecretRequest) GetSecretId() *UUID {
+	if x != nil {
+		return x.SecretId
+	}
+	return nil
+}
+
+type PurgeSecretResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DeleteDataResponse) Reset() {
-	*x = DeleteDataResponse{}
+func (x *PurgeSecretResponse) Reset() {
+	*x = PurgeSecretResponse{}
 	mi := &file_api_v1_api_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DeleteDataResponse) String() string {
+func (x *PurgeSecretResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DeleteDataResponse) ProtoMessage() {}
+func (*PurgeSecretResponse) ProtoMessage() {}
 
-func (x *DeleteDataResponse) ProtoReflect() protoreflect.Message {
+func (x *PurgeSecretResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_api_v1_api_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -525,8 +533,8 @@ func (x *DeleteDataResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteDataResponse.ProtoReflect.Descriptor instead.
-func (*DeleteDataResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use PurgeSecretResponse.ProtoReflect.Descriptor instead.
+func (*PurgeSecretResponse) Descriptor() ([]byte, []int) {
 	return file_api_v1_api_proto_rawDescGZIP(), []int{11}
 }
 
@@ -635,21 +643,21 @@ const file_api_v1_api_proto_rawDesc = "" +
 	"\x15RetrieveSecretRequest\x12>\n" +
 	"\tsecret_id\x18\x01 \x01(\v2\x17.gophkeeper.api.v1.UUIDB\b\xfaB\x05\x8a\x01\x02\x10\x01R\bsecretId\"2\n" +
 	"\x16RetrieveSecretResponse\x12\x18\n" +
-	"\apayload\x18\x01 \x01(\fR\apayload\"\x13\n" +
-	"\x11DeleteDataRequest\"\x14\n" +
-	"\x12DeleteDataResponse\"\x15\n" +
+	"\apayload\x18\x01 \x01(\fR\apayload\"T\n" +
+	"\x12PurgeSecretRequest\x12>\n" +
+	"\tsecret_id\x18\x01 \x01(\v2\x17.gophkeeper.api.v1.UUIDB\b\xfaB\x05\x8a\x01\x02\x10\x01R\bsecretId\"\x15\n" +
+	"\x13PurgeSecretResponse\"\x15\n" +
 	"\x13DownloadFileRequest\"'\n" +
 	"\x04UUID\x12\x1f\n" +
 	"\x05bytes\x18\x01 \x01(\fB\t\xfaB\x06z\x04\x10\x10\x18\x10R\x05bytes2\xbf\x01\n" +
 	"\x10DepositorService\x12S\n" +
 	"\bRegister\x12\".gophkeeper.api.v1.RegisterRequest\x1a#.gophkeeper.api.v1.RegisterResponse\x12V\n" +
-	"\tAuthorize\x12#.gophkeeper.api.v1.AuthorizeRequest\x1a$.gophkeeper.api.v1.AuthorizeResponse2\xd8\x04\n" +
+	"\tAuthorize\x12#.gophkeeper.api.v1.AuthorizeRequest\x1a$.gophkeeper.api.v1.AuthorizeResponse2\xdb\x04\n" +
 	"\rKeeperService\x12b\n" +
 	"\rDepositSecret\x12'.gophkeeper.api.v1.DepositSecretRequest\x1a(.gophkeeper.api.v1.DepositSecretResponse\x12\\\n" +
 	"\vListSecrets\x12%.gophkeeper.api.v1.ListSecretsRequest\x1a&.gophkeeper.api.v1.ListSecretsResponse\x12e\n" +
-	"\x0eRetrieveSecret\x12(.gophkeeper.api.v1.RetrieveSecretRequest\x1a).gophkeeper.api.v1.RetrieveSecretResponse\x12Y\n" +
-	"\n" +
-	"DeleteData\x12$.gophkeeper.api.v1.DeleteDataRequest\x1a%.gophkeeper.api.v1.DeleteDataResponse\x12i\n" +
+	"\x0eRetrieveSecret\x12(.gophkeeper.api.v1.RetrieveSecretRequest\x1a).gophkeeper.api.v1.RetrieveSecretResponse\x12\\\n" +
+	"\vPurgeSecret\x12%.gophkeeper.api.v1.PurgeSecretRequest\x1a&.gophkeeper.api.v1.PurgeSecretResponse\x12i\n" +
 	"\fDownloadFile\x12&.gophkeeper.api.v1.DownloadFileRequest\x1a\x14.google.api.HttpBody\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/file/download0\x01\x12X\n" +
 	"\n" +
 	"UploadFile\x12\x14.google.api.HttpBody\x1a\x16.google.protobuf.Empty\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/file/upload(\x01B+Z)github.com/oleshko-g/gophkeeper/api/v1;pbb\beditionsp\xe8\a"
@@ -678,8 +686,8 @@ var file_api_v1_api_proto_goTypes = []any{
 	(*ListSecretsResponse)(nil),    // 7: gophkeeper.api.v1.ListSecretsResponse
 	(*RetrieveSecretRequest)(nil),  // 8: gophkeeper.api.v1.RetrieveSecretRequest
 	(*RetrieveSecretResponse)(nil), // 9: gophkeeper.api.v1.RetrieveSecretResponse
-	(*DeleteDataRequest)(nil),      // 10: gophkeeper.api.v1.DeleteDataRequest
-	(*DeleteDataResponse)(nil),     // 11: gophkeeper.api.v1.DeleteDataResponse
+	(*PurgeSecretRequest)(nil),     // 10: gophkeeper.api.v1.PurgeSecretRequest
+	(*PurgeSecretResponse)(nil),    // 11: gophkeeper.api.v1.PurgeSecretResponse
 	(*DownloadFileRequest)(nil),    // 12: gophkeeper.api.v1.DownloadFileRequest
 	(*UUID)(nil),                   // 13: gophkeeper.api.v1.UUID
 	(*httpbody.HttpBody)(nil),      // 14: google.api.HttpBody
@@ -689,27 +697,28 @@ var file_api_v1_api_proto_depIdxs = []int32{
 	13, // 0: gophkeeper.api.v1.DepositSecretResponse.deposited_secret_id:type_name -> gophkeeper.api.v1.UUID
 	13, // 1: gophkeeper.api.v1.ListSecretsResponse.secret_ids:type_name -> gophkeeper.api.v1.UUID
 	13, // 2: gophkeeper.api.v1.RetrieveSecretRequest.secret_id:type_name -> gophkeeper.api.v1.UUID
-	0,  // 3: gophkeeper.api.v1.DepositorService.Register:input_type -> gophkeeper.api.v1.RegisterRequest
-	2,  // 4: gophkeeper.api.v1.DepositorService.Authorize:input_type -> gophkeeper.api.v1.AuthorizeRequest
-	4,  // 5: gophkeeper.api.v1.KeeperService.DepositSecret:input_type -> gophkeeper.api.v1.DepositSecretRequest
-	6,  // 6: gophkeeper.api.v1.KeeperService.ListSecrets:input_type -> gophkeeper.api.v1.ListSecretsRequest
-	8,  // 7: gophkeeper.api.v1.KeeperService.RetrieveSecret:input_type -> gophkeeper.api.v1.RetrieveSecretRequest
-	10, // 8: gophkeeper.api.v1.KeeperService.DeleteData:input_type -> gophkeeper.api.v1.DeleteDataRequest
-	12, // 9: gophkeeper.api.v1.KeeperService.DownloadFile:input_type -> gophkeeper.api.v1.DownloadFileRequest
-	14, // 10: gophkeeper.api.v1.KeeperService.UploadFile:input_type -> google.api.HttpBody
-	1,  // 11: gophkeeper.api.v1.DepositorService.Register:output_type -> gophkeeper.api.v1.RegisterResponse
-	3,  // 12: gophkeeper.api.v1.DepositorService.Authorize:output_type -> gophkeeper.api.v1.AuthorizeResponse
-	5,  // 13: gophkeeper.api.v1.KeeperService.DepositSecret:output_type -> gophkeeper.api.v1.DepositSecretResponse
-	7,  // 14: gophkeeper.api.v1.KeeperService.ListSecrets:output_type -> gophkeeper.api.v1.ListSecretsResponse
-	9,  // 15: gophkeeper.api.v1.KeeperService.RetrieveSecret:output_type -> gophkeeper.api.v1.RetrieveSecretResponse
-	11, // 16: gophkeeper.api.v1.KeeperService.DeleteData:output_type -> gophkeeper.api.v1.DeleteDataResponse
-	14, // 17: gophkeeper.api.v1.KeeperService.DownloadFile:output_type -> google.api.HttpBody
-	15, // 18: gophkeeper.api.v1.KeeperService.UploadFile:output_type -> google.protobuf.Empty
-	11, // [11:19] is the sub-list for method output_type
-	3,  // [3:11] is the sub-list for method input_type
-	3,  // [3:3] is the sub-list for extension type_name
-	3,  // [3:3] is the sub-list for extension extendee
-	0,  // [0:3] is the sub-list for field type_name
+	13, // 3: gophkeeper.api.v1.PurgeSecretRequest.secret_id:type_name -> gophkeeper.api.v1.UUID
+	0,  // 4: gophkeeper.api.v1.DepositorService.Register:input_type -> gophkeeper.api.v1.RegisterRequest
+	2,  // 5: gophkeeper.api.v1.DepositorService.Authorize:input_type -> gophkeeper.api.v1.AuthorizeRequest
+	4,  // 6: gophkeeper.api.v1.KeeperService.DepositSecret:input_type -> gophkeeper.api.v1.DepositSecretRequest
+	6,  // 7: gophkeeper.api.v1.KeeperService.ListSecrets:input_type -> gophkeeper.api.v1.ListSecretsRequest
+	8,  // 8: gophkeeper.api.v1.KeeperService.RetrieveSecret:input_type -> gophkeeper.api.v1.RetrieveSecretRequest
+	10, // 9: gophkeeper.api.v1.KeeperService.PurgeSecret:input_type -> gophkeeper.api.v1.PurgeSecretRequest
+	12, // 10: gophkeeper.api.v1.KeeperService.DownloadFile:input_type -> gophkeeper.api.v1.DownloadFileRequest
+	14, // 11: gophkeeper.api.v1.KeeperService.UploadFile:input_type -> google.api.HttpBody
+	1,  // 12: gophkeeper.api.v1.DepositorService.Register:output_type -> gophkeeper.api.v1.RegisterResponse
+	3,  // 13: gophkeeper.api.v1.DepositorService.Authorize:output_type -> gophkeeper.api.v1.AuthorizeResponse
+	5,  // 14: gophkeeper.api.v1.KeeperService.DepositSecret:output_type -> gophkeeper.api.v1.DepositSecretResponse
+	7,  // 15: gophkeeper.api.v1.KeeperService.ListSecrets:output_type -> gophkeeper.api.v1.ListSecretsResponse
+	9,  // 16: gophkeeper.api.v1.KeeperService.RetrieveSecret:output_type -> gophkeeper.api.v1.RetrieveSecretResponse
+	11, // 17: gophkeeper.api.v1.KeeperService.PurgeSecret:output_type -> gophkeeper.api.v1.PurgeSecretResponse
+	14, // 18: gophkeeper.api.v1.KeeperService.DownloadFile:output_type -> google.api.HttpBody
+	15, // 19: gophkeeper.api.v1.KeeperService.UploadFile:output_type -> google.protobuf.Empty
+	12, // [12:20] is the sub-list for method output_type
+	4,  // [4:12] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_api_proto_init() }

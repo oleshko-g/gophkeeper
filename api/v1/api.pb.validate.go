@@ -1182,144 +1182,82 @@ var _ interface {
 	ErrorName() string
 } = RetrieveSecretResponseValidationError{}
 
-// Validate checks the field values on DeleteDataRequest with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// first error encountered is returned, or nil if there are no violations.
-func (m *DeleteDataRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on DeleteDataRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// DeleteDataRequestMultiError, or nil if none found.
-func (m *DeleteDataRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *DeleteDataRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if len(errors) > 0 {
-		return DeleteDataRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// DeleteDataRequestMultiError is an error wrapping multiple validation errors
-// returned by DeleteDataRequest.ValidateAll() if the designated constraints
-// aren't met.
-type DeleteDataRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m DeleteDataRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m DeleteDataRequestMultiError) AllErrors() []error { return m }
-
-// DeleteDataRequestValidationError is the validation error returned by
-// DeleteDataRequest.Validate if the designated constraints aren't met.
-type DeleteDataRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e DeleteDataRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e DeleteDataRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e DeleteDataRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e DeleteDataRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e DeleteDataRequestValidationError) ErrorName() string {
-	return "DeleteDataRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e DeleteDataRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sDeleteDataRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = DeleteDataRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = DeleteDataRequestValidationError{}
-
-// Validate checks the field values on DeleteDataResponse with the rules
+// Validate checks the field values on PurgeSecretRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *DeleteDataResponse) Validate() error {
+func (m *PurgeSecretRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on DeleteDataResponse with the rules
+// ValidateAll checks the field values on PurgeSecretRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// DeleteDataResponseMultiError, or nil if none found.
-func (m *DeleteDataResponse) ValidateAll() error {
+// PurgeSecretRequestMultiError, or nil if none found.
+func (m *PurgeSecretRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *DeleteDataResponse) validate(all bool) error {
+func (m *PurgeSecretRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
+	if m.GetSecretId() == nil {
+		err := PurgeSecretRequestValidationError{
+			field:  "SecretId",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetSecretId()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, PurgeSecretRequestValidationError{
+					field:  "SecretId",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, PurgeSecretRequestValidationError{
+					field:  "SecretId",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSecretId()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return PurgeSecretRequestValidationError{
+				field:  "SecretId",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if len(errors) > 0 {
-		return DeleteDataResponseMultiError(errors)
+		return PurgeSecretRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// DeleteDataResponseMultiError is an error wrapping multiple validation errors
-// returned by DeleteDataResponse.ValidateAll() if the designated constraints
+// PurgeSecretRequestMultiError is an error wrapping multiple validation errors
+// returned by PurgeSecretRequest.ValidateAll() if the designated constraints
 // aren't met.
-type DeleteDataResponseMultiError []error
+type PurgeSecretRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m DeleteDataResponseMultiError) Error() string {
+func (m PurgeSecretRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1328,11 +1266,11 @@ func (m DeleteDataResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m DeleteDataResponseMultiError) AllErrors() []error { return m }
+func (m PurgeSecretRequestMultiError) AllErrors() []error { return m }
 
-// DeleteDataResponseValidationError is the validation error returned by
-// DeleteDataResponse.Validate if the designated constraints aren't met.
-type DeleteDataResponseValidationError struct {
+// PurgeSecretRequestValidationError is the validation error returned by
+// PurgeSecretRequest.Validate if the designated constraints aren't met.
+type PurgeSecretRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1340,24 +1278,24 @@ type DeleteDataResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e DeleteDataResponseValidationError) Field() string { return e.field }
+func (e PurgeSecretRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e DeleteDataResponseValidationError) Reason() string { return e.reason }
+func (e PurgeSecretRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e DeleteDataResponseValidationError) Cause() error { return e.cause }
+func (e PurgeSecretRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e DeleteDataResponseValidationError) Key() bool { return e.key }
+func (e PurgeSecretRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e DeleteDataResponseValidationError) ErrorName() string {
-	return "DeleteDataResponseValidationError"
+func (e PurgeSecretRequestValidationError) ErrorName() string {
+	return "PurgeSecretRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e DeleteDataResponseValidationError) Error() string {
+func (e PurgeSecretRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1369,14 +1307,14 @@ func (e DeleteDataResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sDeleteDataResponse.%s: %s%s",
+		"invalid %sPurgeSecretRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = DeleteDataResponseValidationError{}
+var _ error = PurgeSecretRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -1384,7 +1322,109 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = DeleteDataResponseValidationError{}
+} = PurgeSecretRequestValidationError{}
+
+// Validate checks the field values on PurgeSecretResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *PurgeSecretResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PurgeSecretResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// PurgeSecretResponseMultiError, or nil if none found.
+func (m *PurgeSecretResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PurgeSecretResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return PurgeSecretResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// PurgeSecretResponseMultiError is an error wrapping multiple validation
+// errors returned by PurgeSecretResponse.ValidateAll() if the designated
+// constraints aren't met.
+type PurgeSecretResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PurgeSecretResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PurgeSecretResponseMultiError) AllErrors() []error { return m }
+
+// PurgeSecretResponseValidationError is the validation error returned by
+// PurgeSecretResponse.Validate if the designated constraints aren't met.
+type PurgeSecretResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PurgeSecretResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PurgeSecretResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PurgeSecretResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PurgeSecretResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PurgeSecretResponseValidationError) ErrorName() string {
+	return "PurgeSecretResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e PurgeSecretResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPurgeSecretResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PurgeSecretResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PurgeSecretResponseValidationError{}
 
 // Validate checks the field values on DownloadFileRequest with the rules
 // defined in the proto definition for this message. If any rules are
