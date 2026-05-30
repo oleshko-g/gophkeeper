@@ -39,7 +39,7 @@ type a struct {
 	// cfgFilePath is the path to the ".cfg" file stored in [app.cfgDir]
 	cfgFilePath string
 
-	// config stores the config values read from the ".cfg" file stored in [app.cfgDir]
+	// config stores the config values read from the cfg file stored in [app.cfgDir]
 	*config
 
 	// cmd is the root command
@@ -59,6 +59,57 @@ type a struct {
 	*client
 }
 
+func init() {
+	godotenv.Load()
+
+	defer func() {
+		if v := recover(); v != nil {
+			err, ok := v.(error)
+			if !ok {
+				panic(v)
+			}
+			cobra.CheckErr(fmt.Errorf("error during app initialization %w", err))
+		}
+	}()
+
+	defer func() {
+		app.logger.Info(fmt.Sprintf("app state after init is %q", app.state))
+	}()
+
+	app.initConfigDir()
+
+	app.initConfig()
+
+	app.initClient()
+
+	app.initState()
+
+	if app.state == pubKeyRegistered || app.state == appAuthorized {
+		app.initKeyPair()
+		app.initDepositedSecrets()
+	}
+
+	app.initState()
+
+	switch app.state {
+	case clientSetUp:
+		app.cmd.AddCommand(register)
+		return
+	case pubKeyRegistered:
+		app.cmd.AddCommand(authorize)
+		return
+	case appAuthorized:
+		upload.SetIn(nil)
+		if os.Getenv("GOPHKEEPER_DEBUG_CLIENT") == "true" {
+			upload.SetIn(
+				strings.NewReader("secret"),
+			)
+		}
+		app.cmd.AddCommand(upload, list, download, delete)
+		return
+	}
+}
+
 var app = a{
 	cmd: &cobra.Command{
 		Short: "The client app for gophkeeper",
@@ -74,7 +125,7 @@ const (
 	// cfgDirInitialized is set when the [app] configuration directory has been initialized.
 	cfgDirInitialized appState = iota
 
-	// configSet means the [app.config] is populated
+	// configSet means the [config] is populated
 	configSet
 
 	// pubKeyRegistered means the [app.config.RegisteredPubKey] is populated.
@@ -144,57 +195,6 @@ var (
 	}
 )
 
-func init() {
-	godotenv.Load()
-
-	defer func() {
-		if v := recover(); v != nil {
-			err, ok := v.(error)
-			if !ok {
-				panic(v)
-			}
-			cobra.CheckErr(fmt.Errorf("error during app initialization %w", err))
-		}
-	}()
-
-	defer func() {
-		app.logger.Info(fmt.Sprintf("app state after init is %q", app.state))
-	}()
-
-	app.initConfigDir()
-
-	app.initConfig()
-
-	app.initClient()
-
-	app.initState()
-
-	if app.state == pubKeyRegistered || app.state == appAuthorized {
-		app.initKeyPair()
-		app.initDepositedSecrets()
-	}
-
-	app.initState()
-
-	switch app.state {
-	case clientSetUp:
-		app.cmd.AddCommand(register)
-		return
-	case pubKeyRegistered:
-		app.cmd.AddCommand(authorize)
-		return
-	case appAuthorized:
-		upload.SetIn(nil)
-		if os.Getenv("GOPHKEEPER_DEBUG_CLIENT") == "true" {
-			upload.SetIn(
-				strings.NewReader("secret"),
-			)
-		}
-		app.cmd.AddCommand(upload, list, download, delete)
-		return
-	}
-}
-
 // initConfigDir initializes the configuration directory for the [app].
 func (app *a) initConfigDir() {
 	userCfgDir, err := os.UserConfigDir()
@@ -216,6 +216,7 @@ func (app *a) initConfigDir() {
 }
 
 type config struct {
+	// GophKeeperURL is the URL used to set up [client]
 	GophKeeperURL string `json:"keeper_url"`
 
 	// PrivateKeyFilePath is the path to the private key file used for authentication.
@@ -223,8 +224,6 @@ type config struct {
 	PublicKeyFilePath  string `json:"public_key_file_path"`
 
 	RegisteredPubKeyID string `json:"registered_pub_key_id"`
-
-	DepositedSecretsFilePath string `json:"deposited_keys_file_path"`
 
 	// AuthToken is the authentication token for the [app] on the gophkeeper server.
 	AuthToken string `json:"auth_token"`
@@ -361,7 +360,7 @@ func (app *a) updateDepositedSecrets(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-// initClient initializes the client for the gophkeeper server.
+// initClient initializes the client for the gophkeeper server based on the [config.GophKeeperURL]
 func (app *a) initClient() {
 	client, err := newClient(app.config.GophKeeperURL)
 	if err != nil {
