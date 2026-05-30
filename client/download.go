@@ -40,7 +40,7 @@ func (app *a) downloadRunE(cmd *cobra.Command, _ []string) error {
 	// prepare the ctx
 	ctx, cancel := context.WithTimeout(cmd.Context(), 150*time.Millisecond)
 	defer cancel()
-	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", app.config.AuthToken)
+	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", app.config.Authorization.Token)
 
 	// make the request
 	res, err := app.RetrieveSecret(ctx, &pb.RetrieveSecretRequest{

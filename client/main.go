@@ -114,7 +114,6 @@ var app = a{
 	cmd: &cobra.Command{
 		Short: "The client app for gophkeeper",
 	},
-	config: &config{},
 	logger: slog.Default(),
 }
 
@@ -131,7 +130,7 @@ const (
 	// pubKeyRegistered means the [app.config.RegisteredPubKey] is populated.
 	pubKeyRegistered
 
-	// appAuthorized means the [app.config.AuthToken] is populated.
+	// appAuthorized means the [app.config.Authorization.Token] is populated.
 	appAuthorized
 
 	// clientSetUp means the [app.client] is populated.
@@ -225,16 +224,18 @@ type config struct {
 
 	RegisteredPubKeyID string `json:"registered_pub_key_id"`
 
-	// AuthToken is the authentication token for the [app] on the gophkeeper server.
-	AuthToken string `json:"auth_token"`
+	Authorization struct {
+		// Token is the authentication token for the [app] on the gophkeeper server.
+		Token     string `json:"auth_token"`
+		UpdatedAt string `json:"updated_at"`
+	}
 }
 
 // initConfig initializes the configuration for the [app].
 func (app *a) initConfig() {
+	// read the cfg file
 	const cfgFileName = ".cfg"
-
 	app.cfgFilePath = path.Join(app.cfgDir, cfgFileName)
-
 	cfgFile, err := os.OpenFile(app.cfgFilePath, os.O_RDWR|os.O_CREATE, filePerm)
 	if err != nil {
 		panic(err)
@@ -246,6 +247,8 @@ func (app *a) initConfig() {
 		panic(err)
 	}
 
+	// init app.config
+	app.config = new(config)
 	if len(cfgData) == 0 {
 		cfgData, err = json.MarshalIndent(config{GophKeeperURL: ":8081"}, "", "  ")
 		if err != nil {
@@ -256,6 +259,7 @@ func (app *a) initConfig() {
 		if err != nil {
 			panic(err)
 		}
+		return
 	}
 
 	err = json.Unmarshal(cfgData, app.config)
@@ -410,7 +414,7 @@ func (app *a) initState() {
 	}
 	app.state = pubKeyRegistered
 
-	if app.config.AuthToken == "" {
+	if app.config.Authorization.Token == "" {
 		return
 	}
 	app.state = appAuthorized

@@ -60,7 +60,7 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 
 	ctx := metadata.AppendToOutgoingContext(
 		cmd.Context(),
-		"authorization", app.config.AuthToken,
+		"authorization", app.config.Authorization.Token,
 	)
 	res, err := app.client.DepositSecret(ctx, &pb.DepositSecretRequest{
 		Payload: protoSecretData,

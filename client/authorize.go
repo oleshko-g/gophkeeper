@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"encoding/base64"
+	"time"
 
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/spf13/cobra"
@@ -36,7 +37,8 @@ func (app *a) authorizeRunE(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	app.config.AuthToken = res.GetAuthToken()
+	app.config.Authorization.Token = res.GetAuthToken()
+	app.config.Authorization.UpdatedAt = time.Now().Format(time.RFC822Z)
 
 	return nil
 }

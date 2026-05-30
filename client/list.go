@@ -15,7 +15,7 @@ func (app *a) listRunE(cmd *cobra.Command, _ []string) error {
 
 	ctx, cancel := context.WithTimeout(cmd.Context(), 100*time.Millisecond)
 	defer cancel()
-	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", app.AuthToken)
+	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", app.Authorization.Token)
 	depositedSecretIDs, err := app.client.ListSecrets(ctx, &pb.ListSecretsRequest{})
 	if err != nil {
 		l.Error("list secrets", "error", err)
