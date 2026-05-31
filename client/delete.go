@@ -44,7 +44,10 @@ func (app *a) deleteRunE(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	app.client.PurgeSecret(ctx, &pb.PurgeSecretRequest{SecretId: secretID})
+	_, err = app.client.PurgeSecret(ctx, &pb.PurgeSecretRequest{SecretId: secretID})
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
