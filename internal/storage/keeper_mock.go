@@ -5,11 +5,10 @@ package storage
 
 import (
 	"context"
-	"sync"
-
 	"github.com/google/uuid"
 	"github.com/oleshko-g/gophkeeper/internal/model/keeper/secret"
 	uuidv7 "github.com/oleshko-g/gophkeeper/internal/uuid-v7"
+	"sync"
 )
 
 // Ensure, that KeeperMock does implement Keeper.
@@ -22,6 +21,9 @@ var _ Keeper = &KeeperMock{}
 //
 //		// make and configure a mocked Keeper
 //		mockedKeeper := &KeeperMock{
+//			RemoveSecretFunc: func(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], secretID uuidv7.UUID[uuid.UUID]) error {
+//				panic("mock out the RemoveSecret method")
+//			},
 //			RetrieveSecretFunc: func(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], secretID uuidv7.UUID[uuid.UUID]) (secret.Data, error) {
 //				panic("mock out the RetrieveSecret method")
 //			},
@@ -38,6 +40,9 @@ var _ Keeper = &KeeperMock{}
 //
 //	}
 type KeeperMock struct {
+	// RemoveSecretFunc mocks the RemoveSecret method.
+	RemoveSecretFunc func(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], secretID uuidv7.UUID[uuid.UUID]) error
+
 	// RetrieveSecretFunc mocks the RetrieveSecret method.
 	RetrieveSecretFunc func(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], secretID uuidv7.UUID[uuid.UUID]) (secret.Data, error)
 
@@ -49,6 +54,15 @@ type KeeperMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// RemoveSecret holds details about calls to the RemoveSecret method.
+		RemoveSecret []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PublicKeyID is the publicKeyID argument value.
+			PublicKeyID uuidv7.UUID[uuid.UUID]
+			// SecretID is the secretID argument value.
+			SecretID uuidv7.UUID[uuid.UUID]
+		}
 		// RetrieveSecret holds details about calls to the RetrieveSecret method.
 		RetrieveSecret []struct {
 			// Ctx is the ctx argument value.
@@ -75,9 +89,50 @@ type KeeperMock struct {
 			S secret.Data
 		}
 	}
+	lockRemoveSecret      sync.RWMutex
 	lockRetrieveSecret    sync.RWMutex
 	lockRetrieveSecretIDs sync.RWMutex
 	lockStoreSecret       sync.RWMutex
+}
+
+// RemoveSecret calls RemoveSecretFunc.
+func (mock *KeeperMock) RemoveSecret(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], secretID uuidv7.UUID[uuid.UUID]) error {
+	if mock.RemoveSecretFunc == nil {
+		panic("KeeperMock.RemoveSecretFunc: method is nil but Keeper.RemoveSecret was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		PublicKeyID uuidv7.UUID[uuid.UUID]
+		SecretID    uuidv7.UUID[uuid.UUID]
+	}{
+		Ctx:         ctx,
+		PublicKeyID: publicKeyID,
+		SecretID:    secretID,
+	}
+	mock.lockRemoveSecret.Lock()
+	mock.calls.RemoveSecret = append(mock.calls.RemoveSecret, callInfo)
+	mock.lockRemoveSecret.Unlock()
+	return mock.RemoveSecretFunc(ctx, publicKeyID, secretID)
+}
+
+// RemoveSecretCalls gets all the calls that were made to RemoveSecret.
+// Check the length with:
+//
+//	len(mockedKeeper.RemoveSecretCalls())
+func (mock *KeeperMock) RemoveSecretCalls() []struct {
+	Ctx         context.Context
+	PublicKeyID uuidv7.UUID[uuid.UUID]
+	SecretID    uuidv7.UUID[uuid.UUID]
+} {
+	var calls []struct {
+		Ctx         context.Context
+		PublicKeyID uuidv7.UUID[uuid.UUID]
+		SecretID    uuidv7.UUID[uuid.UUID]
+	}
+	mock.lockRemoveSecret.RLock()
+	calls = mock.calls.RemoveSecret
+	mock.lockRemoveSecret.RUnlock()
+	return calls
 }
 
 // RetrieveSecret calls RetrieveSecretFunc.

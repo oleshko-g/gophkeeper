@@ -5,10 +5,9 @@ package keeper
 
 import (
 	"context"
-	"sync"
-
 	"github.com/google/uuid"
 	"github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
+	"sync"
 )
 
 // Ensure, that QuerierMock does implement Querier.
@@ -21,6 +20,9 @@ var _ Querier = &QuerierMock{}
 //
 //		// make and configure a mocked Querier
 //		mockedQuerier := &QuerierMock{
+//			DeleteSecretByIDFunc: func(ctx context.Context, arg queries.DeleteSecretByIDParams) error {
+//				panic("mock out the DeleteSecretByID method")
+//			},
 //			InsertDepositedSecretFunc: func(ctx context.Context, arg queries.InsertDepositedSecretParams) (queries.DepositedSecret, error) {
 //				panic("mock out the InsertDepositedSecret method")
 //			},
@@ -37,6 +39,9 @@ var _ Querier = &QuerierMock{}
 //
 //	}
 type QuerierMock struct {
+	// DeleteSecretByIDFunc mocks the DeleteSecretByID method.
+	DeleteSecretByIDFunc func(ctx context.Context, arg queries.DeleteSecretByIDParams) error
+
 	// InsertDepositedSecretFunc mocks the InsertDepositedSecret method.
 	InsertDepositedSecretFunc func(ctx context.Context, arg queries.InsertDepositedSecretParams) (queries.DepositedSecret, error)
 
@@ -48,6 +53,13 @@ type QuerierMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// DeleteSecretByID holds details about calls to the DeleteSecretByID method.
+		DeleteSecretByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Arg is the arg argument value.
+			Arg queries.DeleteSecretByIDParams
+		}
 		// InsertDepositedSecret holds details about calls to the InsertDepositedSecret method.
 		InsertDepositedSecret []struct {
 			// Ctx is the ctx argument value.
@@ -70,9 +82,46 @@ type QuerierMock struct {
 			DepositorPubKeyID uuid.UUID
 		}
 	}
+	lockDeleteSecretByID          sync.RWMutex
 	lockInsertDepositedSecret     sync.RWMutex
 	lockSelectDepositedSecretData sync.RWMutex
 	lockSelectDepositedSecretIDs  sync.RWMutex
+}
+
+// DeleteSecretByID calls DeleteSecretByIDFunc.
+func (mock *QuerierMock) DeleteSecretByID(ctx context.Context, arg queries.DeleteSecretByIDParams) error {
+	if mock.DeleteSecretByIDFunc == nil {
+		panic("QuerierMock.DeleteSecretByIDFunc: method is nil but Querier.DeleteSecretByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Arg queries.DeleteSecretByIDParams
+	}{
+		Ctx: ctx,
+		Arg: arg,
+	}
+	mock.lockDeleteSecretByID.Lock()
+	mock.calls.DeleteSecretByID = append(mock.calls.DeleteSecretByID, callInfo)
+	mock.lockDeleteSecretByID.Unlock()
+	return mock.DeleteSecretByIDFunc(ctx, arg)
+}
+
+// DeleteSecretByIDCalls gets all the calls that were made to DeleteSecretByID.
+// Check the length with:
+//
+//	len(mockedQuerier.DeleteSecretByIDCalls())
+func (mock *QuerierMock) DeleteSecretByIDCalls() []struct {
+	Ctx context.Context
+	Arg queries.DeleteSecretByIDParams
+} {
+	var calls []struct {
+		Ctx context.Context
+		Arg queries.DeleteSecretByIDParams
+	}
+	mock.lockDeleteSecretByID.RLock()
+	calls = mock.calls.DeleteSecretByID
+	mock.lockDeleteSecretByID.RUnlock()
+	return calls
 }
 
 // InsertDepositedSecret calls InsertDepositedSecretFunc.

@@ -12,4 +12,5 @@ type Keeper interface {
 	StoreSecret(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID], s secret.Data) (*secret.DepositedSecret, error)
 	RetrieveSecretIDs(ctx context.Context, publicKeyID uuidv7.UUID[uuid.UUID]) (uuid.UUIDs, error)
 	RetrieveSecret(ctx context.Context, publicKeyID, secretID uuidv7.UUID[uuid.UUID]) (secret.Data, error)
+	RemoveSecret(ctx context.Context, publicKeyID, secretID uuidv7.UUID[uuid.UUID]) error
 }

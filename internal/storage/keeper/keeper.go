@@ -19,6 +19,7 @@ type Querier interface {
 	InsertDepositedSecret(ctx context.Context, arg queries.InsertDepositedSecretParams) (queries.DepositedSecret, error)
 	SelectDepositedSecretIDs(ctx context.Context, depositorPubKeyID uuid.UUID) ([]uuid.UUID, error)
 	SelectDepositedSecretData(ctx context.Context, id uuid.UUID) (queries.SelectDepositedSecretDataRow, error)
+	DeleteSecretByID(ctx context.Context, arg queries.DeleteSecretByIDParams) error
 }
 
 func New(q Querier) *Keeper {
@@ -62,4 +63,8 @@ func (k *Keeper) RetrieveSecret(ctx context.Context, publicKeyID, secretID uuidv
 	}
 
 	return row.EncryptedData, nil
+}
+
+func (k *Keeper) RemoveSecret(ctx context.Context, publicKeyID, secretID uuidv7.UUID[uuid.UUID]) error {
+	return k.DeleteSecretByID(ctx, queries.DeleteSecretByIDParams{DepositorPubKeyID: publicKeyID.Value, ID: secretID.Value})
 }
