@@ -189,8 +189,7 @@ var (
 	delete = &cobra.Command{
 		Use:   "delete",
 		Short: "Deletes the data stored on the gophkeeper server",
-		Run: func(cmd *cobra.Command, args []string) {
-		},
+		RunE:   app.deleteRunE,
 	}
 )
 
