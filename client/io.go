@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 )
 
@@ -34,10 +35,13 @@ func ReadAllCtx(ctx context.Context, r io.Reader) ([]byte, error) {
 
 	select {
 	case <-ctx.Done():
+		fmt.Println("received ctx.Done")
 		return nil, ctx.Err()
 	case res := <-resCh:
+		fmt.Printf("received res %v\n", res)
 		return res, nil
 	case err := <-errCh:
+		fmt.Printf("received err %v\n", err)
 		return nil, err
 	}
 }

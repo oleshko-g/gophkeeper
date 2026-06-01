@@ -51,5 +51,7 @@ func (app *a) deleteRunE(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
+	delete(app.depositedSecrets, string(data))
+
 	return nil
 }

@@ -105,7 +105,7 @@ func init() {
 				strings.NewReader("secret"),
 			)
 		}
-		app.cmd.AddCommand(upload, list, download, delete)
+		app.cmd.AddCommand(upload, list, download, deleteSecret)
 		return
 	}
 }
@@ -186,10 +186,11 @@ var (
 		Short: "Downloads the secret by its ID",
 		RunE:  app.downloadRunE,
 	}
-	delete = &cobra.Command{
+	deleteSecret = &cobra.Command{
 		Use:   "delete",
 		Short: "Deletes the data stored on the gophkeeper server",
 		RunE:   app.deleteRunE,
+		PostRunE: app.updateDepositedSecrets,
 	}
 )
 
