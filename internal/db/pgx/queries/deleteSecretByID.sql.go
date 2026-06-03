@@ -12,7 +12,10 @@ import (
 )
 
 const deleteSecretByID = `-- name: DeleteSecretByID :exec
-DELETE FROM deposited_secrets WHERE depositor_pub_key_id = $1 AND id = $2
+DELETE FROM deposited_secrets
+WHERE
+  depositor_pub_key_id = $1
+  AND id = $2
 `
 
 type DeleteSecretByIDParams struct {

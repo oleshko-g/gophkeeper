@@ -43,7 +43,7 @@ func (app *a) downloadRunE(cmd *cobra.Command, _ []string) error {
 	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", app.config.Authorization.Token)
 
 	// make the request
-	res, err := app.RetrieveSecret(ctx, &pb.RetrieveSecretRequest{
+	res, err := app.Client.RetrieveSecret(ctx, &pb.RetrieveSecretRequest{
 		SecretId: secretID,
 	})
 	if err != nil {

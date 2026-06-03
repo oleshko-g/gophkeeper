@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"crypto/rsa"
-	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
 	"encoding/pem"
@@ -19,11 +18,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
-	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/internal/file"
+	grpc "github.com/oleshko-g/gophkeeper/internal/grpc/client"
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
 // a is the main application struct that holds the application state and configuration.
@@ -56,7 +53,7 @@ type a struct {
 	depositedSecrets map[string]struct{}
 
 	// is the gRPC interface to access the gophkeeper server
-	*client
+	*grpc.Client
 }
 
 func init() {
@@ -92,7 +89,7 @@ func init() {
 	app.initState()
 
 	switch app.state {
-	case clientSetUp:
+	case ClientSetUp:
 		app.cmd.AddCommand(register)
 		return
 	case pubKeyRegistered:
@@ -112,7 +109,7 @@ func init() {
 
 var app = a{
 	cmd: &cobra.Command{
-		Short: "The client app for gophkeeper",
+		Short: "The Client app for gophkeeper",
 	},
 	logger: slog.Default(),
 }
@@ -133,8 +130,8 @@ const (
 	// appAuthorized means the [app.config.Authorization.Token] is populated.
 	appAuthorized
 
-	// clientSetUp means the [app.client] is populated.
-	clientSetUp
+	// ClientSetUp means the [app.Client] is populated.
+	ClientSetUp
 )
 
 func (a appState) String() string {
@@ -147,8 +144,8 @@ func (a appState) String() string {
 		return "pubKeyRegistered"
 	case appAuthorized:
 		return "appAuthorized"
-	case clientSetUp:
-		return "clientSetUp"
+	case ClientSetUp:
+		return "ClientSetUp"
 
 	default:
 		return "unknown"
@@ -158,8 +155,8 @@ func (a appState) String() string {
 var (
 	register = &cobra.Command{
 		Use:      "register",
-		Short:    "Registers the client app on the gophkeeper server",
-		Long:     "Generates a new RSA key pair and registers the client app on the gophkeeper server",
+		Short:    "Registers the Client app on the gophkeeper server",
+		Long:     "Generates a new RSA key pair and registers the Client app on the gophkeeper server",
 		RunE:     app.registerRunE,
 		PostRunE: app.updateConfig,
 	}
@@ -187,9 +184,9 @@ var (
 		RunE:  app.downloadRunE,
 	}
 	deleteSecret = &cobra.Command{
-		Use:   "delete",
-		Short: "Deletes the data stored on the gophkeeper server",
-		RunE:   app.deleteRunE,
+		Use:      "delete",
+		Short:    "Deletes the data stored on the gophkeeper server",
+		RunE:     app.deleteRunE,
 		PostRunE: app.updateDepositedSecrets,
 	}
 )
@@ -215,7 +212,7 @@ func (app *a) initConfigDir() {
 }
 
 type config struct {
-	// GophKeeperURL is the URL used to set up [client]
+	// GophKeeperURL is the URL used to set up [Client]
 	GophKeeperURL string `json:"keeper_url"`
 
 	// PrivateKeyFilePath is the path to the private key file used for authentication.
@@ -364,36 +361,16 @@ func (app *a) updateDepositedSecrets(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-// initClient initializes the client for the gophkeeper server based on the [config.GophKeeperURL]
+// initClient initializes the Client for the gophkeeper server based on the [config.GophKeeperURL]
 func (app *a) initClient() {
-	client, err := newClient(app.config.GophKeeperURL)
+	client, err := grpc.New(app.config.GophKeeperURL)
 	if err != nil {
 		panic(err)
 	}
-	app.client = client
+	app.Client = client
 }
 
-type client struct {
-	pb.DepositorServiceClient
-	pb.KeeperServiceClient
-}
-
-func newClient(gophKeeperURL string) (*client, error) {
-	conn, err := grpc.NewClient(
-		gophKeeperURL,
-		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{InsecureSkipVerify: true})),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return &client{
-		DepositorServiceClient: pb.NewDepositorServiceClient(conn),
-		KeeperServiceClient:    pb.NewKeeperServiceClient(conn),
-	}, nil
-}
-
-// initState initializes the state of the app based on the app's configuration and client.
+// initState initializes the state of the app based on the app's configuration and Client.
 func (app *a) initState() {
 	if app.cfgDir != "" {
 		app.state = cfgDirInitialized
@@ -404,10 +381,10 @@ func (app *a) initState() {
 	}
 	app.state = configSet
 
-	if app.client == nil {
+	if app.Client == nil {
 		return
 	}
-	app.state = clientSetUp
+	app.state = ClientSetUp
 
 	if app.config.RegisteredPubKeyID == "" {
 		return

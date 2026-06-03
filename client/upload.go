@@ -62,7 +62,7 @@ func (app *a) uploadRunE(cmd *cobra.Command, args []string) error {
 		cmd.Context(),
 		"authorization", app.config.Authorization.Token,
 	)
-	res, err := app.client.DepositSecret(ctx, &pb.DepositSecretRequest{
+	res, err := app.Client.DepositSecret(ctx, &pb.DepositSecretRequest{
 		Payload: protoSecretData,
 	})
 	if err != nil {

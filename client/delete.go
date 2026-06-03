@@ -46,7 +46,7 @@ func (app *a) deleteRunE(cmd *cobra.Command, _ []string) error {
 	}
 
 	ctx = metadata.AppendToOutgoingContext(ctx, "authorization", app.Authorization.Token)
-	_, err = app.client.PurgeSecret(ctx, &pb.PurgeSecretRequest{SecretId: secretID})
+	_, err = app.Client.PurgeSecret(ctx, &pb.PurgeSecretRequest{SecretId: secretID})
 	if err != nil {
 		return err
 	}

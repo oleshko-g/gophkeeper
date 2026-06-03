@@ -5,9 +5,10 @@ package keeper
 
 import (
 	"context"
+	"sync"
+
 	"github.com/google/uuid"
 	"github.com/oleshko-g/gophkeeper/internal/db/pgx/queries"
-	"sync"
 )
 
 // Ensure, that QuerierMock does implement Querier.

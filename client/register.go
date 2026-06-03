@@ -41,7 +41,7 @@ func (app *a) registerRunE(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	res, err := app.client.DepositorServiceClient.Register(
+	res, err := app.Client.Register(
 		cmd.Context(),
 		&pb.RegisterRequest{
 			PubKey: new(encodedPubKey.String()),

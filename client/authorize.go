@@ -28,7 +28,7 @@ func (app *a) authorizeRunE(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 
-	res, err := app.client.Authorize(
+	res, err := app.Client.Authorize(
 		cmd.Context(),
 		&pb.AuthorizeRequest{
 			DecryptedId: new(string(data)),
