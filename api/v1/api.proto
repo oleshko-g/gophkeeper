@@ -1,0 +1,109 @@
+edition = "2023";
+
+package gophkeeper.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/httpbody.proto";
+import "google/protobuf/empty.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/oleshko-g/gophkeeper/api/v1;pb";
+
+// DepositorService is the interface to:
+//  - [Register] public keys of the Keeper users
+//  - [Authorize] their client apps
+service DepositorService {
+  // Register registers an anonymous public key and returns encrypted id of the registered pub key and the public key of [KeeperService].
+  // The owner of the id can then [Authorize] apps to make requests to [KeeperService]
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+
+  // Authorize authorizes an app of the registered public key owner's to [KeeperService] and returns an authentication token.
+  // The owner of the authentication token can then make requests to [KeeperService]
+  rpc Authorize(AuthorizeRequest) returns (AuthorizeResponse);
+}
+
+// KeeperService is the service that deposits and retrieves secrets.
+service KeeperService {
+  // DepositSecret deposits a secret into the Keeper.
+  rpc DepositSecret(DepositSecretRequest) returns (DepositSecretResponse);
+
+  // ListSecrets lists the deposited secrets of the authenticated user.
+  rpc ListSecrets(ListSecretsRequest) returns (ListSecretsResponse);
+
+  // RetrieveSecret retrieves a secret by its ID.
+  rpc RetrieveSecret(RetrieveSecretRequest) returns (RetrieveSecretResponse);
+
+  // PurgeSecret permanently removes the deposited secret from KeeperService's active storage.
+  // After a successful purge, the secret can no longer be retrieved through KeeperService.
+  rpc PurgeSecret(PurgeSecretRequest) returns (PurgeSecretResponse);
+
+  // DownloadFile downloads a file from the [KeeperService]
+  //
+  // [Not implemented]
+  rpc DownloadFile(DownloadFileRequest) returns (stream google.api.HttpBody) {
+    option (google.api.http) = {get: "/v1/file/download"};
+  }
+
+  // UploadFile uploads a file to the [KeeperService]
+  //
+  // [Not implemented]
+  rpc UploadFile(stream google.api.HttpBody) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/file/upload"
+      body: "*"
+    };
+  }
+}
+
+message RegisterRequest {
+  string pub_key = 1 [(validate.rules).string.min_len = 1];
+}
+
+message RegisterResponse {
+  string encrypted_id = 1;
+}
+
+message AuthorizeRequest {
+  string decrypted_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message AuthorizeResponse {
+  string auth_token = 1;
+}
+
+message DepositSecretRequest {
+  bytes payload = 1;
+}
+
+message DepositSecretResponse {
+  UUID deposited_secret_id = 1;
+}
+
+message ListSecretsRequest {}
+
+message ListSecretsResponse {
+  repeated UUID secret_ids = 1;
+}
+
+message RetrieveSecretRequest {
+  UUID secret_id = 1 [(validate.rules).message.required = true];
+}
+
+message RetrieveSecretResponse {
+  bytes payload = 1;
+}
+
+message PurgeSecretRequest {
+  UUID secret_id = 1 [(validate.rules).message.required = true];
+}
+
+message PurgeSecretResponse {}
+
+message DownloadFileRequest {}
+
+message UUID {
+  bytes bytes = 1 [(validate.rules).bytes = {
+    min_len: 16 // byte UUID representation MUST be exactly 16 bytes
+    max_len: 16 // byte UUID representation MUST be exactly 16 bytes
+  }];
+}

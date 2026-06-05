@@ -1,0 +1,46 @@
+@startuml use-cases
+  left to right direction
+  actor KeeperUser
+
+  rectangle KeeperServer {
+    package ClientAppService {
+      usecase Register
+      usecase Authorize 
+      usecase Authenticate
+    }
+    
+    package KeeperService {
+      usecase UploadData
+      usecase DownloadData
+      usecase DeleteData
+      usecase ListData
+    }
+
+  }
+
+  rectangle KeeperClientApp {
+    usecase GetAuthToken
+    usecase Connect
+    usecase EnterAuthToken
+    usecase EnterPublicKey
+
+  }
+
+  KeeperUser -down- EnterPublicKey
+  KeeperUser -down- KeeperService
+
+  Register -> EnterPublicKey : <<INCLUDE>>
+  Register <-up- Authorize : <<INCLUDES>>
+  GetAuthToken --> Register : <<INCLUDE>>
+
+  Connect -left-> EnterAuthToken : <<INCLUDE>>
+  Connect -right-> Authenticate : <<INCLUDES>>
+  Authenticate -up-> Authorize : <<INCLUDES>>
+  EnterAuthToken -left-> GetAuthToken : <<INCLUDES>>
+
+  Connect <- KeeperService : <<INCLUDES>>
+
+  DeleteData -down-> UploadData : <<EXTENDS>>
+  DownloadData -up-> UploadData : <<EXTENDS>>
+  ListData -> UploadData : <<EXTENDS>>
+@enduml
