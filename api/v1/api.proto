@@ -38,11 +38,15 @@ service KeeperService {
   rpc PurgeSecret(PurgeSecretRequest) returns (PurgeSecretResponse);
 
   // DownloadFile downloads a file from the [KeeperService]
+  //
+  // [Not implemented]
   rpc DownloadFile(DownloadFileRequest) returns (stream google.api.HttpBody) {
     option (google.api.http) = {get: "/v1/file/download"};
   }
 
   // UploadFile uploads a file to the [KeeperService]
+  //
+  // [Not implemented]
   rpc UploadFile(stream google.api.HttpBody) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/file/upload"
