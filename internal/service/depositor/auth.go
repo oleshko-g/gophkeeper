@@ -6,6 +6,7 @@ import (
 	"time"
 
 	jwt "github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	pb "github.com/oleshko-g/gophkeeper/api/v1"
 	"github.com/oleshko-g/gophkeeper/internal/model/depositor"
 	"github.com/oleshko-g/gophkeeper/internal/service"
@@ -16,7 +17,12 @@ import (
 func (s *Service) Authorize(ctx context.Context, in *pb.AuthorizeRequest) (*pb.AuthorizeResponse, error) {
 	methodName := "Authorize"
 
-	pk, err := s.RetrievePubKeyByID(ctx, uuidv7.FromString(in.GetDecryptedId()))
+	id, err := uuid.Parse(in.GetDecryptedId())
+	if err != nil {
+		return nil, err
+	}
+
+	pk, err := s.RetrievePubKeyByID(ctx, uuidv7.FromString(id.String()))
 	if err != nil {
 		if errors.Is(err, storage.ErrNotFound) {
 			return nil, s.wrapError(methodName, service.ErrTypeBusinessLogic, err)
