@@ -1,3 +1,4 @@
+//	Gophkeeper client is a CLI tool to access the gophkeeper server.
 package main
 
 import (
